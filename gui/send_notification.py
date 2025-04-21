@@ -6,7 +6,6 @@
 import tkinter as tk
 from tkinter import messagebox
 
-
 def NotificationPage ():
     """
 This function runs when I hit the send button.
