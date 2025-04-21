@@ -3,52 +3,91 @@
 ## Developer:
 Sayan Tajul
 
-## Description:
-This branch contains the updated Sprint 1 Part 2 implementation for the Send Notification feature for Team 404 – Team Not Found.
+## Overview:
+The `sayan_send_notification` branch has the completed Send Notification feature for Team 404 - Team Not Found within Sprint 1 Part 2.
 
-## Features Implemented:
-- **Template Dropdown:**  
-  Users can select a prewritten template from a dropdown menu. Template subject and message fields auto-populate based on the selected template. Templates are pulled dynamically from the database.
-
-- **Validation:**  
-  Input validation added to ensure that:
-  - Subject must be at least 5 characters.
-  - Message must be at least 10 characters.
-  - Warning popups notify users if validation fails.
-
-- **Attach/Remove Files:**  
-  Users can attach files related to their notification. Selected files are visually shown in a listbox. Users can also select and remove any attached file before sending.
-
-- **Review Before Sending:**  
-  A review confirmation popup displays the subject and message before the notification is finalized and saved to the database.
-
-- **Cancel Button:**  
-  Clears the subject and message fields instantly if needed.
-
-- **Database Connectivity:**  
-  Program connects to a remote SQL Server database using PyODBC. Notifications are stored into the 'notifications' table if sending is confirmed.
-
-- **GUI Updates for Professional Layout:**  
-  - High DPI scaling enabled for better visuals on high-resolution monitors.
-  - Window size and fonts adjusted for better user experience.
-  - Organized button layout following a user-friendly flow.
-
-## Architecture:
-- Follows **N-Tier Architecture**:
-  - **GUI Layer:** Tkinter interface (`send_notification.py`)
-  - **Logic Layer:** Template logic for database communication (`template_logic.py`)
-  - **Data Layer:** SQL Server database connection and operations.
-
-## Branch Information:
-- **Branch Name:** `Sayan_Send_Notification`
-- Based on story 2 assignment for Sprint 1.
-- This branch is over 90% completed.
-- Code compiles, runs without errors, and fully connects to the database.
-
-## Remaining Tasks:
-- Prepare and practice presentation for final Sprint 1 review.
-- Minor UI polish if needed after feedback.
+This feature uses a Tkinter GUI. It links to a distant SQL Server through PyODBC. The design uses N-Tier architecture. All GitHub conflicts received resolution. The folder structure received cleaning and proper committing.
 
 ---
 
-# Thank you for reviewing this Sprint 1 Part 2 update!
+## Features Implemented:
+
+### ✅ Template Dropdown
+- The program obtains stored templates from the SQL Server database.
+- The program puts information into the Subject plus Message areas after a person makes a choice.
+
+### ✅ Validation
+- The subject requires a minimum of five characters.
+- Messages require ten characters at a minimum.
+- For incomplete fields, the system shows popups to notify users.
+
+### ✅ File Attach & Remove
+- Users pick files for notification attachments. 
+- The attachments display in a listbox. 
+- Before submission users can take out files.
+
+### ✅ Review Confirmation
+- A confirmation window displays the topic plus text to the user.
+- It stops unintentional sends.
+
+### ✅ Cancel Button
+- The system empties the input boxes and removes any loaded documents.
+
+### ✅ Database Connectivity
+- PyODBC permits a remote SQL Server connection.
+- If a notifications table is absent, the system constructs one.
+- The system puts every validated notification into that table, attaching a time record.
+
+### ✅ High-Quality GUI Layout
+- DPI awareness permits clear pictures on screens with high resolution. 
+- Window size adjusts to 1400x1000 plus appears at the center. 
+- PCC brand colors are in operation. 
+- The arrangement of buttons and inputs uses a design that is easy for the user.
+
+---
+
+## Folder & Architecture (N-Tier Structure):
+The project is structured as follows:
+
+project/ ├── gui/ │ ├── send_notification.py │ └── logviewermenu.py ├── logic/ │ └── template_logic.py ├── data/ │ └── notifications.db
+
+yaml
+Copy code
+
+- **GUI Layer** → `gui/send_notification.py`
+- **Logic Layer** → `logic/template_logic.py`
+- **Data Layer** → `data/notifications.db`
+
+---
+
+## Git & Branch Workflow:
+- Branch: `sayan_send_notification`
+- All code cleaned, committed, and pushed to this branch
+- Git conflicts resolved and force-pushed via rebase
+- Project is now fully clean and ready for final Sprint 1 presentation
+
+---
+
+## Completed Milestones:
+- [x] Connected to SQL Server database
+- [x] Used GitHub to track version history and changes
+- [x] Resolved Git rebase conflict and force-pushed clean changes
+- [x] Committed to correct branch (sayan_send_notification)
+- [x] Final code tested and verified
+- [x] Final structure zipped and submitted to D2L
+
+---
+
+## Remaining:
+- Final Sprint 1 in-class presentation (Zoom)
+- Optional UI refinement if suggested by instructor
+
+---
+
+## Author:
+Sayan Tajul  
+CIS 234A – Team 404: Team Not Found
+
+---
+
+Thank you for reviewing my Sprint 1 Part 2 project!
