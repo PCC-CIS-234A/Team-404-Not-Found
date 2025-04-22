@@ -10,7 +10,7 @@
 
 ## Overview
 
-This is the implementation of **Story 2: Send Notification**, a GUI component for the Panther Pantry Notification System project. This form allows a user to send a notification message with a subject and body, and confirms the notification with a simulated recipient count.
+This is the execution of Story 2: Send Notification, a graphic user interface part for the Panther Pantry Notification System project. Through this form a person sends a notification message. The message contains a subject plus text. The system verifies the notification through a simulated count of recipients.
 
 ---
 
