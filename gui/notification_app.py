@@ -6,19 +6,20 @@
 # Description:
 # This module is the initial user interface for notification system.
 # The user may choose to log in, sign up, or switch to the employee portal.
-# Combines code from notifications_home.py, signup.py, and login.py into a single tkinter app using Frames.
+# Combines code from notification_home.py, signup.py, and login.py into a single tkinter app using Frames.
 
 # Code Reference:
 # https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
 # *****************************************************
 
 # Issues with the current code:
+
+# Formatting is terrible.
 # Color scheme does not match other team members' stories.
-# Widgets are not centered in the window.
 # Entries do not clear when switching back and forth between login and signup.
-# There is no way to get back to the employee signup once the login or signup buttons are used.
 # The window title does not change to reflect the current frame.
 # All the frame classes are in the same file as the app class.
+# Buttons do not connect to code in the logic layer.
 
 import tkinter as tk
 from tkinter import ttk
@@ -56,6 +57,7 @@ class NotificationApp(tk.Tk):
 
         self.show_frame(HomePage)
 
+    # Display the current frame passed as a parameter.
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -136,6 +138,10 @@ class LoginPage(tk.Frame):
         signup_button = tk.Button(footer_frame, text="Sign Up", bg="#235578", fg="#fff", width=7,
                                   command=lambda: controller.show_frame(SignupPage))
         signup_button.grid(column=0, row=2, padx=10)
+        # Button connects to employee login screen for Stories 2, 3, and 4.
+        # Add later: command=lambda: controller.show_frame(EmployeePage)
+        employee_button = tk.Button(footer_frame, text="Employee Login", font=("Helvetica", 10))
+        employee_button.grid(column=1, row=2)
 
 
 class SignupPage(tk.Frame):
@@ -195,6 +201,10 @@ class SignupPage(tk.Frame):
 
         login_label = ttk.Label(button_frame, text="Already a Subscriber?")
         login_label.grid(column=0, row=1)
+        # Button connects to employee login screen for Stories 2, 3, and 4.
+        # Add later: command=lambda: controller.show_frame(EmployeePage)
+        employee_button = tk.Button(button_frame, text="Employee Login", font=("Helvetica", 10))
+        employee_button.grid(column=1, row=2)
 
 
 app = NotificationApp()
