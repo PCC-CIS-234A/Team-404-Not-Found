@@ -3,16 +3,24 @@
 # 04/18/2025
 # Working on story 2 Send Notification
 
+import pyodbc
 import tkinter as tk
 from tkinter import messagebox
 
-def NotificationPage ():
-    """
-This function runs when I hit the send button.
-It makes sure the fields aren't blank and then shows a message
-pretending it was sent to 5 people (for now!).
-Later, I’ll connect this to real data.
-    """
+# Team 404 makes a connection to the distant SQL Server database. We utilizing an ODBC driver.
+def connect_to_db():
+    conn_str = (
+        "DRIVER={ODBC Driver 17 for SQL Server};"
+        "SERVER=cisdbss.pcc.edu;"
+        "DATABASE=CIS234A_404 Team Not Found;"
+        "UID=CIS234A_404 Team Not Found;"
+        "PWD=NoErrors&2"
+    )
+    return pyodbc.connect(conn_str)
+
+# The system puts subject plus message, provided by users, into a SQL Server database. User input goes to the
+# SQL Server database. It stores user-submitted content in the database. The system saves the subject and message from the user.
+def NotificationPage():
     subject = mainpagesubjectentry.get().strip()
     message = textmessage.get("1.0", tk.END).strip()
 
@@ -20,10 +28,37 @@ Later, I’ll connect this to real data.
         messagebox.showwarning("Missing Information", "Subject and Message are required.")
         return
 
-    #  A (Dummy) practice run copies delivery to receivers.
-    countofrecientt = 5
-    messagebox.showinfo("Success", f"Notification sent to {countofrecientt} recipients.")
+    try:
+        conn = connect_to_db()
+        cursor = conn.cursor()
 
+        # Create table if it doesn’t exist in SQL
+        cursor.execute("""
+            IF NOT EXISTS (
+                SELECT * FROM sysobjects 
+                WHERE name='notifications' AND xtype='U'
+            )
+            CREATE TABLE notifications (
+                id INT IDENTITY(1,1) PRIMARY KEY,
+                subject NVARCHAR(255) NOT NULL,
+                message NVARCHAR(MAX) NOT NULL,
+                date_sent DATETIME DEFAULT GETDATE()
+            )
+        """)
+        conn.commit()
+
+        # Insert data into notifications table
+        cursor.execute("""
+            INSERT INTO notifications (subject, message) VALUES (?, ?)
+        """, (subject, message))
+        conn.commit()
+
+        messagebox.showinfo("Success", "Notification sent and saved to SQL Server.")
+
+    except Exception as e:
+        messagebox.showerror("Database Error", f"An error occurred:\n{e}")
+    finally:
+        conn.close()
 
 # Making the primary screen area.
 mainpage = tk.Tk()
@@ -93,4 +128,3 @@ btnsend.pack(pady=20)
 
 # Start the GUI event loop
 mainpage.mainloop()
-
