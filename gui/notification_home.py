@@ -1,5 +1,5 @@
 # Initial interface for notification system
-# Choose to log in, sign up, or switch to employee portal
+# Choose to log in, or sign up
 import tkinter as tk
 from tkinter import ttk
 from gui.login import SubscriberLoginApp
@@ -29,9 +29,6 @@ class NotificationHomeApp:
 
         footer_frame = ttk.Frame(top_level)
         footer_frame.grid(column=0, row=3, pady=15)
-        # Button connects to home screen for Stories 2, 3, and 4.
-        employee_button = tk.Button(footer_frame, text="Employee Login", font=("Helvetica", 10))
-        employee_button.grid(column=0, row=2)
 
         self.mainwindow = top_level
 

@@ -1,11 +1,10 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-16
-# Last Modified: 2025-4-23
-
+# Last Modified: 2025-4-26
 # Description:
 # This module is the initial user interface for notification system.
-# The user may choose to log in, sign up, or switch to the employee portal.
+# The user may choose to log in or sign up.
 # Combines code from notification_home.py, signup.py, and login.py into a single tkinter app using Frames.
 
 # Code Reference:
@@ -14,8 +13,6 @@
 
 # Issues with the current code:
 
-# Formatting is terrible.
-# Color scheme does not match other team members' stories.
 # Entries do not clear when switching back and forth between login and signup.
 # The window title does not change to reflect the current frame.
 # All the frame classes are in the same file as the app class.
@@ -24,6 +21,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from gui.theme import *
 
 
 class NotificationApp(tk.Tk):
@@ -37,13 +35,16 @@ class NotificationApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         container = tk.Frame(self)
-        # container.grid(column=0, row=0)
         container.pack(side="top", fill="both", expand=True)
 
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.title("Panther Pantry Notification System")
+        self.geometry("500x500")
+        self.minsize(width=400, height=465)
+
+        apply_theme_styles(self)
 
         # Initialize frames to an empty array.
         self.frames = {}
@@ -72,29 +73,37 @@ class HomePage(tk.Frame):
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
 
-        header_label1 = ttk.Label(self, text="Welcome to the Panther Pantry", font=("Helvetica", 16, "bold"),
-                                  foreground="#235578")
-        header_label1.grid(column=0, row=0, padx=20, pady=5)
-        header_label2 = ttk.Label(self, text="Notification Service!", font=("Helvetica", 16, "bold"),
-                                  foreground="#235578")
-        header_label2.grid(column=0, row=1)
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
 
-        button_frame = ttk.Frame(self)
-        button_frame.grid(column=0, row=2, pady=15)
-        login_button = tk.Button(button_frame, text="Login", font=("Helvetica", 12, "bold"), bg="#235578", fg="#fff",
-                                 width=7, command=lambda: controller.show_frame(LoginPage))
-        signup_button = tk.Button(button_frame, text="Sign Up", font=("Helvetica", 12, "bold"), bg="#235578", fg="#fff",
-                                  width=7, command=lambda: controller.show_frame(SignupPage))
+        shadow_offset = 2
+        shadow_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+                                pady=6)
+        shadow_label.place(relx=0.5, rely=0.1, anchor="n", x=shadow_offset, y=shadow_offset)
+        title_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+                               pady=5)
+        title_label.place(relx=0.5, rely=0.1, anchor="n")
+
+        shadow_offset = 2
+        shadow_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_HOVER, fg="#333333",
+                                 padx=11, pady=6)
+        shadow_label2.place(relx=0.5, rely=0.2, anchor="n", x=shadow_offset, y=shadow_offset)
+        title_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                padx=10, pady=5)
+        title_label2.place(relx=0.5, rely=0.2, anchor="n")
+
+        button_frame = ttk.Frame(self, style="Form.TFrame")
+        button_frame.place(relx=0.5, rely=0.5, anchor="n")
+        login_button = tk.Button(button_frame, text="Login", font=button_font, width=7, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                 relief="flat", command=lambda: controller.show_frame(LoginPage))
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat", command=lambda: controller.show_frame(SignupPage))
         login_button.grid(column=0, row=0, padx=10, pady=10)
         signup_button.grid(column=1, row=0, padx=10, pady=10)
-
-        footer_frame = ttk.Frame(self)
-        footer_frame.grid(column=0, row=3, pady=15)
-        # Button connects to employee login screen for Stories 2, 3, and 4.
-        # Add later: command=lambda: controller.show_frame(EmployeePage)
-        employee_button = tk.Button(footer_frame, text="Employee Login", font=("Helvetica", 10))
-        employee_button.grid(column=0, row=2)
 
 
 class LoginPage(tk.Frame):
@@ -107,16 +116,26 @@ class LoginPage(tk.Frame):
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
 
-        header_label = ttk.Label(self, text="Subscriber Login", font=("Helvetica", 16, "bold"), foreground="#235578")
-        header_label.grid(column=0, row=0)
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
 
-        input_frame = ttk.Frame(self, padding=10)
-        input_frame.grid(column=0, row=1)
+        shadow_offset = 2
+        shadow_label = tk.Label(self, text="USER LOGIN", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+                                pady=6)
+        shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
 
-        user_label = ttk.Label(input_frame, text="Email or Username")
+        title_label = tk.Label(self, text="USER LOGIN", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+                               pady=5)
+        title_label.place(relx=0.5, rely=0.03, anchor="n")
+
+        input_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
+        input_frame.place(relx=0.5, rely=0.2, anchor="n")
+
+        user_label = ttk.Label(input_frame, text="Email or Username", font=label_font)
         user_label.grid(column=0, row=0, pady=3, sticky="e")
-        password_label = ttk.Label(input_frame, text="Password")
+        password_label = ttk.Label(input_frame, text="Password", font=label_font)
         password_label.grid(column=0, row=1, pady=3, sticky="e")
 
         user_entry = ttk.Entry(input_frame)
@@ -124,24 +143,18 @@ class LoginPage(tk.Frame):
         password_entry = ttk.Entry(input_frame, show="*")
         password_entry.grid(column=1, row=1, padx=5, pady=3)
 
-        button_frame = ttk.Frame(self)
-        button_frame.grid(column=0, row=2)
+        button_frame = ttk.Frame(self, style="Form.TFrame")
+        button_frame.place(relx=0.5, rely=0.45, anchor="n")
         # To do: Add command to connect to a function to check user_entry and password_entry against the database.
-        login_button = tk.Button(button_frame, text="Login", font=("Helvetica", 12, "bold"), bg="#235578", fg="#fff",
-                                 width=7)
+        login_button = tk.Button(button_frame, text="Login", font=button_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat", width=7)
         login_button.grid(column=0, row=0, padx=10, pady=15)
-
-        footer_frame = ttk.Frame(self)
-        footer_frame.grid(column=0, row=3, pady=10)
-        signup_label = ttk.Label(footer_frame, text="New Subscriber?")
+        signup_label = ttk.Label(button_frame, text="New User?")
         signup_label.grid(column=0, row=1)
-        signup_button = tk.Button(footer_frame, text="Sign Up", bg="#235578", fg="#fff", width=7,
-                                  command=lambda: controller.show_frame(SignupPage))
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat", width=7, command=lambda: controller.show_frame(SignupPage))
         signup_button.grid(column=0, row=2, padx=10)
-        # Button connects to employee login screen for Stories 2, 3, and 4.
-        # Add later: command=lambda: controller.show_frame(EmployeePage)
-        employee_button = tk.Button(footer_frame, text="Employee Login", font=("Helvetica", 10))
-        employee_button.grid(column=1, row=2)
 
 
 class SignupPage(tk.Frame):
@@ -154,31 +167,40 @@ class SignupPage(tk.Frame):
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
 
-        header_label = ttk.Label(self, text="Subscriber Sign Up",
-                                 font=("Helvetica", 16, "bold"), foreground="#235578")
-        header_label.grid(column=0, row=0)
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
 
-        input_frame = ttk.Frame(self, padding=10)
-        input_frame.grid(column=0, row=1)
+        shadow_offset = 2
+        shadow_label = tk.Label(self, text="USER SIGN UP", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+                                pady=6)
+        shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
 
-        f_name_label = ttk.Label(input_frame, text="First Name")
-        f_name_label.grid(column=0, row=0, pady=3, sticky="e")
-        l_name_label = ttk.Label(input_frame, text="Last Name")
-        l_name_label.grid(column=0, row=1, pady=3, sticky="e")
-        email_label = ttk.Label(input_frame, text="Email")
+        title_label = tk.Label(self, text="USER SIGN UP", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+                               pady=5)
+        title_label.place(relx=0.5, rely=0.03, anchor="n")
+
+        input_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
+        input_frame.place(relx=0.5, rely=0.15, anchor="n")
+
+        first_name_label = ttk.Label(input_frame, text="First Name", font=label_font)
+        first_name_label.grid(column=0, row=0, pady=3, sticky="e")
+        last_name_label = ttk.Label(input_frame, text="Last Name", font=label_font)
+        last_name_label.grid(column=0, row=1, pady=3, sticky="e")
+        email_label = ttk.Label(input_frame, text="Email", font=label_font)
         email_label.grid(column=0, row=2, pady=3, sticky="e")
-        username_label = ttk.Label(input_frame, text="Create a Username")
+        username_label = ttk.Label(input_frame, text="Username", font=label_font)
         username_label.grid(column=0, row=3, pady=3, sticky="e")
-        password_label = ttk.Label(input_frame, text="Password")
+        password_label = ttk.Label(input_frame, text="Password", font=label_font)
         password_label.grid(column=0, row=4, pady=3, sticky="e")
-        re_password_label = ttk.Label(input_frame, text="Re-enter Password")
+        re_password_label = ttk.Label(input_frame, text="Re-enter Password", font=label_font)
         re_password_label.grid(column=0, row=5, pady=3, sticky="e")
 
-        f_name_entry = ttk.Entry(input_frame)
-        f_name_entry.grid(column=1, row=0, padx=5, pady=3)
-        l_name_entry = ttk.Entry(input_frame)
-        l_name_entry.grid(column=1, row=1, padx=5, pady=3)
+        first_name_entry = ttk.Entry(input_frame)
+        first_name_entry.grid(column=1, row=0, padx=5, pady=3)
+        last_name_entry = ttk.Entry(input_frame)
+        last_name_entry.grid(column=1, row=1, padx=5, pady=3)
         email_entry = ttk.Entry(input_frame)
         email_entry.grid(column=1, row=2, padx=5, pady=3)
         username_entry = ttk.Entry(input_frame)
@@ -188,23 +210,21 @@ class SignupPage(tk.Frame):
         re_password_entry = ttk.Entry(input_frame, show="*")
         re_password_entry.grid(column=1, row=5, padx=5, pady=3)
 
-        button_frame = ttk.Frame(self)
-        button_frame.grid(column=0, row=2)
+        button_frame = ttk.Frame(self, style="Form.TFrame")
+        button_frame.place(relx=0.5, rely=0.65, anchor="n")
         # To do: Add a command to connect to a function to check the signup entries against the database and create a
         # new user with the entries.
-        signup_button = tk.Button(button_frame, text="Sign Up", font=("Helvetica", 12, "bold"), bg="#235578", fg="#fff",
-                                  width=7)
-        login_button = tk.Button(button_frame, text="Login", bg="#235578", fg="#fff", width=6,
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat")
+        login_button = tk.Button(button_frame, text="Login", font=button_font, width=6, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat",
                                  command=lambda: controller.show_frame(LoginPage))
         signup_button.grid(column=0, row=0, padx=10, pady=15)
         login_button.grid(column=0, row=2, padx=10)
 
-        login_label = ttk.Label(button_frame, text="Already a Subscriber?")
+        login_label = ttk.Label(button_frame, text="Already a User?")
         login_label.grid(column=0, row=1)
-        # Button connects to employee login screen for Stories 2, 3, and 4.
-        # Add later: command=lambda: controller.show_frame(EmployeePage)
-        employee_button = tk.Button(button_frame, text="Employee Login", font=("Helvetica", 10))
-        employee_button.grid(column=1, row=2)
 
 
 app = NotificationApp()
