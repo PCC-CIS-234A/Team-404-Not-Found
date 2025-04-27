@@ -1,0 +1,64 @@
+# *****************************************************
+# Author: R-Nixon
+# Creation Date: 2025-4-16
+# Last Modified: 2025-4-26
+# Description:
+# This module is the initial user interface for notification system.
+# The user may choose to log in or sign up.
+
+# Code Reference:
+# https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
+# *****************************************************
+
+
+# Initial interface for notification system
+# Choose to log in, or sign up
+import tkinter as tk
+from tkinter import ttk
+from theme import *
+
+
+class HomePage(tk.Frame):
+    """
+    Author: R-Nixon
+    Creation Date: 2025-04-22
+    Purpose: This class is a tkinter frame that contains the initial screen of the notification system.  The page gives
+    options to log in, sign up, or log in as an employee in the form of buttons that change the frame.
+    """
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
+
+        from signup import SignupPage
+        from login import LoginPage
+
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
+
+        shadow_offset = 2
+        shadow_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+                                pady=6)
+        shadow_label.place(relx=0.5, rely=0.1, anchor="n", x=shadow_offset, y=shadow_offset)
+        title_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+                               pady=5)
+        title_label.place(relx=0.5, rely=0.1, anchor="n")
+
+        shadow_offset = 2
+        shadow_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_HOVER, fg="#333333",
+                                 padx=11, pady=6)
+        shadow_label2.place(relx=0.5, rely=0.2, anchor="n", x=shadow_offset, y=shadow_offset)
+        title_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                padx=10, pady=5)
+        title_label2.place(relx=0.5, rely=0.2, anchor="n")
+
+        button_frame = ttk.Frame(self, style="Form.TFrame")
+        button_frame.place(relx=0.5, rely=0.5, anchor="n")
+        login_button = tk.Button(button_frame, text="Login", font=button_font, width=7, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                 relief="flat", command=lambda: controller.show_frame(LoginPage))
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat", command=lambda: controller.show_frame(SignupPage))
+        login_button.grid(column=0, row=0, padx=10, pady=10)
+        signup_button.grid(column=1, row=0, padx=10, pady=10)
+

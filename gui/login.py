@@ -1,26 +1,52 @@
-# For an existing user to log in to the system
+# *****************************************************
+# Author: R-Nixon
+# Creation Date: 2025-4-16
+# Last Modified: 2025-4-26
+# Description:
+# This module is the interface for a current user to log in to the system.
+# The user enters email or username, and password to log in.
+# The user may also choose to sign up if they do not already have user credentials.
 
+# Code Reference:
+# https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
+# *****************************************************
 import tkinter as tk
 from tkinter import ttk
+from theme import *
 
 
-class SubscriberLoginApp:
-    def __init__(self, parent):
-        # self.title("Subscriber Login")
+class LoginPage(tk.Frame):
+    """
+    Author: R-Nixon
+    Creation Date: 2025-04-22
+    Purpose: This class is a tkinter frame that contains the subscriber login page of the notification system.
+    The page accepts user inputs for email or username and password.  It also has a button that takes the user to a page
+    to sign up instead of logging in.
+    """
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
 
-        top_level = ttk.Frame(parent, padding=10)
-        top_level.grid(column=0, row=0, sticky="nsew")
+        from signup import SignupPage
 
-        header_label = ttk.Label(top_level, text="Subscriber Login",
-                                 font=("Helvetica", 16, "bold"), foreground="#235578")
-        header_label.grid(column=0, row=0)
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
 
-        input_frame = ttk.Frame(top_level, padding=10)
-        input_frame.grid(column=0, row=1)
+        shadow_offset = 2
+        shadow_label = tk.Label(self, text="USER LOGIN", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+                                pady=6)
+        shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
 
-        user_label = ttk.Label(input_frame, text="Email or Username")
+        title_label = tk.Label(self, text="USER LOGIN", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+                               pady=5)
+        title_label.place(relx=0.5, rely=0.03, anchor="n")
+
+        input_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
+        input_frame.place(relx=0.5, rely=0.2, anchor="n")
+
+        user_label = ttk.Label(input_frame, text="Email or Username", font=label_font)
         user_label.grid(column=0, row=0, pady=3, sticky="e")
-        password_label = ttk.Label(input_frame, text="Password")
+        password_label = ttk.Label(input_frame, text="Password", font=label_font)
         password_label.grid(column=0, row=1, pady=3, sticky="e")
 
         user_entry = ttk.Entry(input_frame)
@@ -28,27 +54,15 @@ class SubscriberLoginApp:
         password_entry = ttk.Entry(input_frame, show="*")
         password_entry.grid(column=1, row=1, padx=5, pady=3)
 
-        button_frame = ttk.Frame(top_level)
-        button_frame.grid(column=0, row=2)
-        login_button = tk.Button(button_frame, text="Login", font=("Helvetica", 12, "bold"), bg="#235578", fg="#fff", width=7)
+        button_frame = ttk.Frame(self, style="Form.TFrame")
+        button_frame.place(relx=0.5, rely=0.45, anchor="n")
+        # To do: Add command to connect to a function to check user_entry and password_entry against the database.
+        login_button = tk.Button(button_frame, text="Login", font=button_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat", width=7)
         login_button.grid(column=0, row=0, padx=10, pady=15)
-
-        footer_frame = ttk.Frame(top_level)
-        footer_frame.grid(column=0, row=3, pady=10)
-        signup_label = ttk.Label(footer_frame, text="New Subscriber?")
+        signup_label = ttk.Label(button_frame, text="New User?")
         signup_label.grid(column=0, row=1)
-        signup_button = tk.Button(footer_frame, text="Sign Up", bg="#235578", fg="#fff", width=7)
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat", width=7, command=lambda: controller.show_frame(SignupPage))
         signup_button.grid(column=0, row=2, padx=10)
-
-
-        self.mainwindow = top_level
-
-    def run(self):
-        self.mainwindow.mainloop()
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Panther Pantry Notification - Login")
-    app = SubscriberLoginApp(root)
-    app.run()
