@@ -1,3 +1,6 @@
+# I am currently using this to make sure my send notifiction is actually sending DATA to SQL.
+# This file will be replaced with Shawla's Story
+
 # Sayan's logviewermenu.py
 # Sayan Tajul - Team 404
 # View Notifications with Search & Date Filter + Export to CSV
