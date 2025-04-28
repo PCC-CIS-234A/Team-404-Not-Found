@@ -1,6 +1,6 @@
 import pyodbc
 
-# Connect to your same database
+# Connecting to my same database
 def connect_to_db():
     conn_str = (
         "DRIVER={ODBC Driver 17 for SQL Server};"
@@ -11,7 +11,7 @@ def connect_to_db():
     )
     return pyodbc.connect(conn_str)
 
-# Fetch all template names
+# Displaying all template names
 def fetch_template_names():
     conn = connect_to_db()
     cursor = conn.cursor()
@@ -20,7 +20,7 @@ def fetch_template_names():
     conn.close()
     return [row[0] for row in results]
 
-# Fetch subject and message for a given template name
+# Fetchng subject and message for a given template name
 def fetch_template_by_name(template_name):
     conn = connect_to_db()
     cursor = conn.cursor()
