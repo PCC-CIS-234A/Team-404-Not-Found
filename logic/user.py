@@ -68,7 +68,9 @@ class User:
             "role": "Subscriber"
         }
 
+    @staticmethod
     # Add data to the database.
-    def add_to_database(self):
+    def add_to_database(first_name, last_name, email, username, password_hash, role):
         from data.db_manager import Database
-        Database.add_user(self)
+        Database.add_user(first_name, last_name, email, username, password_hash, role)
+        # print(first_name, last_name, email, username, password_hash, role)

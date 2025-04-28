@@ -1,6 +1,6 @@
 # *****************************************************
 # Author: R-Nixon
-# Creation Date: 2025-4-16
+# Creation Date: 2025-4-22
 # Last Modified: 2025-4-26
 # Description:
 # This module is the initial user interface for notification system.
@@ -9,10 +9,6 @@
 # Code Reference:
 # https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
 # *****************************************************
-
-
-# Initial interface for notification system
-# Choose to log in, or sign up
 import tkinter as tk
 from tkinter import ttk
 from theme import *
@@ -23,7 +19,7 @@ class HomePage(tk.Frame):
     Author: R-Nixon
     Creation Date: 2025-04-22
     Purpose: This class is a tkinter frame that contains the initial screen of the notification system.  The page gives
-    options to log in, sign up, or log in as an employee in the form of buttons that change the frame.
+    options to log in or sign up in the form of buttons that switch between frames.
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)

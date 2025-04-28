@@ -18,7 +18,6 @@ class Database:
     Purpose: This class contains methods to interact with the SQL database.
     """
     __client = None
-    __all_users = None
 
     # Connect to the database.
     @classmethod
@@ -30,7 +29,7 @@ class Database:
                 user="CIS234A_404 Team Not Found",
                 password="NoErrors&2",
                 trustservercertificate="Yes",
-                driver="{ODBC Driver 18 for SQL Server}"
+                driver="{ODBC Driver 17 for SQL Server}"
             )
 
             print("Connected to: ", cls.__client)
@@ -38,6 +37,7 @@ class Database:
     # Read user data from the database.
     @classmethod
     def read_users(cls):
+        cls.connect()
         cursor = cls.__client.cursor()
         sql = """
         SELECT user_id, first_name, last_name, email, password_hash, username, role
@@ -57,12 +57,14 @@ class Database:
     # Drop data in the database.
     @classmethod
     def drop_data(cls):
+        cls.connect()
         cursor = cls.__client.cursor()
         sql = """
         IF OBJECT_ID('dbo.users2', 'U') IS NOT NULL
             DROP TABLE dbo.users2;
         """
         cursor.execute(sql)
+        cls.__client.commit()
         print("Dropping table")
 
     # Rebuild data in the database from a known good dataset.
@@ -75,6 +77,8 @@ class Database:
         # __username = ""
         # __password_hash = ""
         # __role = ""
+        cls.connect()
+        cls.drop_data()
         cursor = cls.__client.cursor()
         sql = """
         CREATE TABLE dbo.users2
@@ -97,26 +101,37 @@ class Database:
             ('Stephanie','Tran', 'stran@pcc.edu','stran','password_hash','Subscriber');
             """
         cursor.execute(sql)
+        cls.__client.commit()
 
     # Add a user to the database.
     @classmethod
-    def add_user(cls):
+    def add_user(cls, first_name, last_name, email, username, password_hash, role):
+        cls.connect()
         cursor = cls.__client.cursor()
         sql = """
         INSERT INTO dbo.users2
-         (first_name, last_name, email, password_hash, username, role)
-        VALUES 
-         ('Test', 'Staff', 'staff@test.com', 'staff_mypcc_2025_C$', 'T Staff', 'Staff')
+         (first_name, last_name, email, username, password_hash, role)
+        VALUES
+         (?, ?, ?, ?, ?, ?)
+        """
+        params = (first_name, last_name, email, username, password_hash, role)
+        cursor.execute(sql, params)
+        cls.__client.commit()
+
+    @classmethod
+    def add_test_user(cls):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        sql = """
+        INSERT INTO dbo.users2
+         (first_name, last_name, email, username, password_hash, role)
+        VALUES
+         ('Test','User','email@email.com','TUser','pass_hash', 'Subscriber');
         """
         cursor.execute(sql)
+        cls.__client.commit()
 
 
 if __name__ == "__main__":
-    Database.connect()
-    Database.drop_data()
     Database.rebuild_data()
     Database.read_users()
-    Database.add_user()
-    Database.read_users()
-    Database.close_connection()
-

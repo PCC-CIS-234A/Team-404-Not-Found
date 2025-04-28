@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
-# Creation Date: 2025-4-16
-# Last Modified: 2025-4-26
+# Creation Date: 2025-4-22
+# Last Modified: 2025-4-28
 # Description:
 # This module is the interface for a new user to sign up in the system.
 # The user enters first name, last name, email, username, and password to sign up.
@@ -12,14 +12,16 @@
 # *****************************************************
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from theme import *
+from logic.user import User
 
 
 class SignupPage(tk.Frame):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
-    Purpose: This class is a tkinter frame that contains the subscriber sign up page of the notification system.
+    Purpose: This class is a tkinter frame that contains the user sign up page of the notification system.
     The page accepts user inputs for account creation.  It also has a button that takes the user to a page to log in
     instead of signing up.
     """
@@ -76,7 +78,7 @@ class SignupPage(tk.Frame):
         # new user with the entries.
         signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
                                   fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-                                  relief="flat")
+                                  relief="flat", command=lambda: self.create_user())
         login_button = tk.Button(button_frame, text="Login", font=button_font, width=6, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
                                  activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat",
                                  command=lambda: controller.show_frame(LoginPage))
@@ -85,4 +87,31 @@ class SignupPage(tk.Frame):
 
         login_label = ttk.Label(button_frame, text="Already a User?")
         login_label.grid(column=0, row=1)
+
+        self.first_name_entry = first_name_entry
+        self.last_name_entry = last_name_entry
+        self.email_entry = email_entry
+        self.username_entry = username_entry
+        self.password_entry = password_entry
+
+        # Create a new user from the GUI inputs.
+        # Needs input validation added.
+        # Needs password hashing added.
+
+    def create_user(self):
+        first_name = self.first_name_entry.get().strip()
+        last_name = self.last_name_entry.get().strip()
+        email = self.email_entry.get().strip()
+        username = self.username_entry.get().strip()
+        password_hash = self.password_entry.get().strip()
+        role = 'Subscriber'
+
+        User.add_to_database(first_name, last_name, email, username, password_hash, role)
+        # self.clear_entries()
+        messagebox.showinfo(title="Success", message="Sign Up Successful!")
+
+    # @staticmethod
+    # def clear_entries():
+    #     for ttk.Entry in SignupPage
+    #         entry.delete(0, 'end')
 

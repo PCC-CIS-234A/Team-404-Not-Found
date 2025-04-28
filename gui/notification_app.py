@@ -1,6 +1,6 @@
 # *****************************************************
 # Author: R-Nixon
-# Creation Date: 2025-4-16
+# Creation Date: 2025-4-22
 # Last Modified: 2025-4-26
 # Description:
 # This module is the tkinter app that holds Frames for different interface pages.
@@ -17,6 +17,7 @@
 # Buttons do not connect to code in the logic layer.
 
 import tkinter as tk
+from tkinter import messagebox
 from gui.theme import *
 from home_page import HomePage
 from signup import SignupPage
@@ -27,8 +28,7 @@ class NotificationApp(tk.Tk):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
-    Purpose: This class is the tkinter app that contains the frames and widgets for the user login page,
-    user sign up page, and employee login page (forthcoming).
+    Purpose: This class is a tkinter app that contains the frames for the user home page, login page, and sign up page.
     """
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -47,6 +47,10 @@ class NotificationApp(tk.Tk):
 
         # Initialize frames to an empty array.
         self.frames = {}
+
+        # Iterate through the frames to change the window title?
+        # for t in (HomePage, LoginPage, SignupPage):
+        # change the title for each object in the loop?
 
         # Iterate through a tuple containing the different page layouts.
         # Initialize a frame for each object in the loop.
