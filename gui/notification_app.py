@@ -48,7 +48,7 @@ class NotificationApp(tk.Tk):
         # Initialize frames to an empty array.
         self.frames = {}
 
-        # Iterate through the frames to change the window title?
+        # Iterate through the frames to change the window title???
         # for t in (HomePage, LoginPage, SignupPage):
         # change the title for each object in the loop?
 

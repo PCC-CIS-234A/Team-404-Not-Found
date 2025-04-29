@@ -72,21 +72,23 @@ class SignupPage(tk.Frame):
         re_password_entry = ttk.Entry(input_frame, show="*")
         re_password_entry.grid(column=1, row=5, padx=5, pady=3)
 
-        button_frame = ttk.Frame(self, style="Form.TFrame")
-        button_frame.place(relx=0.5, rely=0.65, anchor="n")
         # To do: Add a command to connect to a function to check the signup entries against the database and create a
         # new user with the entries.
-        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
+        # Add error handling.
+
+        signup_button = tk.Button(self, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
                                   fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
                                   relief="flat", command=lambda: self.create_user())
-        login_button = tk.Button(button_frame, text="Login", font=button_font, width=6, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
-                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat",
-                                 command=lambda: controller.show_frame(LoginPage))
-        signup_button.grid(column=0, row=0, padx=10, pady=15)
-        login_button.grid(column=0, row=2, padx=10)
+        signup_button.place(relx=0.5, rely=0.7, anchor="n")
 
-        login_label = ttk.Label(button_frame, text="Already a User?")
-        login_label.grid(column=0, row=1)
+        login_frame = ttk.Frame(self, style="Form.TFrame")
+        login_frame.place(relx=0.5, rely=0.8, anchor="n")
+        login_label = ttk.Label(login_frame, text="Already a User?")
+        login_label.grid(column=0, row=0)
+        login_button = tk.Button(login_frame, text="Login", font=(button_font, 11, "underline", "bold"),
+                                 bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+                                 activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(LoginPage))
+        login_button.grid(column=1, row=0)
 
         self.first_name_entry = first_name_entry
         self.last_name_entry = last_name_entry

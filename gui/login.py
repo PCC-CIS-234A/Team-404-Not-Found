@@ -56,19 +56,22 @@ class LoginPage(tk.Frame):
         password_entry = ttk.Entry(input_frame, show="*")
         password_entry.grid(column=1, row=1, padx=5, pady=3)
 
-        button_frame = ttk.Frame(self, style="Form.TFrame")
-        button_frame.place(relx=0.5, rely=0.45, anchor="n")
-        # To do: Add command to connect to a function to check user_entry and password_entry against the database.
-        login_button = tk.Button(button_frame, text="Login", font=button_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+        login_button = tk.Button(self, text="Login", font=button_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
                                  activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT, relief="flat", width=7,
                                  command=lambda: confirm_login)
-        login_button.grid(column=0, row=0, padx=10, pady=15)
-        signup_label = ttk.Label(button_frame, text="New User?")
-        signup_label.grid(column=0, row=1)
-        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, bg=BUTTON_COLOR,
-                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-                                  relief="flat", width=7, command=lambda: controller.show_frame(SignupPage))
-        signup_button.grid(column=0, row=2, padx=10)
+        login_button.place(relx=0.5, rely=0.45, anchor="n")
+
+        signup_frame = ttk.Frame(self, style="Form.TFrame")
+        signup_frame.place(relx=0.5, rely=0.55, anchor="n")
+        # To do: Add command to connect to a function to check user_entry and password_entry against the database.
+
+        signup_label = ttk.Label(signup_frame, text="New User?")
+        signup_label.grid(column=0, row=0)
+        signup_button = tk.Button(signup_frame, text="Sign Up", font=(button_font, 11, "underline", "bold"),
+                                  bg=APP_BACKGROUND, fg=BUTTON_COLOR, activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT, relief="flat",
+                                  command=lambda: controller.show_frame(SignupPage))
+        signup_button.grid(column=1, row=0)
 
         def confirm_login():
             messagebox.showinfo("Welcome to the Notification System!")
