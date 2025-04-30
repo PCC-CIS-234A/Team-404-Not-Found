@@ -1,5 +1,5 @@
 # =============================================================================
-# Author:              Santhil Murugesan
+# Author:            Santhil Murugesan
 # File:                   template_logic.py
 # Created:           04/25/2025
 # Project:             Food Pantry Notification System
