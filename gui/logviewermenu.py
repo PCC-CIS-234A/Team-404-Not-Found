@@ -1,7 +1,3 @@
-# This is for Testing Purposes
-# I am currently using this to make sure my send notifiction is actually sending DATA to SQL.
-# This file will be replaced with Shawla's Story
-
 # Sayan's logviewermenu.py
 # Sayan Tajul - Team 404
 # View Notifications with Search & Date Filter + Export to CSV
@@ -15,7 +11,7 @@ from datetime import datetime
 import csv
 from tkinter import filedialog
 
-# Using PCC Style Colors for evrything
+# Using PCC Style Colors for everything
 PCCblue = "#008099"
 softcolorback = "#235578"
 bgcolor = "#f5f5f5"
