@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-26
+# Last Modified: 2025-4-28
 # Description:
 # This module is the tkinter app that holds Frames for different interface pages.
 # Uses code from home_page.py, signup.py, and login.py as the current frames.
@@ -12,12 +12,10 @@
 
 # Issues with the current code:
 
-# Entries do not clear when switching back and forth between login and signup.
+# Entries are persistent when switching back and forth between login and signup.
 # The window title does not change to reflect the current frame.
-# Buttons do not connect to code in the logic layer.
 
 import tkinter as tk
-from tkinter import messagebox
 from gui.theme import *
 from home_page import HomePage
 from signup import SignupPage

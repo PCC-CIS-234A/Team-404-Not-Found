@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-28
+# Last Modified: 2025-4-30
 # Description:
 # This module is the interface for a new user to sign up in the system.
 # The user enters first name, last name, email, username, and password to sign up.
@@ -15,6 +15,11 @@ from tkinter import ttk
 from tkinter import messagebox
 from theme import *
 from logic.user import User
+from data.db_manager import Database
+
+# Problems with the code:
+
+# The GUI layer should not connect directly with the database?
 
 
 class SignupPage(tk.Frame):
@@ -31,9 +36,11 @@ class SignupPage(tk.Frame):
 
         from login import LoginPage
 
+        # GUI theme
         apply_theme_styles(self)
         default_font, label_font, button_font = get_fonts(self)
 
+        # Styling for the frame title
         shadow_offset = 2
         shadow_label = tk.Label(self, text="USER SIGN UP", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
                                 pady=6)
@@ -43,9 +50,11 @@ class SignupPage(tk.Frame):
                                pady=5)
         title_label.place(relx=0.5, rely=0.03, anchor="n")
 
+        # Frame for input labels and entries
         input_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         input_frame.place(relx=0.5, rely=0.15, anchor="n")
 
+        # Labels for the user inputs
         first_name_label = ttk.Label(input_frame, text="First Name", font=label_font)
         first_name_label.grid(column=0, row=0, pady=3, sticky="e")
         last_name_label = ttk.Label(input_frame, text="Last Name", font=label_font)
@@ -59,6 +68,7 @@ class SignupPage(tk.Frame):
         re_password_label = ttk.Label(input_frame, text="Re-enter Password", font=label_font)
         re_password_label.grid(column=0, row=5, pady=3, sticky="e")
 
+        # Entries for the user inputs
         first_name_entry = ttk.Entry(input_frame)
         first_name_entry.grid(column=1, row=0, padx=5, pady=3)
         last_name_entry = ttk.Entry(input_frame)
@@ -72,15 +82,13 @@ class SignupPage(tk.Frame):
         re_password_entry = ttk.Entry(input_frame, show="*")
         re_password_entry.grid(column=1, row=5, padx=5, pady=3)
 
-        # To do: Add a command to connect to a function to check the signup entries against the database and create a
-        # new user with the entries.
-        # Add error handling.
-
+        # Primary function button
         signup_button = tk.Button(self, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
                                   fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
                                   relief="flat", command=lambda: self.create_user())
         signup_button.place(relx=0.5, rely=0.7, anchor="n")
 
+        # Frame to hold the login alternative
         login_frame = ttk.Frame(self, style="Form.TFrame")
         login_frame.place(relx=0.5, rely=0.8, anchor="n")
         login_label = ttk.Label(login_frame, text="Already a User?")
@@ -90,28 +98,46 @@ class SignupPage(tk.Frame):
                                  activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(LoginPage))
         login_button.grid(column=1, row=0)
 
+        # Initialize the entries.
         self.first_name_entry = first_name_entry
         self.last_name_entry = last_name_entry
         self.email_entry = email_entry
         self.username_entry = username_entry
         self.password_entry = password_entry
+        self.re_password_entry = re_password_entry
 
         # Create a new user from the GUI inputs.
-        # Needs input validation added.
+        # Username and email are checked against existing entries in the database.
+        # Needs input validation for email format.
         # Needs password hashing added.
-
+        # Needs verification that passwords match.
     def create_user(self):
+
         first_name = self.first_name_entry.get().strip()
         last_name = self.last_name_entry.get().strip()
         email = self.email_entry.get().strip()
         username = self.username_entry.get().strip()
-        password_hash = self.password_entry.get().strip()
+        password = self.password_entry.get().strip()
+        re_password = self.re_password_entry.get().strip()
         role = 'Subscriber'
 
-        User.add_to_database(first_name, last_name, email, username, password_hash, role)
-        # self.clear_entries()
-        messagebox.showinfo(title="Success", message="Sign Up Successful!")
+        if first_name == "" or last_name == "" or email == "" or username == "" or password == "" or re_password == "":
+            messagebox.showerror("Error", "All fields are required")
+        elif password != re_password:
+            messagebox.showerror("Error", "Passwords must match")
+        # elif email fails database check constraint:
+        #   messagebox.showerror("Error", "Invalid Email format")
+        elif Database.check_email(email) is not None:
+            messagebox.showerror("Error", "Email or Username already exists")
+        elif Database.check_username(username) is not None:
+            messagebox.showerror("Error", "Email or Username already exists")
+        else:
+            User.add_to_database(first_name, last_name, email, username, password, role)
+            # self.clear_entries()
+            messagebox.showinfo(title="Success", message="Sign Up Successful!")
+            # controller.show_frame(LandingPage) or (LoginPage)?
 
+    # Method to clear all the user entries
     # @staticmethod
     # def clear_entries():
     #     for ttk.Entry in SignupPage

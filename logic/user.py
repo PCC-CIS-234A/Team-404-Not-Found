@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-16
-# Last Modified: 2025-4-26
+# Last Modified: 2025-4-29
 
 # Description:
 # This module contains the User class and contains methods for setting and getting User data.
@@ -27,10 +27,12 @@ class User:
         self.__password_hash = password_hash
         self.__role = role
 
-    @classmethod
-    def build(cls, dict):
-        return User(dict["first_name"], dict["last_name"], dict["email"], dict["username"],
-                    dict["password_hash"], dict["role"])
+    # Not sure if this is useful or how to use it?
+    # Prevents having to query the database from the GUI layer?
+    # @classmethod
+    # def build(cls, dict):
+    #     return User(dict["first_name"], dict["last_name"], dict["email"], dict["username"],
+    #                 dict["password_hash"], dict["role"])
 
     # Read data from the database.
     @staticmethod
@@ -50,27 +52,31 @@ class User:
     def get_username(self):
         return self.__username
 
+    # Create a password hash given the password
+    # This function needs work!
     def get_password_hash(self, password):
         # code to hash a password using bcrypt
         return self.__password_hash
 
     # Check the password entry from the user against the stored password_hash
+    # This function needs work!
     def verify_password(self, password):
         return bcrypt.checkpw(password.encode(), self.__password_hash())
 
-    def to_dict(self):
-        return {
-            "first_name": self.__first_name,
-            "last_name": self.__last_name,
-            "email": self.__email,
-            "username": self.__username,
-            "password_hash": self.__password_hash,
-            "role": "Subscriber"
-        }
+    # Not sure if this is useful or how to use it?
+    # Prevents having to query the database from the GUI layer?
+    # def to_dict(self):
+    #     return {
+    #         "first_name": self.__first_name,
+    #         "last_name": self.__last_name,
+    #         "email": self.__email,
+    #         "username": self.__username,
+    #         "password_hash": self.__password_hash,
+    #         "role": "Subscriber"
+    #     }
 
     @staticmethod
     # Add data to the database.
     def add_to_database(first_name, last_name, email, username, password_hash, role):
         from data.db_manager import Database
         Database.add_user(first_name, last_name, email, username, password_hash, role)
-        # print(first_name, last_name, email, username, password_hash, role)

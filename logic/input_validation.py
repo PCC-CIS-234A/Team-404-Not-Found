@@ -1,3 +1,15 @@
+import re
+
+
+# Possible method for validating email user entries
+# Check the format of an email entry using a regular expression
+# from https://useful.codes/python-input-validation-and-sanitization/
+def validate_email(email):
+    pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(pattern, email):
+        raise ValueError("Invalid email format")
+
+
 # Takes an input_type keyword argument.
 # Executes an input validation function based on the input_type keyword.
 # Takes optional parameters and passes them to the validation function.
