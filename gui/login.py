@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-30
+# Last Modified: 2025-5-2
 # Description:
 # This module is the interface for a current user to log in to the system.
 # The user enters email or username, and password to log in.
@@ -28,13 +28,14 @@ class LoginPage(tk.Frame):
     Creation Date: 2025-04-22
     Purpose: This class is a tkinter frame that contains the login page of the notification system.
     The page accepts user inputs for email or username, and password.  It also has a button that takes the user to a
-    page to sign up instead of logging in.
+    page to sign up instead of logging in.  Successful login will take the user to a welcome page.
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(background=APP_BACKGROUND)
 
         from signup import SignupPage
+        from welcome import WelcomePage
 
         # GUI theme
         apply_theme_styles(self)
@@ -103,5 +104,4 @@ class LoginPage(tk.Frame):
             # elif Database.check_login(login_user, ) is None:
             #     match password hash to email or username
             else:
-                messagebox.showinfo("Success", "Welcome to the Notification System!")
-                # controller.show_frame(LandingPage) or (LoginPage)?
+                controller.show_frame(WelcomePage)

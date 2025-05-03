@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-30
+# Last Modified: 2025-5-2
 # Description:
 # This module is the interface for a new user to sign up in the system.
 # The user enters first name, last name, email, username, and password to sign up.
@@ -28,13 +28,14 @@ class SignupPage(tk.Frame):
     Creation Date: 2025-04-22
     Purpose: This class is a tkinter frame that contains the user sign up page of the notification system.
     The page accepts user inputs for account creation.  It also has a button that takes the user to a page to log in
-    instead of signing up.
+    instead of signing up.  Successful signup will take the user to a welcome page.
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(background=APP_BACKGROUND)
 
         from login import LoginPage
+        from welcome import WelcomePage
 
         # GUI theme
         apply_theme_styles(self)
@@ -85,7 +86,7 @@ class SignupPage(tk.Frame):
         # Primary function button
         signup_button = tk.Button(self, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
                                   fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-                                  relief="flat", command=lambda: self.create_user())
+                                  relief="flat", command=lambda: create_user())
         signup_button.place(relx=0.5, rely=0.7, anchor="n")
 
         # Frame to hold the login alternative
@@ -111,31 +112,29 @@ class SignupPage(tk.Frame):
         # Needs input validation for email format.
         # Needs password hashing added.
         # Needs verification that passwords match.
-    def create_user(self):
+        def create_user():
+            first_name = self.first_name_entry.get().strip()
+            last_name = self.last_name_entry.get().strip()
+            email = self.email_entry.get().strip()
+            username = self.username_entry.get().strip()
+            password = self.password_entry.get().strip()
+            re_password = self.re_password_entry.get().strip()
+            role = 'Subscriber'
 
-        first_name = self.first_name_entry.get().strip()
-        last_name = self.last_name_entry.get().strip()
-        email = self.email_entry.get().strip()
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get().strip()
-        re_password = self.re_password_entry.get().strip()
-        role = 'Subscriber'
-
-        if first_name == "" or last_name == "" or email == "" or username == "" or password == "" or re_password == "":
-            messagebox.showerror("Error", "All fields are required")
-        elif password != re_password:
-            messagebox.showerror("Error", "Passwords must match")
-        # elif email fails database check constraint:
-        #   messagebox.showerror("Error", "Invalid Email format")
-        elif Database.check_email(email) is not None:
-            messagebox.showerror("Error", "Email or Username already exists")
-        elif Database.check_username(username) is not None:
-            messagebox.showerror("Error", "Email or Username already exists")
-        else:
-            User.add_to_database(first_name, last_name, email, username, password, role)
-            # self.clear_entries()
-            messagebox.showinfo(title="Success", message="Sign Up Successful!")
-            # controller.show_frame(LandingPage) or (LoginPage)?
+            if (first_name == "" or last_name == "" or email == "" or username == "" or password == "" or
+                    re_password == ""):
+                messagebox.showerror("Error", "All fields are required")
+            elif password != re_password:
+                messagebox.showerror("Error", "Passwords must match")
+            # elif email fails database check constraint:
+            #   messagebox.showerror("Error", "Invalid Email format")
+            elif Database.check_email(email) is not None:
+                messagebox.showerror("Error", "Email or Username already exists")
+            elif Database.check_username(username) is not None:
+                messagebox.showerror("Error", "Email or Username already exists")
+            else:
+                User.add_to_database(first_name, last_name, email, username, password, role)
+                controller.show_frame(WelcomePage)
 
     # Method to clear all the user entries
     # @staticmethod

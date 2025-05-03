@@ -1,10 +1,10 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-28
+# Last Modified: 2025-5-2
 # Description:
 # This module is the tkinter app that holds Frames for different interface pages.
-# Uses code from home_page.py, signup.py, and login.py as the current frames.
+# Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
 
 # Code Reference:
 # https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
@@ -20,6 +20,7 @@ from gui.theme import *
 from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
+from welcome import WelcomePage
 
 
 class NotificationApp(tk.Tk):
@@ -47,13 +48,13 @@ class NotificationApp(tk.Tk):
         self.frames = {}
 
         # Iterate through the frames to change the window title???
-        # for t in (HomePage, LoginPage, SignupPage):
+        # for t in (HomePage, LoginPage, SignupPage, WelcomePage):
         # change the title for each object in the loop?
 
         # Iterate through a tuple containing the different page layouts.
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
-        for F in (HomePage, LoginPage, SignupPage):
+        for F in (HomePage, LoginPage, SignupPage, WelcomePage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
