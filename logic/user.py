@@ -54,14 +54,18 @@ class User:
 
     # Create a password hash given the password
     # This function needs work!
-    def get_password_hash(self, password):
-        # code to hash a password using bcrypt
+    def get_password_hash(self):
         return self.__password_hash
 
     # Check the password entry from the user against the stored password_hash
-    # This function needs work!
     def verify_password(self, password):
         return bcrypt.checkpw(password.encode(), self.__password_hash())
+
+    @staticmethod
+    def hash_password(password):
+        salt = bcrypt.gensalt(13)
+        password_hash = bcrypt.hashpw(password.encode(), salt)
+        return password_hash
 
     # Not sure if this is useful or how to use it?
     # Prevents having to query the database from the GUI layer?
