@@ -1,9 +1,9 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-4-29
+# Last Modified: 2025-5-3
 # Description:
-# This module is the initial user interface for notification system.
+# This module is the initial user interface for pantry system.
 # The user may choose to log in or sign up.
 
 # Code Reference:
@@ -18,7 +18,7 @@ class HomePage(tk.Frame):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
-    Purpose: This class is a tkinter frame that contains the initial screen of the notification system.  The page gives
+    Purpose: This class is a tkinter frame that contains the initial screen of the pantry system.  The page gives
     options to log in or sign up in the form of buttons that switch between frames.
     """
     def __init__(self, parent, controller):
@@ -40,14 +40,6 @@ class HomePage(tk.Frame):
         title_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
                                pady=5)
         title_label.place(relx=0.5, rely=0.1, anchor="n")
-
-        shadow_offset = 2
-        shadow_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_HOVER, fg="#333333",
-                                 padx=11, pady=6)
-        shadow_label2.place(relx=0.5, rely=0.2, anchor="n", x=shadow_offset, y=shadow_offset)
-        title_label2 = tk.Label(self, text="NOTIFICATION SYSTEM", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
-                                padx=10, pady=5)
-        title_label2.place(relx=0.5, rely=0.2, anchor="n")
 
         # Frame to hold the login and signup buttons
         button_frame = ttk.Frame(self, style="Form.TFrame")

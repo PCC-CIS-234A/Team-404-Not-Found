@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-5-2
+# Last Modified: 2025-5-3
 # Description:
 # This module is the tkinter app that holds Frames for different interface pages.
 # Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
@@ -23,7 +23,7 @@ from login import LoginPage
 from welcome import WelcomePage
 
 
-class NotificationApp(tk.Tk):
+class PantryApp(tk.Tk):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
@@ -38,7 +38,7 @@ class NotificationApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.title("Panther Pantry Notification System")
+        self.title("Panther Pantry")
         self.geometry("500x500")
         self.minsize(width=400, height=465)
 
@@ -67,5 +67,5 @@ class NotificationApp(tk.Tk):
         frame.tkraise()
 
 
-app = NotificationApp()
+app = PantryApp()
 app.mainloop()

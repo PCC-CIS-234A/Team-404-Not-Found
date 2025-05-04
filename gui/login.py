@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-4-22
-# Last Modified: 2025-5-2
+# Last Modified: 2025-5-3
 # Description:
 # This module is the interface for a current user to log in to the system.
 # The user enters email or username, and password to log in.
@@ -26,7 +26,7 @@ class LoginPage(tk.Frame):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
-    Purpose: This class is a tkinter frame that contains the login page of the notification system.
+    Purpose: This class is a tkinter frame that contains the login page of the pantry system.
     The page accepts user inputs for email or username, and password.  It also has a button that takes the user to a
     page to sign up instead of logging in.  Successful login will take the user to a welcome page.
     """

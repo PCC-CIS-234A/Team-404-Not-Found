@@ -1,7 +1,7 @@
 # *****************************************************
 # Author: R-Nixon
 # Creation Date: 2025-5-1
-# Last Modified: 2025-5-2
+# Last Modified: 2025-5-3
 # Description:
 # This module is the welcome page after a user signs into the system.
 # This page greets both new users and returning users.
@@ -43,8 +43,8 @@ class WelcomePage(tk.Frame):
         welcome_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         welcome_frame.place(relx=0.5, rely=0.2, anchor="n")
 
-        welcome_label1 = ttk.Label(welcome_frame, text="Welcome the the Panther Pantry", font=label_font)
+        welcome_label1 = ttk.Label(welcome_frame, text="Welcome to the", font=label_font)
         welcome_label1.grid(row=0, column=0)
-        welcome_label2 = ttk.Label(welcome_frame, text="Notification System!", font=label_font)
+        welcome_label2 = ttk.Label(welcome_frame, text="Panther Pantry!", font=label_font)
         welcome_label2.grid(row=1, column=0)
 
