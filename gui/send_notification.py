@@ -1,9 +1,9 @@
 # Sayan Tajul
 # CIS 234A
-# 04/21/2025
-# Sprint 1 Part 2 - Send Notification with Templates, Validation, File Attachments, and Review
+# 05/05/2025
+# Sprint 1 Final - Send Notification with Templates, Validation, File Attachments, and Review
 
-# Enable High DPI Awareness. High DPI awareness helps produce sharper scaling. This is particularly useful for Zoom
+# Enabling High DPI Awareness. High DPI awareness helps produce sharper scaling. This is particularly useful for Zoom
 # presentations.
 try:
     from ctypes import windll
@@ -16,8 +16,16 @@ import pyodbc
 import tkinter as tk
 from tkinter import messagebox, filedialog
 from logic.template_logic import fetch_template_names, fetch_template_by_name  # Template functions
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
+from email.mime.base import MIMEBase
+from email import encoders
+# Defining my attachments list here (GLOBAL SCOPE)
+selected_files = []
 
-# Connecting to our Database in SQL Server
+# Connecting to our Database in SQL Server (CIS 234A Team 404 not found)
 def connecttoourdb():
     conn_str = (
         "DRIVER={ODBC Driver 17 for SQL Server};"
@@ -28,73 +36,122 @@ def connecttoourdb():
     )
     return pyodbc.connect(conn_str)
 
+# Email sending function using Gmail SMTP.
+# I had to update function to send email with attachments.
+def send_email_to_subscribers(subject, message, subscribers, attachments=[]):
+    sender_email = "omi.blackrose@gmail.com"
+    app_password = "eusoqmatzuovfvki"
 
-# Building the primary notification for my Send Function
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.login(sender_email, app_password)
+
+        for recipient_email in subscribers:
+            email_msg = MIMEMultipart()
+            email_msg['From'] = sender_email
+            email_msg['To'] = recipient_email
+            email_msg['Subject'] = subject
+            email_msg.attach(MIMEText(message, 'plain'))
+
+            # Adding attachments if provided
+            for file_path in attachments:
+                with open(file_path, 'rb') as attachment:
+                    mime_base = MIMEBase('application', 'octet-stream')
+                    mime_base.set_payload(attachment.read())
+
+                encoders.encode_base64(mime_base)
+                filename = os.path.basename(file_path)
+                mime_base.add_header(
+                    'Content-Disposition',
+                    f'attachment; filename={filename}'
+                )
+
+                email_msg.attach(mime_base)
+
+            # Sending email
+            server.send_message(email_msg)
+
+        server.quit()
+
+    except Exception as e:
+        raise Exception(f"Email Sending Error: {e}")
+
+
+# Updated notification sending logic with logging here
 def NotificationPage():
     subject = mainpagesubjectentry.get().strip()
     message = textmessage.get("1.0", tk.END).strip()
+    sender_username = "Sarah Sam"  # Manager username from your DB
 
-    # Field Required Validation
+    # Validating subject and message input here
     if not subject or not message:
         messagebox.showwarning("Missing Information", "Subject and Message are required.")
         return
-
-    # This function needs minimum length checking.
-    if len(subject) < 5:
-        messagebox.showwarning("Validation Error", "Subject must be at least 5 characters.")
-        return
-    if len(message) < 10:
-        messagebox.showwarning("Validation Error", "Message must be at least 10 characters.")
+    if len(subject) < 5 or len(message) < 10:
+        messagebox.showwarning("Validation Error", "Subject must be at least 5 characters; message at least 10.")
         return
 
-    # Every notification requires examination before dispatch.
+    # Confirming sending notification
     confirm = messagebox.askyesno("Review Notification",
                                   f"Subject:\n{subject}\n\nMessage:\n{message}\n\nDo you want to send it?")
     if not confirm:
         return
 
-    try:
+    try: # Had some issues but currently fix hopefully
         conn = connecttoourdb()
         cursor = conn.cursor()
 
-        # Creating table if it doesn't exist in our SQL Database
+        # Debug: Print subscribers for double checking
+        cursor.execute("SELECT email FROM dbo.users WHERE role = 'subscriber'")
+        subscribers = [row[0] for row in cursor.fetchall()]
+        print("DEBUG: Subscribers fetched:", subscribers)
+
+        number_of_recipients = len(subscribers)
+        print("DEBUG: Number of subscribers:", number_of_recipients)
+
+        # Debug: Verify sender_username (double checking)
+        sender_username = "Sarah Sam"
+        print("DEBUG: Sender username:", sender_username)
+
+        # Debug: Fetching sender ID to make sure
+        cursor.execute("SELECT user_id FROM dbo.users WHERE username = ?", (sender_username,))
+        sender_result = cursor.fetchone()
+        print("DEBUG: Sender query result:", sender_result)
+
+        sender_id = sender_result[0] if sender_result else None
+
+        if not sender_id:
+            messagebox.showerror("Sender Error", f"Sender '{sender_username}' not found. Check username.")
+            return
+
+        # Sending emails to subscribers
+        send_email_to_subscribers(subject, message, subscribers, selected_files)
+
+        # Inserting notification log into SQL (Team 404 Not Found)
         cursor.execute("""
-            IF NOT EXISTS (
-                SELECT * FROM sysobjects 
-                WHERE name='notifications' AND xtype='U'
-            )
-            CREATE TABLE notifications (
-                id INT IDENTITY(1,1) PRIMARY KEY,
-                subject NVARCHAR(255) NOT NULL,
-                message NVARCHAR(MAX) NOT NULL,
-                date_sent DATETIME DEFAULT GETDATE()
-            )
-        """)
+            INSERT INTO dbo.notifications (subject, message, date_sent, num_subscribers, sender_id)
+            VALUES (?, ?, GETDATE(), ?, ?)
+        """, (subject, message, number_of_recipients, sender_id))
         conn.commit()
 
-        # Data notification happens as the table changes.
-        cursor.execute("""
-            INSERT INTO notifications (subject, message) VALUES (?, ?)
-        """, (subject, message))
-        conn.commit()
-
-        messagebox.showinfo("Success", "Notification sent and saved to SQL Server.")
+        messagebox.showinfo("Success", f"Notification sent successfully to {number_of_recipients} subscribers.")
 
     except Exception as e:
-        messagebox.showerror("Database Error", f"An error occurred:\n{e}")
+        messagebox.showerror("Error", f"An error occurred:\n{e}")
     finally:
         conn.close()
 
-
-# Cancel/Clear Functions as Professor recommneded
+# Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
 def cancelfieldsFun():
+    # Clearing subject and message fields
     mainpagesubjectentry.delete(0, tk.END)
     textmessage.delete("1.0", tk.END)
 
+    # Clearing the attachments listbox
+    attached_files_listbox.delete(0, tk.END)
 
-# Add/Remove Files Functions as Professors recommneded
-selected_files = []
-
+    # Clearing the internal attachments list
+    selected_files.clear()
 
 def addingfileFun():
     file_path = filedialog.askopenfilename()
@@ -111,7 +168,7 @@ def removingfileFun():
     else:
         messagebox.showwarning("No Selection", "Please select a file to remove.")
 
-# Load Template Data When Selected
+# Loading Template Data When Selected
 def load_selected_template(*args):
     selected_template = template_var.get()
     if selected_template != "Select a Template":
@@ -171,6 +228,7 @@ mainpagesubjectentry = tk.Entry(mainpage, width=70)
 mainpagesubjectentry.pack(pady=(0, 10))
 
 # Message Label + Text Box (Change here team 404 if needed)
+# Message Label
 tk.Label(
     mainpage,
     text="Message:",
@@ -179,23 +237,53 @@ tk.Label(
     fg=softcolorback
 ).pack(pady=(5, 5))
 
-textmessage = tk.Text(mainpage, height=12, width=70)
-textmessage.pack(pady=(0, 10))
+# Frame to hold text box and scrollbar
+message_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+message_frame.pack(pady=(0, 10))
 
-# File Buttons for adding files
-btn_addingfileFun = tk.Button(mainpage, text="Add File", bg=PCCblue, fg="white", command=addingfileFun)
-btn_addingfileFun.pack(pady=(5, 2))
+# Scrollbar for longer messages
+message_scrollbar = tk.Scrollbar(message_frame)
+message_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-btn_removingfileFun = tk.Button(mainpage, text="Remove File", bg=PCCblue, fg="white", command=removingfileFun)
-btn_removingfileFun.pack(pady=(2, 10))
+# Text Box with scrollbar, at first I forgot about the scrollbar but later I updated
+textmessage = tk.Text(
+    message_frame,
+    height=12,
+    width=70,
+    yscrollcommand=message_scrollbar.set
+)
+textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
+
+# Configure scrollbar to interact with text box
+message_scrollbar.config(command=textmessage.yview)
+
+# Frame to align file buttons horizontally side by side
+file_buttons_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+file_buttons_frame.pack(pady=(5, 5))
+
+# Add Attachment button
+btn_add_attachment = tk.Button(
+    file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=addingfileFun
+)
+btn_add_attachment.pack(side=tk.LEFT, padx=10, pady=5)
+
+# Remove Attachment button
+btn_remove_attachment = tk.Button(
+    file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=removingfileFun
+)
+btn_remove_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
 # Attached Files Listbox (shows files being attached)
 attached_files_listbox = tk.Listbox(mainpage, width=100, height=5, bg="#e6f2ff")
 attached_files_listbox.pack(pady=(10, 10))
 
-# Send and Cancel Buttons as recommended
+# Frame to align Send and Cancel buttons horizontally side by side
+bottom_buttons_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+bottom_buttons_frame.pack(pady=(15, 20))
+
+# Send Notification Button
 btnsend = tk.Button(
-    mainpage,
+    bottom_buttons_frame,
     text="Send Notification",
     bg=Linkpccblue,
     fg="white",
@@ -204,11 +292,11 @@ btnsend = tk.Button(
     pady=6,
     command=NotificationPage
 )
-btnsend.pack(pady=10)
+btnsend.pack(side=tk.LEFT, padx=10)
 
-#Cancel Button as recommended.
+# Cancel Button
 buttoncancel = tk.Button(
-    mainpage,
+    bottom_buttons_frame,
     text="Cancel",
     bg=PCCblue,
     fg="white",
@@ -217,7 +305,7 @@ buttoncancel = tk.Button(
     pady=6,
     command=cancelfieldsFun
 )
-buttoncancel.pack(pady=(5, 20))
+buttoncancel.pack(side=tk.LEFT, padx=10)
 
 # Main GUI Loop
 mainpage.mainloop()
