@@ -2,7 +2,7 @@
 """
 Author(s): jasag
 Creation Date: 2025-04-23
-Last Modified: 2025-04-28
+Last Modified: 2025-05-02
 
 Description:
 This file defines Notification class and Database class
@@ -12,26 +12,25 @@ and contains connection settings to access the Database.
 import pyodbc
 from datetime import datetime
 
+
 # Defines Notification (model/entity) class.  Notification table in database.
 class Notification:
 
-    def __init__(self, notification_id, user_id, subject, message, date_time, num_subscribers):
-        self.notification_id = notification_id
-        self.user_id = user_id
+    def __init__(self, date_sent, subject, message, sender_id, num_subscribers):
+        self.date_sent = date_sent
         self.subject = subject
         self.message = message
-        self.date_time = date_time
+        self.sender_id = sender_id
         self.num_subscribers = num_subscribers
 
 
 # Defines Database class
 class Database:
-
-    server = "",
-    database = "",
-    user = "",
-    password = "",
-    trust_server_certificate = "Yes",
+    server = ""
+    database = ""
+    user = ""
+    password = ""
+    trust_server_certificate = "Yes"
     driver = "{ODBC Driver 17 for SQL Server}"
 
     @classmethod
@@ -47,12 +46,12 @@ class Database:
     @classmethod
     def connect(cls):
         connection_string = (
-            "Server={cls.};"
-            "Database={cls.};"
-            "User={cls.};"
-            "Password={cls.};"
-            "Trust Server={cls.Yes};"
-            "Driver={{{ODBC Driver 17 for SQL Server}}};"
+            f"DRIVER={cls.driver};"
+            f"SERVER={cls.server};"
+            f"DATABASE={cls.database};"
+            f"UID={cls.user};"
+            f"PWD={cls.password};"
+            f"TrustServerCertificate={cls.trust_server_certificate};"
         )
         return pyodbc.connect(connection_string)
 
@@ -60,10 +59,10 @@ class Database:
     @classmethod
     def get_notification_log(cls, start_date, end_date):
         query = """
-            SELECT notification_id, user_id, subject, message, date_time, num_subscribers
-            FROM Notification
-            WHERE date_time BETWEEN ? AND ?
-            ORDER BY date_time;
+            SELECT date_sent, subject, message, sender_id, num_subscribers
+            FROM dbo.Notifications
+            WHERE date_sent BETWEEN ? AND ?
+            ORDER BY date_sent;
         """
 
        # Holds list objects from Notification table
@@ -73,14 +72,16 @@ class Database:
 
         try:
             cursor = connection.cursor()
-            try:
-                cursor.execute(query, (start_date, end_date))
-                rows = cursor.fetchall()
-                for row in rows:
-                    notifications.append(Notification(*row))
-            finally:
-                cursor.close()
+            # Protects against SQL injection keeping query outside of cursor.execute
+            cursor.execute(query, (start_date, end_date))
+
+            # Gets column names
+            columns = [column[0] for column in cursor.description]
+
+            for row in cursor.fetchall():
+                row_dict = dict(zip(columns, row))
+                notifications.append(Notification(**row_dict))
         finally:
-                connection.close()
+            connection.close()
 
         return notifications

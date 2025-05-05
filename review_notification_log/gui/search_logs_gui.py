@@ -2,7 +2,7 @@
 """
 Author(s): jasag
 Creation Date: 2025-04-25
-Last Modified: 2025-04-25
+Last Modified: 2025-05-05
 
 Description:
 This file produces the GUI for the employee's to search for
@@ -12,71 +12,109 @@ log results and details.
 # ***************************************************************
 from logic.logic_layer import search_logs
 
-# GUI builder
+# GUI builder - Tkinter library
 import tkinter as tk
-from tkinter import ttk, messagebox
-# Datetime class from built-in module
-from datetime import datetime, timedelta
+from tkinter import ttk, messagebox, font
+# Tkinter library to build calendar
+from tkcalendar import DateEntry
 
-# Function to generate list of dates
-def generate_dates(days=30):
-    base = datetime.today()
-    return [(base + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days)]
-
-# Function to display details of a log once clicked
-def display_log_details(event):
-    selected_item = tree.selection()[0]
-    row_data = tree.item(selected_item, "values")
-
-    details_text.set(f"Date & Time: {row_data[0]}\n"
-                     f"Subject: {row_data[1]}\n"
-                     f"Message: {row_data[2]}\n"
-                     f"Sender: {row_data[3]}\n"
-                     f"# of Subscribers: {row_data[4]}")
-
-# Test function to test GUI search - will need to go into logic layer
-#def search_logs(start_date, end_date):
-    #return []
-
-# Search button click
+# Creates Search button click
 def search_click():
     start_date = start_date_box.get()
     end_date = end_date_box.get()
 
-    results = search_logs(start_date, end_date)
-    # Gets current search's logs and deletes older search logs
-    for row in tree.get_children():
-        tree.delete(row)
+ # Error handling
+    if not start_date or not end_date:
+        messagebox.showerror("Error", "Start date and end date cannot be empty")
+        return
+
+    if start_date > end_date:
+        messagebox.showerror("Error", "Start date cannot be greater than end date")
+        return
+
+    try:
+        results = search_logs(start_date, end_date)
+    except ValueError as e:
+        messagebox.showerror("No records for that date range.  Please try again.", str(e))
+        return
+
+# Clears results
+    tree.delete(*tree.get_children())
+
+# Displays results of search from database
     if not results:
-        messagebox.showerror("Error. Invalid date range.", "Please enter a new date range.")
+        messagebox.showerror("No notification logs for that date range.  Please try again.")
     else:
         for row in results:
-    # Adds log to GUI view
-            tree.insert('', tk.END, values=row)
+            tree.insert('', tk.END, values=(row["date_sent"], row["subject"], row["message"], row["sender_id"], row["num_subscribers"]))
+
 
 # Creates main window
 root = tk.Tk()
 root.title("Notification Logs Search")
-root.geometry("900x400")
+root.geometry("1000x500")
 # Use Team chosen color
-root.configure(background='#008099')
-text_color = "1690b4"
+root.configure(background='#f7f9fb')
+# Sets fonts
+default_font = font.Font(family='Helvetica', size=16, weight='bold')
+button_font = font.Font(family='Helvetica', size=16, weight='bold')
 
-# Gets list of dates
-date_option = generate_dates()
+# Adds style to GUI
+root.option_add("*Font", default_font)
+root.option_add("*Background", "#f7f9fb")
+root.option_add("*Foreground", "#1690b4")
+
+style = ttk.Style()
+style.theme_use("default")
+
+style.configure("Treeview.Heading",
+                background="#f7f9fb",
+                foreground="#1690b4",
+                font=default_font)
+
+style.configure("Treeview",
+                background="#ffffff",
+                fieldbackground="#ffffff",
+                foreground="#1690b4",
+                rowheight=30,
+                font=default_font)
+
+style.configure("Label",
+                background="#f7f9fb",
+                foreground="#1690b4",
+                font=default_font)
+
+style.configure("Button",
+                background="#007b8a",
+                foreground="#ffffff",
+                font=button_font,
+                padding=6)
+
+style.map("Button",
+          background=[("active", "#005f6a"), ("pressed", "#005f6a")],
+          foreground=[("active", "#ffffff"), ("pressed", "#ffffff")]
+          )
+
+style.configure("Combobox",
+                fieldbackground="#ffffff",
+                background="#ffffff",
+                foreground="#1690b4",
+                font=default_font
+                )
+
 
 # Top frame
 top_frame = ttk.Frame(root)
-top_frame.pack(pady=10)
+top_frame.pack(pady=20)
 
 # Creates box for "start" date
 ttk.Label(top_frame, text="Start: ").grid(row=0, column=0, padx=5)
-start_date_box = ttk.Combobox(top_frame, values=date_option, state="readonly")
+start_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
 start_date_box.grid(row=0, column=1, padx=5)
 
 # Creates box for "end" date
-ttk.Label(top_frame, text="To: ").grid(row=0, column=2, padx=5)
-end_date_box = ttk.Combobox(top_frame, values=date_option, state="readonly")
+ttk.Label(top_frame, text="End: ").grid(row=0, column=2, padx=5)
+end_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
 end_date_box.grid(row=0, column=3, padx=5)
 
 # Creates search button
@@ -98,32 +136,18 @@ scrollbar.config(command=tree.yview)
 # Settings for columns display
 for column in columns:
     tree.heading(column, text=column)
-    tree.column(column, width=100)
+    tree.column(column, width=150, anchor=tk.W)
 
 tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
 # Connects log in treeview with display below
-tree.bind("<ButtonRelease-1>", display_log_details)
+tree.bind("<ButtonRelease-1>")
 
 # Displays details of the log clicked
 details_frame = tk.Frame(root)
 details_frame.pack(fill=tk.BOTH, padx=10, pady=10)
 
 details_text = tk.StringVar()
-details_label = ttk.Label(details_frame, text="Log Details: ")
-details_label.pack(anchor=tk.W, pady=5)
-details_display = ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W)
-details_display.pack(fill=tk.BOTH, padx=10, pady=10)
-
-
-# Test data to test GUI - will need to move to data access layer
-test_data = [
-    ("2025-04-18 10:00", "New Items",
-     "Fresh vegetables available for pick up.", "Bob Smith", "20"),
-]
-
-# Test log data to test GUI
-for row in test_data:
-    tree.insert('', tk.END, values=row)
+ttk.Label(details_frame, text="Log Details: ").pack(anchor=tk.W, pady=5)
+ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W).pack(fill=tk.BOTH, padx=10, pady=10)
 
 root.mainloop()
