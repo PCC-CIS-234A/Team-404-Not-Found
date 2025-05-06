@@ -2,7 +2,7 @@
 """
 Author(s): jasag
 Creation Date: 2025-04-23
-Last Modified: 2025-05-02
+Last Modified: 2025-05-06
 
 Description:
 This file defines Notification class and Database class
@@ -16,12 +16,22 @@ from datetime import datetime
 # Defines Notification (model/entity) class.  Notification table in database.
 class Notification:
 
-    def __init__(self, date_sent, subject, message, sender_id, num_subscribers):
+    def __init__(self, date_sent, subject, message, sender_id, num_subscribers, first_name):
+        """
+        Defines Notification class
+        :param date_sent: datetime, date and time of notification sent
+        :param subject: string, subject of the notification
+        :param message: string, message of the notification
+        :param sender_id: int, id of the sender of the notification
+        :param num_subscribers: int, number of subscribers notified
+        :param first_name: str, name of the person who sent the notification
+        """
         self.date_sent = date_sent
         self.subject = subject
         self.message = message
         self.sender_id = sender_id
         self.num_subscribers = num_subscribers
+        self.first_name = first_name
 
 
 # Defines Database class
@@ -35,6 +45,16 @@ class Database:
 
     @classmethod
     def configure(cls, server, database, user, password, trust_server_certificate, driver):
+        """
+        Configuration settings to connect to database.
+        :param server: server connection string
+        :param database: database connection string
+        :param user: user connection string
+        :param password: password connection string
+        :param trust_server_certificate: trust_server_certificate connection string
+        :param driver: driver connection string
+        :return: None
+        """
         cls.server = server
         cls.database = database
         cls.user = user
@@ -45,6 +65,10 @@ class Database:
     # Connects to the database
     @classmethod
     def connect(cls):
+        """
+        Connects to database
+        :return: connection object
+        """
         connection_string = (
             f"DRIVER={cls.driver};"
             f"SERVER={cls.server};"
@@ -58,11 +82,18 @@ class Database:
  # Gets the notification logs from database
     @classmethod
     def get_notification_log(cls, start_date, end_date):
+        """
+        Fetches Notification log from database
+        :param start_date: datetime, start date and time of notification sent
+        :param end_date: datetime, end date and time of notification sent
+        :return: Notification log
+        """
         query = """
-            SELECT date_sent, subject, message, sender_id, num_subscribers
-            FROM dbo.Notifications
-            WHERE date_sent BETWEEN ? AND ?
-            ORDER BY date_sent;
+            SELECT n.date_sent, n.subject, n.message, n.sender_id, n.num_subscribers, u.first_name
+            FROM dbo.Notifications n
+            JOIN dbo.Users u ON n.sender_id = u.user_id
+            WHERE n.date_sent BETWEEN ? AND ?
+            ORDER BY n.date_sent;
         """
 
        # Holds list objects from Notification table
@@ -79,6 +110,7 @@ class Database:
             columns = [column[0] for column in cursor.description]
 
             for row in cursor.fetchall():
+                # Converts tuples into dictionary
                 row_dict = dict(zip(columns, row))
                 notifications.append(Notification(**row_dict))
         finally:
