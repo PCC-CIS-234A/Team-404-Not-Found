@@ -1,18 +1,16 @@
-# *****************************************************
-# Author: R-Nixon
-# Creation Date: 2025-4-22
-# Last Modified: 2025-5-3
-# Description:
-# This module is the tkinter app that holds Frames for different interface pages.
-# Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
+"""
+Author: R-Nixon
+Creation Date: 2025-4-22
+Last Modified: 2025-5-3
+Description:
+This module is the tkinter app that holds Frames for different interface pages.
+Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
 
-# Code Reference:
-# https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
-# *****************************************************
+Code Reference:
+https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
+"""
 
-# Issues with the current code:
-
-# Entries are persistent when switching back and forth between login and signup.
+# Problems with the code:
 # The window title does not change to reflect the current frame.
 
 import tkinter as tk
@@ -47,7 +45,7 @@ class PantryApp(tk.Tk):
         # Initialize frames to an empty array.
         self.frames = {}
 
-        # Iterate through the frames to change the window title???
+        # Possible to iterate through the frames to change the window title?
         # for t in (HomePage, LoginPage, SignupPage, WelcomePage):
         # change the title for each object in the loop?
 
@@ -61,8 +59,17 @@ class PantryApp(tk.Tk):
 
         self.show_frame(HomePage)
 
-    # Display the current frame passed as a parameter.
     def show_frame(self, cont):
+        """
+        Function: show_frame
+        Author: R-Nixon
+        Date Created: 2025-4-22
+
+        Purpose: Display the current tkinter frame passed as a parameter.
+
+        :param cont: container that holds the tkinter frame
+        :return: None
+        """
         frame = self.frames[cont]
         frame.tkraise()
 

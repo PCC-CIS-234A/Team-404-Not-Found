@@ -1,14 +1,14 @@
-# *****************************************************
-# Author: R-Nixon
-# Creation Date: 2025-4-22
-# Last Modified: 2025-5-3
-# Description:
-# This module is the initial user interface for pantry system.
-# The user may choose to log in or sign up.
+"""
+Author: R-Nixon
+Creation Date: 2025-4-22
+Last Modified: 2025-5-3
+Description:
+This module is the initial user interface for pantry system.
+The user may choose to log in or sign up.
 
-# Code Reference:
-# https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
-# *****************************************************
+Code Reference:
+https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
+"""
 import tkinter as tk
 from tkinter import ttk
 from theme import *
@@ -28,11 +28,11 @@ class HomePage(tk.Frame):
         from signup import SignupPage
         from login import LoginPage
 
-        # GUI theme
+        # GUI theme.
         apply_theme_styles(self)
         default_font, label_font, button_font = get_fonts(self)
 
-        # Styling for the frame title
+        # Styling for the frame title.
         shadow_offset = 2
         shadow_label = tk.Label(self, text="PANTHER PANTRY", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
                                 pady=6)
@@ -41,7 +41,7 @@ class HomePage(tk.Frame):
                                pady=5)
         title_label.place(relx=0.5, rely=0.1, anchor="n")
 
-        # Frame to hold the login and signup buttons
+        # Frame to hold the login and signup buttons.
         button_frame = ttk.Frame(self, style="Form.TFrame")
         button_frame.place(relx=0.5, rely=0.5, anchor="n")
         login_button = tk.Button(button_frame, text="Login", font=button_font, width=7, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
@@ -52,4 +52,3 @@ class HomePage(tk.Frame):
                                   relief="flat", command=lambda: controller.show_frame(SignupPage))
         login_button.grid(column=0, row=0, padx=10, pady=10)
         signup_button.grid(column=1, row=0, padx=10, pady=10)
-

@@ -1,11 +1,17 @@
-# *****************************************************
-# Author: R-Nixon
-# Creation Date: 2025-4-16
-# Last Modified: 2025-5-2
+"""
+Author: R-Nixon
+Creation Date: 2025-4-16
+Last Modified: 2025-5-7
 
-# Description:
-# This module contains the Database class and connects the logic layer to the SQL database.
-# *****************************************************
+Description:
+This module contains the Database class and connects the logic layer to the SQL database.
+
+References:
+https://stackoverflow.com/questions/16519385/output-pyodbc-cursor-results-as-python-dictionary
+"""
+
+# Problems with the code:
+# The read_user method does not convert the database results into a usable format.
 
 import pyodbc
 from logic.user import User
@@ -14,7 +20,7 @@ from logic.user import User
 class Database:
     """
     Author: R-Nixon
-    Creation Date: 2025-04-17
+    Creation Date: 2025-04-16
     Purpose: This class contains methods to interact with the SQL database.
     """
     __client = None
@@ -22,6 +28,16 @@ class Database:
     # Connect to the database.
     @classmethod
     def connect(cls):
+        """
+        Function: connect
+        Author: R-Nixon
+        Date Created: 2025-4-16
+
+        Purpose: Connect to the SQL database.
+
+        :param: cls: Database class
+        :return: None
+        """
         if cls.__client is None:
             cls.__client = pyodbc.connect(
                 server="cisdbss.pcc.edu",
@@ -34,57 +50,37 @@ class Database:
 
             print("Connected to: ", cls.__client)
 
-    # Read user data from the database.
-    @classmethod
-    def read_users(cls):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        sql = """
-        SELECT user_id, first_name, last_name, email, password_hash, username, role
-        FROM dbo.users;
-        """
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-        for row in rows:
-            print(row)
-
-    # @classmethod
-    # def read_user(cls, username):
-    #     cls.connect()
-    #     user_dict = cls.__users_collection.find_one({'_id': username.lower()})
-    #     if user_dict is None:
-    #         return None
-    #     else:
-    #         return User.build(user_dict)
-
-    # Check email/username and password
-    @classmethod
-    def check_login(cls, login_user, login_password):
-        cls.connect()
-        sql = """
-        SELECT * 
-        FROM more_users
-        WHERE email = ?
-        OR username = ?
-        AND password = ?
-        """
-        params = (login_user, login_user, login_password)
-        cursor = cls.__client.cursor()
-        cursor.execute(sql, params)
-
-    # Close the database connection.
     @classmethod
     def close_connection(cls):
+        """
+        Function: close_connection
+        Author: R-Nixon
+        Date Created: 2025-4-16
+
+        Purpose: Close the database connection.
+
+        :param: cls: Database class
+        :return: None
+        """
         cls.__client.close()
         print("Connection closed")
 
-    # Drop data in the sandbox tables.
-    # Testing DDL code.
-    # Change to real tables for final code.
     @classmethod
     def drop_data(cls):
+        """
+        Function: drop_data
+        Author: R-Nixon
+        Date Created: 2025-5-3
+
+        Purpose: Drop all tables in the SQL database.
+
+        :param: cls: Database class
+        :return: None
+        """
         cls.connect()
         cursor = cls.__client.cursor()
+        # Creates sandbox tables.
+        # Change table names for final code.
         sql = """
         IF OBJECT_ID('dbo.more_templates', 'U') IS NOT NULL
             DROP TABLE dbo.more_templates;
@@ -97,11 +93,18 @@ class Database:
         cls.__client.commit()
         print("Dropping table")
 
-    # Rebuild data in the sandbox tables.
-    # Testing DDL code.
-    # Change to real tables for final code.
     @classmethod
     def rebuild_data(cls):
+        """
+        Function: rebuild_data
+        Author: R-Nixon
+        Date Created: 2025-5-3
+
+        Purpose: Recreate tables in the SQL database and insert known good data.
+
+        :param: cls: Database class
+        :return: None
+        """
         # Attributes of User entity:
         # user_id, first_name, last_name, email, username, password_hash, role
 
@@ -113,6 +116,8 @@ class Database:
         cls.connect()
         cls.drop_data()
         cursor = cls.__client.cursor()
+        # Creates sandbox tables.
+        # Change table names for final code.
         sql = """
         CREATE TABLE dbo.more_users
             (user_id INTEGER NOT NULL IDENTITY PRIMARY KEY,
@@ -206,9 +211,81 @@ class Database:
         cls.__client.commit()
         print("Database rebuilt")
 
-    # Check to see if the username exists in the database
+    @classmethod
+    def read_user(cls, username, email):
+        """
+        Function: read_user
+        Author: R-Nixon
+        Date Created: 2025-5-1
+
+        Purpose: Read user data from the database given the username or email.
+
+        **DOES NOT WORK**
+
+        :param: cls: Database class
+        :param: username: str, user's username
+        :param: email: str, user's email
+        :return: None, or User object
+        """
+        # Fails to return a User object.
+        # Not able to change the result of the query into a User object.
+        cls.connect()
+        cursor = cls.__client.cursor()
+        sql = """
+         SELECT first_name, last_name, email, username, password_hash, role
+         FROM dbo.users
+         WHERE username = ?
+         OR email = ?;
+         """
+        params = (username, email)
+        cursor.execute(sql, params)
+        row = cursor.fetchone()
+        if not cursor.rowcount:
+            print("None")
+            return None
+        else:
+            print(row)
+            # user = []
+            # columns = [column[1] for column in cursor.description]
+            # for row in row:
+            #     user_dict = dict(zip(columns, row))
+            #     user.append(User(**user_dict))
+            # print("USER:", user)
+            # return user
+
+        # Possible code ideas to fix read_user:
+
+        # cursor = connection.cursor().execute(sql)
+        # columns = [column[0] for column in cursor.description]
+        # print(columns)
+        # ['name', 'create_date']
+        # results = []
+        # for row in cursor.fetchall():
+        #     results.append(dict(zip(columns, row)))
+        # print(results)
+
+        # def query(query_str):
+        #     cursor.execute(query_str)
+        #     return {'results':
+        #                 [dict(zip([column[0] for column in cursor.description], row))
+        #                  for row in cursor.fetchall()]}
+
+        # def row_to_dict(row):
+        #     return dict(zip([t[0] for t in row.cursor_description], row))
+
     @classmethod
     def check_username(cls, username):
+        """
+        Function: check_username
+        Author: R-Nixon
+        Date Created: 2025-4-26
+
+        Purpose: Check to see if the username exists in the database.
+
+        :param: cls: Database class
+        :param: username: string, user's username
+        :return: None, or Cursor object containing SQL result rows
+        """
         cls.connect()
         cursor = cls.__client.cursor()
         sql = """
@@ -219,14 +296,23 @@ class Database:
         cursor.execute(sql, param)
         rows = cursor.fetchall()
         if not cursor.rowcount:
-            # print("None")
             return None
         else:
             return rows
 
-    # Check to see if email exists in the database
     @classmethod
     def check_email(cls, email):
+        """
+        Function: check_username
+        Author: R-Nixon
+        Date Created: 2025-4-26
+
+        Purpose: Check to see if the email exists in the database.
+
+        :param: cls: Database class
+        :param: email: string, user's email
+        :return: None, or Cursor object containing SQL result rows
+        """
         cls.connect()
         cursor = cls.__client.cursor()
         sql = """
@@ -237,34 +323,62 @@ class Database:
         cursor.execute(sql, param)
         rows = cursor.fetchall()
         if not cursor.rowcount:
-            # print("None")
             return None
         else:
             return rows
 
-    # Check to see if the combination of login credentials exists in the database
-    # This function needs work!
-    # The current SQL is invalid.
     @classmethod
-    def check_login(cls, login_user, password_hash):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        sql = """
-        SELECT * from dbo.users
-        WHERE username OR email = ? AND password_hash = ?
+    def check_hash(cls, login_user):
         """
-        params = (login_user, password_hash)
+        Function: check_hash
+        Author: R-Nixon
+        Date Created: 2025-4-26
+
+        Purpose: Check for a password hash in the database.
+
+        **DOES NOT WORK**
+
+        :param: cls: Database class
+        :param: login_user: string, user credential for login, email or username
+        :return: None, or Cursor object containing SQL result rows
+        """
+        cls.connect()
+        sql = """
+        SELECT password_hash
+        FROM dbo.users
+        WHERE email = ?
+        OR username = ?
+        """
+        params = (login_user, login_user)
+        cursor = cls.__client.cursor()
         cursor.execute(sql, params)
-        rows = cursor.fetchall()
+        row = cursor.fetchone()
         if not cursor.rowcount:
-            # print("None")
             return None
         else:
-            return rows
+            print("row:", row[0])
+            pass_hash = row[0]
+            return pass_hash
 
     # Add a user to the database.
     @classmethod
     def add_user(cls, first_name, last_name, email, username, password_hash, role):
+        """
+        Function: check_username
+        Author: R-Nixon
+        Date Created: 2025-4-26
+
+        Purpose: Insert values into the database users table to create a new user.
+
+        :param: cls: Database class
+        :param: first_name: string, user's first_name
+        :param: first_name: string, user's first_name
+        :param: email: string, user's email
+        :param: username: string, user's username
+        :param: password_hash: string, hashed value of the user's password
+        :param: role: string, user's role in the pantry system
+        :return: None
+        """
         cls.connect()
         cursor = cls.__client.cursor()
         sql = """
@@ -277,23 +391,7 @@ class Database:
         cursor.execute(sql, params)
         cls.__client.commit()
 
-    # Method is for development purposes only.
-    # Delete in final code.
-    @classmethod
-    def add_test_user(cls):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        sql = """
-        INSERT INTO dbo.users
-         (first_name, last_name, email, username, password_hash, role)
-        VALUES
-         ('Test','User','email1@email.com','TestUser','pass_hash', 'Subscriber');
-        """
-        cursor.execute(sql)
-        cls.__client.commit()
-
 
 if __name__ == "__main__":
-    Database.rebuild_data()
-    # Database.read_users()
-    # Database.add_test_user()
+    # Database.check_hash("user1")
+    Database.read_user("user1", "user1@test.edu")
