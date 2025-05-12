@@ -77,6 +77,7 @@ class User:
         Function: read_user
         Author: R-Nixon
         Date Created: 2025-5-1
+        Date Modified: 2025-5-8
 
         Purpose: Check the database for a user that matches the username
         or email provided.
@@ -86,7 +87,18 @@ class User:
         :return: User object
         """
         from data.db_manager import Database
-        return Database.read_user(username, email)
+        users = Database.read_user(username, email)
+        result = []
+        for user in users or []:
+            result.append({
+                "first_name": user.get_first_name(),
+                "last_name": user.get_last_name(),
+                "email": user.get_email(),
+                "username": user.get_username(),
+                "password_hash": user.get_password_hash(),
+                "role": user.get_role()
+            })
+        return result
 
     def get_first_name(self):
         return self.__first_name
@@ -102,6 +114,9 @@ class User:
 
     def get_password_hash(self):
         return self.__password_hash
+
+    def get_role(self):
+        return self.__role
 
     def verify_password(self, password):
         """

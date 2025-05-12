@@ -22,6 +22,7 @@ from data.db_manager import Database
 # Problems with the code:
 # The GUI layer should not connect directly with the database?
 # Function for confirming login information does not work.
+# Does not check password
 
 
 class LoginPage(tk.Frame):
@@ -91,45 +92,13 @@ class LoginPage(tk.Frame):
         self.login_user_entry = login_user_entry
         self.login_password_entry = login_password_entry
 
-        # def confirm_login():
-        #     """
-        #     Function: confirm_login
-        #     Author: R-Nixon
-        #     Date Created: 2025-4-26
-        #
-        #     Purpose: Primary attempt at a function to confirm login credentials.
-        #     Confirm the user credentials from the GUI inputs.
-        #     Username or email are checked against existing entries in the database.
-        #     Clears the form and switches to the WelcomePage upon successful login.
-        #
-        #     **DOES NOT WORK**
-        #
-        #     :return: None
-        #     """
-        #     login_user = self.login_user_entry.get().strip()
-        #     login_password = self.login_password_entry.get().strip()
-        #     user = User.read_user(login_user, login_user)
-        #     logged_in = user.verify_password(login_password)
-        #
-        #     if login_user == "" or login_password == "":
-        #         messagebox.showerror("Error", "All fields are required")
-        #     elif user is None:
-        #         messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
-        #                                              "information and try again")
-        #     elif not logged_in:
-        #         messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account"
-        #                                              "information and try again")
-        #     else:
-        #         clear_form()
-        #         controller.show_frame(WelcomePage)
-
         def confirm_login():
             """
             Function: confirm_login
             Author: R-Nixon
             Date Created: 2025-4-26
 
-            Purpose: Second attempt at a function to confirm login credentials.
+            Purpose: Primary attempt at a function to confirm login credentials.
             Confirm the user credentials from the GUI inputs.
             Username or email are checked against existing entries in the database.
             Clears the form and switches to the WelcomePage upon successful login.
@@ -138,21 +107,26 @@ class LoginPage(tk.Frame):
 
             :return: None
             """
-
             login_user = self.login_user_entry.get().strip()
             login_password = self.login_password_entry.get().strip()
-            stored_hash = Database.check_hash(login_user)
+            user = User.read_user(login_user, login_user)
+            # logged_in = user.verify_password(login_password)
+            # stored_hash = Database.check_hash(login_user)
+            # result = bcrypt.checkpw(login_password.encode(), stored_hash.encode())
+            # print("Result:", result)
 
             if login_user == "" or login_password == "":
                 messagebox.showerror("Error", "All fields are required")
-            elif Database.check_email(login_user) is None and Database.check_username(login_user) is None:
-                messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account"
-                                                     " information and try again")
-            # This clause does not work
-            elif bcrypt.hashpw(login_password.encode(), stored_hash) != stored_hash:
-                messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account"
-                                                     " information and try again (hash function failure")
+            elif user is None:
+                messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
+                                                     "information and try again")
+
+            # elif not logged_in:
+            #     messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account"
+            #                                          "information and try again")
             else:
+                # messagebox.showinfo("Print User")
+                # print(user)
                 clear_form()
                 controller.show_frame(WelcomePage)
 

@@ -13,6 +13,7 @@ https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-pa
 # Problems with the code:
 # The window title does not change to reflect the current frame.
 
+
 import tkinter as tk
 from gui.theme import *
 from home_page import HomePage
@@ -36,7 +37,7 @@ class PantryApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.title("Panther Pantry")
+        self.title("404 Food Pantry")
         self.geometry("500x500")
         self.minsize(width=400, height=465)
 

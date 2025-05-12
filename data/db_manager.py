@@ -239,39 +239,19 @@ class Database:
          """
         params = (username, email)
         cursor.execute(sql, params)
-        row = cursor.fetchone()
+        rows = cursor.fetchall()
         if not cursor.rowcount:
             print("None")
             return None
         else:
-            print(row)
-            # user = []
-            # columns = [column[1] for column in cursor.description]
-            # for row in row:
-            #     user_dict = dict(zip(columns, row))
-            #     user.append(User(**user_dict))
-            # print("USER:", user)
-            # return user
-
-        # Possible code ideas to fix read_user:
-
-        # cursor = connection.cursor().execute(sql)
-        # columns = [column[0] for column in cursor.description]
-        # print(columns)
-        # ['name', 'create_date']
-        # results = []
-        # for row in cursor.fetchall():
-        #     results.append(dict(zip(columns, row)))
-        # print(results)
-
-        # def query(query_str):
-        #     cursor.execute(query_str)
-        #     return {'results':
-        #                 [dict(zip([column[0] for column in cursor.description], row))
-        #                  for row in cursor.fetchall()]}
-
-        # def row_to_dict(row):
-        #     return dict(zip([t[0] for t in row.cursor_description], row))
+            print(rows)
+            users = []
+            columns = [column[0] for column in cursor.description]
+            for row in rows:
+                user_dict = dict(zip(columns, row))
+                users.append(User(**user_dict))
+            print("USER:", users)
+            return users
 
     @classmethod
     def check_username(cls, username):
@@ -356,7 +336,7 @@ class Database:
         if not cursor.rowcount:
             return None
         else:
-            print("row:", row[0])
+            print("row type:", row[0].type())
             pass_hash = row[0]
             return pass_hash
 
@@ -393,5 +373,5 @@ class Database:
 
 
 if __name__ == "__main__":
-    # Database.check_hash("user1")
-    Database.read_user("user1", "user1@test.edu")
+    Database.check_hash("user1")
+    # Database.read_user("user1", "user1@test.edu")

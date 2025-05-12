@@ -1,10 +1,11 @@
 """
 Author: R-Nixon
 Creation Date: 2025-5-1
-Last Modified: 2025-5-3
+Last Modified: 2025-5-11
 Description:
 This module is the welcome page after a user signs into the system.
-This page greets both new users and returning users.
+This page greets both new users and returning users, and contains a button for the user
+to exit to the login/signup home page.
 
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
@@ -25,17 +26,19 @@ class WelcomePage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(background=APP_BACKGROUND)
 
+        from home_page import HomePage
+
         # GUI theme.
         apply_theme_styles(self)
         default_font, label_font, button_font = get_fonts(self)
 
         # Styling for the frame title.
         shadow_offset = 2
-        shadow_label = tk.Label(self, text="WELCOME", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+        shadow_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
                                 pady=6)
         shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
 
-        title_label = tk.Label(self, text="WELCOME", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+        title_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
                                pady=5)
         title_label.place(relx=0.5, rely=0.03, anchor="n")
 
@@ -45,5 +48,14 @@ class WelcomePage(tk.Frame):
 
         welcome_label1 = ttk.Label(welcome_frame, text="Welcome to the", font=label_font)
         welcome_label1.grid(row=0, column=0)
-        welcome_label2 = ttk.Label(welcome_frame, text="Panther Pantry!", font=label_font)
+        welcome_label2 = ttk.Label(welcome_frame, text="404 Food Pantry!", font=label_font)
         welcome_label2.grid(row=1, column=0)
+
+        # Exit button.
+        exit_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
+        exit_frame.place(relx=0.5, rely=0.5, anchor="n")
+
+        exit_button = tk.Button(exit_frame, text="Exit", font=(button_font, 12, "underline", "bold"),
+                                bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+                                activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(HomePage))
+        exit_button.grid(row=0, column=0)
