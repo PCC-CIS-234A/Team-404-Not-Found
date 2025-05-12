@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-16
-Last Modified: 2025-5-6
+Last Modified: 2025-5-11
 
 Description:
 This module contains the User class and contains methods for setting
@@ -88,6 +88,9 @@ class User:
         """
         from data.db_manager import Database
         users = Database.read_user(username, email)
+        # if users is None
+        #   return None
+        # else:
         result = []
         for user in users or []:
             result.append({
@@ -145,8 +148,8 @@ class User:
           :return password_hash: string, hashed value of the password
           """
         salt = bcrypt.gensalt(13)
-        password_hash = bcrypt.hashpw(password.encode(), salt)
-        return password_hash
+        password_hash = bcrypt.hashpw(password.encode('utf8'), salt)
+        return password_hash.decode('utf8')
 
     @staticmethod
     # Add data to the database.

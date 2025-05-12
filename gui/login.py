@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-7
+Last Modified: 2025-5-11
 Description:
 This module is the interface for a current user to log in to the system.
 The user enters email or username, and password to log in.
@@ -21,8 +21,6 @@ from data.db_manager import Database
 
 # Problems with the code:
 # The GUI layer should not connect directly with the database?
-# Function for confirming login information does not work.
-# Does not check password
 
 
 class LoginPage(tk.Frame):
@@ -103,30 +101,23 @@ class LoginPage(tk.Frame):
             Username or email are checked against existing entries in the database.
             Clears the form and switches to the WelcomePage upon successful login.
 
-            **DOES NOT WORK**
-
             :return: None
             """
             login_user = self.login_user_entry.get().strip()
             login_password = self.login_password_entry.get().strip()
-            user = User.read_user(login_user, login_user)
-            # logged_in = user.verify_password(login_password)
-            # stored_hash = Database.check_hash(login_user)
-            # result = bcrypt.checkpw(login_password.encode(), stored_hash.encode())
-            # print("Result:", result)
+            user = Database.read_user(login_user, login_user)
+            stored_hash = Database.check_hash(login_user)
+            result = bcrypt.checkpw(login_password.encode(), stored_hash.encode())
 
             if login_user == "" or login_password == "":
                 messagebox.showerror("Error", "All fields are required")
             elif user is None:
                 messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
                                                      "information and try again")
-
-            # elif not logged_in:
-            #     messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account"
-            #                                          "information and try again")
+            elif result is False:
+                messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
+                                                     "information and try again")
             else:
-                # messagebox.showinfo("Print User")
-                # print(user)
                 clear_form()
                 controller.show_frame(WelcomePage)
 

@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-16
-Last Modified: 2025-5-7
+Last Modified: 2025-5-11
 
 Description:
 This module contains the Database class and connects the logic layer to the SQL database.
@@ -9,9 +9,6 @@ This module contains the Database class and connects the logic layer to the SQL 
 References:
 https://stackoverflow.com/questions/16519385/output-pyodbc-cursor-results-as-python-dictionary
 """
-
-# Problems with the code:
-# The read_user method does not convert the database results into a usable format.
 
 import pyodbc
 from logic.user import User
@@ -220,8 +217,6 @@ class Database:
 
         Purpose: Read user data from the database given the username or email.
 
-        **DOES NOT WORK**
-
         :param: cls: Database class
         :param: username: str, user's username
         :param: email: str, user's email
@@ -241,16 +236,16 @@ class Database:
         cursor.execute(sql, params)
         rows = cursor.fetchall()
         if not cursor.rowcount:
-            print("None")
+            print(" read user rows", rows)
             return None
         else:
-            print(rows)
+            # print(rows)
             users = []
             columns = [column[0] for column in cursor.description]
             for row in rows:
                 user_dict = dict(zip(columns, row))
                 users.append(User(**user_dict))
-            print("USER:", users)
+            # print("USER:", users)
             return users
 
     @classmethod
@@ -276,6 +271,7 @@ class Database:
         cursor.execute(sql, param)
         rows = cursor.fetchall()
         if not cursor.rowcount:
+            print("rows", rows)
             return None
         else:
             return rows
@@ -316,8 +312,6 @@ class Database:
 
         Purpose: Check for a password hash in the database.
 
-        **DOES NOT WORK**
-
         :param: cls: Database class
         :param: login_user: string, user credential for login, email or username
         :return: None, or Cursor object containing SQL result rows
@@ -336,7 +330,7 @@ class Database:
         if not cursor.rowcount:
             return None
         else:
-            print("row type:", row[0].type())
+            print("row type:", row[0])
             pass_hash = row[0]
             return pass_hash
 
@@ -373,5 +367,6 @@ class Database:
 
 
 if __name__ == "__main__":
+    # Database.check_hash("user1")
+     # Database.read_user("user1", "user1@test.edu")
     Database.check_hash("user1")
-    # Database.read_user("user1", "user1@test.edu")
