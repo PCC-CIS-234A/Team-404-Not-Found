@@ -26,7 +26,7 @@ def validate_email(email):
     :return: Boolean, True if pattern matches, False otherwise
     """
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    # possible alternate pattern
+    # possible alternate pattern from emailregex.com
     # pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
     if re.match(pattern, email):
         return True

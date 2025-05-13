@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-11
+Last Modified: 2025-5-13
 Description:
 This module is the interface for a current user to log in to the system.
 The user enters email or username, and password to log in.
@@ -106,20 +106,21 @@ class LoginPage(tk.Frame):
             login_user = self.login_user_entry.get().strip()
             login_password = self.login_password_entry.get().strip()
             user = Database.read_user(login_user, login_user)
-            stored_hash = Database.check_hash(login_user)
-            result = bcrypt.checkpw(login_password.encode(), stored_hash.encode())
 
             if login_user == "" or login_password == "":
                 messagebox.showerror("Error", "All fields are required")
             elif user is None:
                 messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
                                                      "information and try again")
-            elif result is False:
-                messagebox.showerror("Login Failed", "The login attempt failed.  Please check your account "
-                                                     "information and try again")
-            else:
-                clear_form()
-                controller.show_frame(WelcomePage)
+            elif user is not None:
+                stored_hash = Database.check_hash(login_user)
+                result = bcrypt.checkpw(login_password.encode(), stored_hash.encode())
+                if result is False:
+                    messagebox.showerror("Login Failed", "The login attempt failed.  Please check your "
+                                                         "account information and try again")
+                else:
+                    clear_form()
+                    controller.show_frame(WelcomePage)
 
         def clear_form():
             """
