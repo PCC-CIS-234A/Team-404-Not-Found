@@ -1,14 +1,14 @@
 # =============================================================================
-# Author:             Santhil Murugesan
-# File:                   template_creator_gui.py
-# Created:           04/25/2025
-# Project:            Food Pantry Notification System
-# Module:          Template Manager  (db_connection.py, template_logic.py,
-#                            template_creator_gui.py and theme.py)
-# Description:    GUI interface for creating, editing, and managing templates.
+# Author:        Santhil Murugesan
+# File:          template_creator_gui.py
+# Created:       04/25/2025
+# Project:       Food Pantry Notification System
+# Module:        Template Manager  (db_connection.py, template_logic.py,
+#                template_creator_gui.py and theme.py)
+# Description:   GUI interface for creating, editing, and managing templates.
 # Functionality: Supports adding new templates, updating existing ones,
-#                             and deleting templates through a user-friendly interface.
-# Output:            User-driven template actions reflected in the database.
+#                and deleting templates through a user-friendly interface.
+# Output:        User-driven template actions reflected in the database.
 # References:    Python Documentation, Tkinter, SQL Server (pyodbc)
 # =============================================================================
 
