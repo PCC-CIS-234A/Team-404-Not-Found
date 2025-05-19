@@ -1,6 +1,6 @@
 # Sayan Tajul
 # CIS 234A
-# 05/05/2025
+# 05/19/2025
 # Sprint 1 Final - Send Notification with Templates, Validation, File Attachments, and Review
 
 # Enabling High DPI Awareness. High DPI awareness helps produce sharper scaling. This is particularly useful for Zoom
@@ -12,21 +12,22 @@ except:
     pass
 
 # Imports for my Send Notification
-import datetime
+from tkinter import ttk
 import configparser
 import tkinter as tk
 from tkinter import messagebox, filedialog
-from logic.template_logic import fetch_template_names, fetch_template_by_name
 import os
 import winsound  # Windows built-in sound module
-from logic.notification_logic import send_email_to_subscribers, process_tags
-from tkinter import simpledialog
+from logic.notification_logic import send_email_to_subscribers
 from data.database_access import connecttoourdb
-from logic.tag_logic import prompt_for_tags
 from logic.template_logic import fetch_template_names, fetch_template_by_name
+from data.database_access import get_subscribers, get_sender_id, log_notification
 
 # Defining my attachments list here (GLOBAL SCOPE)
 selected_files = []
+
+# Track which field is active (subject or message)
+active_widget = None  # To store last focused widget
 
 # Load email credentials from config.ini
 config = configparser.ConfigParser()
@@ -41,16 +42,6 @@ print("Loaded INI Sections:", config.sections())
 def NotificationPage():
     subject = mainpagesubjectentry.get().strip()
     message = textmessage.get("1.0", tk.END).strip()
-
-    # Prompt for dynamic tags from template content
-    full_template_text = subject + "\n" + message
-    user_filled_tags = prompt_for_tags(full_template_text)
-    if user_filled_tags is None:
-        return  # User canceled input
-
-    # Replace tags with user values
-    subject = process_tags(subject, user_filled_tags)
-    message = process_tags(message, user_filled_tags)
 
     sender_username = "Sarah Sam"  # Manager username from your DB
 
@@ -68,54 +59,32 @@ def NotificationPage():
     if not confirm:
         return
 
-    try: # Had some issues but currently fix hopefully
+    try:
         conn = connecttoourdb()
         cursor = conn.cursor()
 
-        # Debug: Print subscribers for double checking
-        cursor.execute("SELECT first_name, email FROM dbo.users WHERE role = 'subscriber'")
-        subscribers = [{"first_name": row[0], "email": row[1]} for row in cursor.fetchall()]
-
-        print("DEBUG: Subscribers fetched:", subscribers)
-
+        subscribers = get_subscribers()
         number_of_recipients = len(subscribers)
-        print("DEBUG: Number of subscribers:", number_of_recipients)
-
-        # Debug: Verify sender_username (double checking)
-        sender_username = "Sarah Sam"
-        print("DEBUG: Sender username:", sender_username)
-
-        # Debug: Fetching sender ID to make sure
-        cursor.execute("SELECT user_id FROM dbo.users WHERE username = ?", (sender_username,))
-        sender_result = cursor.fetchone()
-        print("DEBUG: Sender query result:", sender_result)
-
-        sender_id = sender_result[0] if sender_result else None
+        sender_id = get_sender_id(sender_username)
+        log_notification(subject, message, number_of_recipients, sender_id, selected_files)
 
         if not sender_id:
             messagebox.showerror("Sender Error", f"Sender '{sender_username}' not found. Check username.")
             return
 
-        # Sending emails to subscribers
-        send_email_to_subscribers(subject, message, subscribers, selected_files, user_filled_tags)
-
-        # Inserting notification log into SQL (Team 404 Not Found)
-        attachment_names = ", ".join([os.path.basename(file) for file in selected_files])
-        cursor.execute("""
-            INSERT INTO dbo.notifications (subject, message, date_sent, num_subscribers, sender_id, attachment_names)
-            VALUES (?, ?, GETDATE(), ?, ?, ?)
-        """, (subject, message, number_of_recipients, sender_id, attachment_names))
-
-        conn.commit()
+        send_email_to_subscribers(subject, message, subscribers, selected_files, {})
 
         messagebox.showinfo("Success", f"Notification sent successfully to {number_of_recipients} subscribers.")
         winsound.MessageBeep()
-        cancelfieldsFun()  # Reset the form after success
+        cancelfieldsFun()
 
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
     finally:
         conn.close()
+def set_active_widget(widget):
+    global active_widget
+    active_widget = widget
 
 # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
 def cancelfieldsFun():
@@ -202,6 +171,41 @@ tk.Label(
 
 mainpagesubjectentry = tk.Entry(mainpage, width=70)
 mainpagesubjectentry.pack(pady=(0, 10))
+mainpagesubjectentry.bind("<FocusIn>", lambda e: set_active_widget(mainpagesubjectentry))
+
+# Common Tags Dropdown
+tk.Label(
+    mainpage,
+    text="TAGS",
+    font=("Helvetica", 12, "bold"),
+    bg=mainpage["bg"],
+    fg=softcolorback
+).pack(pady=(5, 5))
+
+from data.database_access import get_all_tags
+common_tags = get_all_tags()
+
+
+dropdown_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+dropdown_frame.pack(pady=(0, 10))
+selected_tag = tk.StringVar(mainpage)
+selected_tag.set("")
+tag_dropdown = ttk.Combobox(dropdown_frame, textvariable=selected_tag, values=common_tags, state="readonly", width=30)
+tag_dropdown.pack(side=tk.LEFT, padx=10)
+
+def insert_tag():
+    tag = selected_tag.get()
+    if tag and active_widget:
+        if isinstance(active_widget, tk.Entry):
+            pos = active_widget.index(tk.INSERT)  # Get current cursor position
+            active_widget.insert(pos, tag)
+        elif isinstance(active_widget, tk.Text):
+            active_widget.insert(tk.INSERT, tag)
+    else:
+        messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
+
+insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=insert_tag, bg=PCCblue, fg="white")
+insert_btn.pack(side=tk.LEFT)
 
 # Message Label + Text Box (Change here team 404 if needed)
 # Message Label
@@ -229,6 +233,7 @@ textmessage = tk.Text(
     yscrollcommand=message_scrollbar.set
 )
 textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
+textmessage.bind("<FocusIn>", lambda e: set_active_widget(textmessage))
 
 # Configure scrollbar to interact with text box
 message_scrollbar.config(command=textmessage.yview)

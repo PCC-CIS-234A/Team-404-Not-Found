@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from logic.tag_logic import fetch_available_tags
+from data.database_access import get_all_tags  # Updated import to follow N-Tier
 
 # PCC Style Colors
 PCCblue = "#008099"
@@ -36,7 +36,9 @@ template_name_entry.pack(pady=(0, 10))
 # Dropdown for Tags
 tk.Label(mainpage, text="TAGS", font=("Helvetica", 12, "bold"), bg=mainpage["bg"]).pack()
 tag_var = tk.StringVar(mainpage)
-tag_list = sorted(fetch_available_tags())
+
+# Load tags from DB using get_all_tags()
+tag_list = sorted(get_all_tags())
 if tag_list:
     tag_var.set(tag_list[0])
 else:
@@ -53,7 +55,8 @@ message_box.pack(pady=(0, 10))
 # Function to insert tag into message
 def insert_tag():
     tag = tag_var.get()
-    message_box.insert(tk.INSERT, f"{{{{{tag}}}}}")  # insert with {{tag}} format
+    if tag != "No tags found":
+        message_box.insert(tk.INSERT, tag)
 
 # Insert Tag Button
 insert_tag_button = tk.Button(
@@ -68,7 +71,7 @@ def save_template():
     if not template_name or not message:
         messagebox.showwarning("Validation Error", "Template name and message are required.")
         return
-    # Here you can add DB insertion code for saving template
+    # TODO: Later will Add code to save the template to the database
     messagebox.showinfo("Saved", "Template saved successfully.")
 
 # Save Button

@@ -1,27 +1,31 @@
 # logic/template_logic.py
+
 import pyodbc
 from data.database_access import connecttoourdb
 
-# Fetching all available template names from our database made by Santhil
+# Fetch all available template names (created by Santhil)
 def fetch_template_names():
+    conn = None
     try:
         conn = connecttoourdb()
         cursor = conn.cursor()
-        cursor.execute("SELECT name FROM templates")
-        templates = [row[0] for row in cursor.fetchall()]
-        return templates
+        cursor.execute("SELECT name FROM dbo.templates")
+        template_names = [row[0] for row in cursor.fetchall()]
+        return template_names
     except pyodbc.Error as e:
         print(f"Database Error (fetch_template_names): {e}")
         return []
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
-# Fetching subject and message content for the selected template name from Santhil
+# Fetch subject and message by template name
 def fetch_template_by_name(template_name):
+    conn = None
     try:
         conn = connecttoourdb()
         cursor = conn.cursor()
-        cursor.execute("SELECT subject, message FROM templates WHERE name = ?", (template_name,))
+        cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
         result = cursor.fetchone()
         if result:
             return result[0], result[1]
@@ -32,4 +36,5 @@ def fetch_template_by_name(template_name):
         print(f"Database Error (fetch_template_by_name): {e}")
         return "", ""
     finally:
-        conn.close()
+        if conn:
+            conn.close()
