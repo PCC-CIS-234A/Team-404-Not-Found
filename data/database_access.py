@@ -1,4 +1,3 @@
-# data/database_access.py
 import pyodbc
 
 # Connecting to our Database in SQL Server (CIS 234A Team 404 not found)
@@ -11,3 +10,8 @@ def connecttoourdb():
         "PWD=NoErrors&2"
     )
     return pyodbc.connect(conn_str)
+
+# Stub function for unit testing (I can later add real DB insert here)
+def insert_notification(subject, message, date_sent, recipient_email):
+    print(f"Inserting: {subject}, {message}, {date_sent}, {recipient_email}")
+    return True  # Simulating a successful insert

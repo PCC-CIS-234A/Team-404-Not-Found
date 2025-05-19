@@ -1,6 +1,14 @@
 import configparser
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import datetime
+import re  # <-- Add re for email validation
 
+# Load email config
 config = configparser.ConfigParser()
 config_path = os.path.join(os.path.dirname(__file__), '../gui/config.ini')
 config.read(config_path)
@@ -8,18 +16,21 @@ config.read(config_path)
 SENDER_EMAIL = config.get('EMAIL', 'sender_email')
 APP_PASSWORD = config.get('EMAIL', 'app_password')
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-import datetime
 
+# Email format validator
+def validate_email(email):
+    pattern = r"[^@]+@[^@]+\.[^@]+"
+    return re.match(pattern, email) is not None
+
+
+# Tag processor
 def process_tags(template_str, tag_values):
     for tag, value in tag_values.items():
         template_str = template_str.replace(f"{{{{{tag}}}}}", value)
     return template_str
-from email import encoders
 
+
+# Main send email logic
 def send_email_to_subscribers(subject, message, subscribers, attachments=[], tag_values={}):
     sender_email = SENDER_EMAIL
     app_password = APP_PASSWORD
