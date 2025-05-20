@@ -10,8 +10,6 @@ and contains connection settings to access the Database.
 """
 # ***************************************************************
 import pyodbc
-from datetime import datetime
-
 
 # Defines Notification (model/entity) class.  Notification table in database.
 class Notification:

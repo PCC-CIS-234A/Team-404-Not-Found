@@ -45,8 +45,8 @@ def run_app():
 
         try:
             results = search_logs(start_date, end_date)
-        except ValueError as e:
-            messagebox.showerror("No records for that date range.  Please try again.", str(e))
+        except ValueError:
+            messagebox.showerror("Error", "No records for that date range.  Please try again.")
             return
 
     # Clears results
@@ -54,7 +54,7 @@ def run_app():
 
     # Displays results of search from database
         if not results:
-            messagebox.showerror("No notification logs for that date range.  Please try again.")
+            messagebox.showerror("Error", "No notification logs for that date range.  Please try again.")
         else:
             for row in results:
                 tree.insert('', tk.END, values=(row["date_sent"], row["subject"], row["message"], row["first_name"], row["num_subscribers"]))
@@ -161,12 +161,12 @@ def run_app():
         :return: None
         """
         item_id = tree.identify_row(event.y)
-        column = tree.identify_column(event.x)
+        clicked_column = tree.identify_column(event.x)
 
-        if not item_id or not column:
+        if not item_id or not clicked_column:
             return
 
-        col_index = int(column.replace("#", "")) - 1
+        col_index = int(clicked_column.replace("#", "")) - 1
         values = tree.item(item_id, "values")
 
         if 0 <= col_index < len(values):

@@ -53,12 +53,3 @@ def search_logs(start_date_str, end_date_str):
         })
 
     return result
-
-
-    # Uses test data instead fo database data
-    #except Exception as e:
-        #print("{e}")
-        #return[
-            #("2025-04-18 10:00", "New Items",
-            #"Fresh vegetables available for pickup.", "Bob Smith", "20")
-        #     ]
