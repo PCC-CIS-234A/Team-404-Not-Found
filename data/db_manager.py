@@ -138,7 +138,7 @@ class Database:
 
         CREATE TABLE dbo.more_notifications
             (id INTEGER NOT NULL IDENTITY PRIMARY KEY,
-            sender_id INTEGER NOT NULL REFERENCES users(user_id),
+            sender_id INTEGER NOT NULL REFERENCES dbo.more_users(user_id),
             subject NVARCHAR(255) NOT NULL,
             message NVARCHAR(MAX) NOT NULL,
             date_sent DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -175,7 +175,7 @@ class Database:
 
         CREATE TABLE dbo.more_templates
             (template_id INTEGER NOT NULL IDENTITY PRIMARY KEY,
-            creator_id INTEGER NOT NULL REFERENCES users(user_id),
+            creator_id INTEGER NOT NULL REFERENCES dbo.more_users(user_id),
             name NVARCHAR(100) NOT NULL UNIQUE,
             subject NVARCHAR(255) NOT NULL,
             message NVARCHAR(MAX) NOT NULL,
@@ -330,7 +330,7 @@ class Database:
         if not cursor.rowcount:
             return None
         else:
-            print("row type:", row[0])
+            print("row:", row[0])
             pass_hash = row[0]
             return pass_hash
 
@@ -338,7 +338,7 @@ class Database:
     @classmethod
     def add_user(cls, first_name, last_name, email, username, password_hash, role):
         """
-        Function: check_username
+        Function: add_user
         Author: R-Nixon
         Date Created: 2025-4-26
 
@@ -367,6 +367,5 @@ class Database:
 
 
 if __name__ == "__main__":
-    # Database.check_hash("user1")
-     # Database.read_user("user1", "user1@test.edu")
-    Database.check_hash("user1")
+    # Database.read_user("user1", "user1@test.edu")
+    Database.check_hash("rnixon")

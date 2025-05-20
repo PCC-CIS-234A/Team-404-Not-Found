@@ -16,8 +16,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from theme import *
-from logic.user import User
 from data.db_manager import Database
+# from logic.user import User
 
 # Problems with the code:
 # The GUI layer should not connect directly with the database?
