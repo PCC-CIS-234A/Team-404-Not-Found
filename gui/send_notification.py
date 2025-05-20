@@ -238,9 +238,50 @@ textmessage.bind("<FocusIn>", lambda e: set_active_widget(textmessage))
 # Configure scrollbar to interact with text box
 message_scrollbar.config(command=textmessage.yview)
 
+# Formatting Buttons (Bold, Italic, Underline)
+format_buttons_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+format_buttons_frame.pack(pady=(5, 5))
+
+btn_bold = tk.Button(
+    format_buttons_frame, text="Bold", command=lambda: wrap_selected_text("b"),
+    bg=PCCblue, fg="white"
+)
+btn_bold.pack(side=tk.LEFT, padx=5)
+
+btn_italic = tk.Button(
+    format_buttons_frame, text="Italic", command=lambda: wrap_selected_text("i"),
+    bg=PCCblue, fg="white"
+)
+btn_italic.pack(side=tk.LEFT, padx=5)
+
+btn_underline = tk.Button(
+    format_buttons_frame, text="Underline", command=lambda: wrap_selected_text("u"),
+    bg=PCCblue, fg="white"
+)
+btn_underline.pack(side=tk.LEFT, padx=5)
+
 # Frame to align file buttons horizontally side by side
 file_buttons_frame = tk.Frame(mainpage, bg=mainpage["bg"])
 file_buttons_frame.pack(pady=(5, 5))
+
+# Color Dropdown and Apply Button
+color_frame = tk.Frame(mainpage, bg=mainpage["bg"])
+color_frame.pack(pady=(5, 5))
+
+tk.Label(color_frame, text="Text Color:", bg=mainpage["bg"], fg=softcolorback).pack(side=tk.LEFT, padx=5)
+
+color_options = ["red", "blue", "green", "orange", "purple", "black"]
+selected_color = tk.StringVar(mainpage)
+selected_color.set("red")
+
+color_dropdown = ttk.Combobox(color_frame, textvariable=selected_color, values=color_options, state="readonly", width=10)
+color_dropdown.pack(side=tk.LEFT, padx=5)
+
+btn_apply_color = tk.Button(
+    color_frame, text="Apply Color", bg=PCCblue, fg="white",
+    command=lambda: wrap_color_text(selected_color.get())
+)
+btn_apply_color.pack(side=tk.LEFT, padx=5)
 
 # Add Attachment button
 btn_add_attachment = tk.Button(
@@ -287,6 +328,28 @@ buttoncancel = tk.Button(
     command=cancelfieldsFun
 )
 buttoncancel.pack(side=tk.LEFT, padx=10)
+
+def wrap_selected_text(tag):
+    try:
+        start = textmessage.index(tk.SEL_FIRST)
+        end = textmessage.index(tk.SEL_LAST)
+        selected = textmessage.get(start, end)
+        wrapped = f"<{tag}>{selected}</{tag}>"
+        textmessage.delete(start, end)
+        textmessage.insert(start, wrapped)
+    except tk.TclError:
+        messagebox.showwarning("No Selection", "Please highlight some text in the message box to format.")
+
+def wrap_color_text(color):
+            try:
+                start = textmessage.index(tk.SEL_FIRST)
+                end = textmessage.index(tk.SEL_LAST)
+                selected = textmessage.get(start, end)
+                wrapped = f'<span style="color:{color}">{selected}</span>'
+                textmessage.delete(start, end)
+                textmessage.insert(start, wrapped)
+            except tk.TclError:
+                messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
 
 # Main GUI Loop
 mainpage.mainloop()

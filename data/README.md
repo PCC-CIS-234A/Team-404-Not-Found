@@ -110,7 +110,7 @@ project/
 
 ---
 
-## 🙋‍♂️ Author:
+## Author:
 **Sayan Tajul**  
 _CIS 234A – Team 404: Team Not Found_
 
