@@ -239,13 +239,13 @@ class Database:
             print(" read user rows", rows)
             return None
         else:
-            # print(rows)
+            print(rows)
             users = []
             columns = [column[0] for column in cursor.description]
             for row in rows:
                 user_dict = dict(zip(columns, row))
                 users.append(User(**user_dict))
-            # print("USER:", users)
+            print("USER:", users)
             return users
 
     @classmethod
@@ -367,5 +367,5 @@ class Database:
 
 
 if __name__ == "__main__":
-    # Database.read_user("user1", "user1@test.edu")
-    Database.check_hash("rnixon")
+    Database.read_user("tuser", "test@email.com")
+    # Database.check_hash("rnixon")
