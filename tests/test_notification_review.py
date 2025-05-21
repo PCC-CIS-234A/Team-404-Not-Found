@@ -9,7 +9,7 @@ This file tests data layer Notification class.
 """
 # ***************************************************************
 import unittest
-from data.notification_db import Notification
+from logic.notification import Notification
 
 
 # tests Notification class

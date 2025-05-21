@@ -34,7 +34,7 @@ def run_app():
         start_date = start_date_box.get()
         end_date = end_date_box.get()
 
-     # Error handling -- Don't need this with calendar feature?
+        # Error handling -- Don't need this with calendar feature?
         if not start_date or not end_date:
             messagebox.showerror("Error", "Start date and end date cannot be empty")
             return
@@ -58,7 +58,6 @@ def run_app():
         else:
             for row in results:
                 tree.insert('', tk.END, values=(row["date_sent"], row["subject"], row["message"], row["first_name"], row["num_subscribers"]))
-
 
     # Creates main window
     root = tk.Tk()
@@ -112,7 +111,6 @@ def run_app():
                     foreground="#1690b4",
                     font=default_font
                     )
-
 
     # Top frame
     top_frame = ttk.Frame(root)

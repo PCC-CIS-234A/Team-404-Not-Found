@@ -19,9 +19,7 @@ from tkinter import messagebox, filedialog
 import os
 import winsound  # Windows built-in sound module
 from logic.notification_logic import send_email_to_subscribers
-from data.database_access import connecttoourdb
-from logic.template_logic import fetch_template_names, fetch_template_by_name
-from data.database_access import get_subscribers, get_sender_id, log_notification
+from data.db_manager import Database
 
 # Defining my attachments list here (GLOBAL SCOPE)
 selected_files = []
@@ -37,6 +35,7 @@ config.read(config_path)
 SENDER_EMAIL = config.get('EMAIL', 'sender_email')
 APP_PASSWORD = config.get('EMAIL', 'app_password')
 print("Loaded INI Sections:", config.sections())
+
 
 # Updated notification sending logic with logging here
 def NotificationPage():
@@ -60,13 +59,10 @@ def NotificationPage():
         return
 
     try:
-        conn = connecttoourdb()
-        cursor = conn.cursor()
-
-        subscribers = get_subscribers()
+        subscribers = Database.get_subscribers()
         number_of_recipients = len(subscribers)
-        sender_id = get_sender_id(sender_username)
-        log_notification(subject, message, number_of_recipients, sender_id, selected_files)
+        sender_id = Database.get_sender_id(sender_username)
+        Database.log_notification(subject, message, number_of_recipients, sender_id, selected_files)
 
         if not sender_id:
             messagebox.showerror("Sender Error", f"Sender '{sender_username}' not found. Check username.")
@@ -80,11 +76,12 @@ def NotificationPage():
 
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
-    finally:
-        conn.close()
+
+
 def set_active_widget(widget):
     global active_widget
     active_widget = widget
+
 
 # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
 def cancelfieldsFun():
@@ -98,11 +95,13 @@ def cancelfieldsFun():
     # Clearing the internal attachments list
     selected_files.clear()
 
+
 def addingfileFun():
     file_path = filedialog.askopenfilename()
     if file_path:
         selected_files.append(file_path)
         attached_files_listbox.insert(tk.END, file_path)  # Insert into Listbox
+
 
 def removingfileFun():
     selected_indices = attached_files_listbox.curselection()
@@ -113,12 +112,13 @@ def removingfileFun():
     else:
         messagebox.showwarning("No Selection", "Please select a file to remove.")
 
+
 # Loading Template Data When Selected
 def load_selected_template(*args):
     selected_template = template_var.get()
     if selected_template != "Select a Template":
         try:
-            subject, message = fetch_template_by_name(selected_template)
+            subject, message = Database.fetch_template_by_name(selected_template)
             mainpagesubjectentry.delete(0, tk.END)
             mainpagesubjectentry.insert(0, subject)
             textmessage.delete("1.0", tk.END)
@@ -152,7 +152,7 @@ template_var = tk.StringVar(mainpage)
 template_var.set("Select a Template")
 
 try:
-    template_names = fetch_template_names()
+    template_names = Database.fetch_template_names()
 except Exception as e:
     template_names = []
     messagebox.showerror("Template Error", f"Failed to fetch templates: {e}")
@@ -182,8 +182,7 @@ tk.Label(
     fg=softcolorback
 ).pack(pady=(5, 5))
 
-from data.database_access import get_all_tags
-common_tags = get_all_tags()
+common_tags = Database.get_all_tags()
 
 
 dropdown_frame = tk.Frame(mainpage, bg=mainpage["bg"])
@@ -192,6 +191,7 @@ selected_tag = tk.StringVar(mainpage)
 selected_tag.set("")
 tag_dropdown = ttk.Combobox(dropdown_frame, textvariable=selected_tag, values=common_tags, state="readonly", width=30)
 tag_dropdown.pack(side=tk.LEFT, padx=10)
+
 
 def insert_tag():
     tag = selected_tag.get()
@@ -329,6 +329,7 @@ buttoncancel = tk.Button(
 )
 buttoncancel.pack(side=tk.LEFT, padx=10)
 
+
 def wrap_selected_text(tag):
     try:
         start = textmessage.index(tk.SEL_FIRST)
@@ -339,6 +340,7 @@ def wrap_selected_text(tag):
         textmessage.insert(start, wrapped)
     except tk.TclError:
         messagebox.showwarning("No Selection", "Please highlight some text in the message box to format.")
+
 
 def wrap_color_text(color):
             try:
@@ -352,4 +354,4 @@ def wrap_color_text(color):
                 messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
 
 # Main GUI Loop
-mainpage.mainloop()
+# mainpage.mainloop()

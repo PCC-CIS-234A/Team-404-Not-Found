@@ -10,7 +10,7 @@ the data layer and validates date and time input.
 """
 # ***************************************************************
 from datetime import datetime
-from data.notification_db import Database
+from data.db_manager import Database
 
 
 # Requests data from data layer and validates input

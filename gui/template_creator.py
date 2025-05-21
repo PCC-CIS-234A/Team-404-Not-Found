@@ -1,6 +1,19 @@
 import tkinter as tk
 from tkinter import messagebox
-from data.database_access import get_all_tags  # Updated import to follow N-Tier
+from data.db_manager import Database  # Updated import to follow N-Tier
+from theme import *
+
+
+# Added by Rebecca
+class TemplatePage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.configure(background=APP_BACKGROUND)
+
+        # GUI theme.
+        apply_theme_styles(self)
+        default_font, label_font, button_font = get_fonts(self)
+
 
 # PCC Style Colors
 PCCblue = "#008099"
@@ -38,7 +51,7 @@ tk.Label(mainpage, text="TAGS", font=("Helvetica", 12, "bold"), bg=mainpage["bg"
 tag_var = tk.StringVar(mainpage)
 
 # Load tags from DB using get_all_tags()
-tag_list = sorted(get_all_tags())
+tag_list = sorted(Database.get_all_tags())
 if tag_list:
     tag_var.set(tag_list[0])
 else:
@@ -52,17 +65,20 @@ tk.Label(mainpage, text="MESSAGE", font=("Helvetica", 12, "bold"), bg=mainpage["
 message_box = tk.Text(mainpage, height=12, width=70)
 message_box.pack(pady=(0, 10))
 
+
 # Function to insert tag into message
 def insert_tag():
     tag = tag_var.get()
     if tag != "No tags found":
         message_box.insert(tk.INSERT, tag)
 
+
 # Insert Tag Button
 insert_tag_button = tk.Button(
     mainpage, text="Insert Tag", bg=PCCblue, fg="white", command=insert_tag
 )
 insert_tag_button.pack(pady=(5, 10))
+
 
 # Save Template Placeholder Function
 def save_template():
@@ -74,6 +90,7 @@ def save_template():
     # TODO: Later will Add code to save the template to the database
     messagebox.showinfo("Saved", "Template saved successfully.")
 
+
 # Save Button
 save_button = tk.Button(
     mainpage, text="Save Template", bg=softcolorback, fg="white", command=save_template
@@ -81,4 +98,4 @@ save_button = tk.Button(
 save_button.pack(pady=(10, 10))
 
 # Run GUI loop
-mainpage.mainloop()
+# mainpage.mainloop()
