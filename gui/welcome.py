@@ -30,7 +30,7 @@ class WelcomePage(tk.Frame):
         from search_logs_gui import run_app
         # from send_notification import NotificationPage
         # from template_creator import TemplatePage
-        # from notification_logs import LogsPage
+        from notification_logs import LogsPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -71,7 +71,8 @@ class WelcomePage(tk.Frame):
         notification_logs_button = tk.Button(options_frame, text="Notification Logs",
                                              font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
                                              fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                             activeforeground=BUTTON_TEXT)
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(LogsPage))
         notification_logs_button.grid(row=0, column=2)
 
         # Logout button.

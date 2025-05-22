@@ -20,6 +20,7 @@ from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
 from welcome import WelcomePage
+from notification_logs import LogsPage
 
 
 class PantryApp(tk.Tk):
@@ -38,7 +39,7 @@ class PantryApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.title("PCC Free Food Pantry")
-        self.geometry("500x500")
+        self.geometry("1000x500")
         self.minsize(width=400, height=465)
 
         apply_theme_styles(self)
@@ -53,7 +54,7 @@ class PantryApp(tk.Tk):
         # Iterate through a tuple containing the different page layouts.
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
-        for F in (HomePage, LoginPage, SignupPage, WelcomePage):
+        for F in (HomePage, LoginPage, SignupPage, WelcomePage, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
