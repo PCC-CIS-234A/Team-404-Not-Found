@@ -410,6 +410,7 @@ class Database:
             cursor.execute("SELECT tag_name FROM dbo.tags")
             tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
             cls.close_connection()
+            print(tags)
             return tags
         except Exception as e:
             print("Error fetching tags from database:", e)
@@ -489,5 +490,5 @@ class Database:
 
 
 if __name__ == "__main__":
-    Database.read_user("tuser", "test@email.com")
-    # Database.check_hash("rnixon")
+    # Database.read_user("tuser", "test@email.com")
+    Database.get_all_tags()

@@ -1,19 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 from data.db_manager import Database  # Updated import to follow N-Tier
-from theme import *
-
-
-# Added by Rebecca
-class TemplatePage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.configure(background=APP_BACKGROUND)
-
-        # GUI theme.
-        apply_theme_styles(self)
-        default_font, label_font, button_font = get_fonts(self)
-
 
 # PCC Style Colors
 PCCblue = "#008099"

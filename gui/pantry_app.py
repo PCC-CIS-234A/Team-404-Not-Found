@@ -20,7 +20,6 @@ from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
 from welcome import WelcomePage
-from notification_logs import LogsPage
 
 
 class PantryApp(tk.Tk):
@@ -54,7 +53,7 @@ class PantryApp(tk.Tk):
         # Iterate through a tuple containing the different page layouts.
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
-        for F in (HomePage, LoginPage, SignupPage, WelcomePage, LogsPage):
+        for F in (HomePage, LoginPage, SignupPage, WelcomePage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
