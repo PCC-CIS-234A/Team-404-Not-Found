@@ -38,7 +38,7 @@ class PantryApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.title("404 Food Pantry")
+        self.title("PCC Free Food Pantry")
         self.geometry("500x500")
         self.minsize(width=400, height=465)
 
