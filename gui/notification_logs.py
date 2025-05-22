@@ -9,6 +9,7 @@ notification logs by date range and displays
 log results and details.
 """
 # Modified version of search_logs_gui.py
+# Modified 5-22-2025 by RNixon
 # Needs styling applied
 
 
