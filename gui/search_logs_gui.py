@@ -57,7 +57,8 @@ def run_app():
             messagebox.showerror("Error", "No notification logs for that date range.  Please try again.")
         else:
             for row in results:
-                tree.insert('', tk.END, values=(row["date_sent"], row["subject"], row["message"], row["first_name"], row["num_subscribers"]))
+                tree.insert('', tk.END, values=(row["date_sent"], row["subject"], row["message"],
+                                                row["first_name"], row["num_subscribers"]))
 
     # Creates main window
     root = tk.Tk()
@@ -118,12 +119,14 @@ def run_app():
 
     # Creates box for "start" date
     ttk.Label(top_frame, text="Start: ").grid(row=0, column=0, padx=5)
-    start_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+    start_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2,
+                               date_pattern='yyyy-mm-dd')
     start_date_box.grid(row=0, column=1, padx=5)
 
     # Creates box for "end" date
     ttk.Label(top_frame, text="End: ").grid(row=0, column=2, padx=5)
-    end_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+    end_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2,
+                             date_pattern='yyyy-mm-dd')
     end_date_box.grid(row=0, column=3, padx=5)
 
     # Creates search button
@@ -139,7 +142,7 @@ def run_app():
 
     columns = ("Date & Time", "Subject",
                "Message", "Sender", "# of Subscribers")
-    tree = ttk.Treeview(tree_frame, columns=columns, show ="headings", yscrollcommand=scrollbar.set)
+    tree = ttk.Treeview(tree_frame, columns=columns, show="headings", yscrollcommand=scrollbar.set)
     scrollbar.config(command=tree.yview)
 
     # Settings for columns display
@@ -176,7 +179,8 @@ def run_app():
 
     details_text = tk.StringVar()
     ttk.Label(details_frame, text="Log Details: ").pack(anchor=tk.W, pady=5)
-    ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W).pack(fill=tk.BOTH, padx=10, pady=10)
+    (ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W)
+     .pack(fill=tk.BOTH, padx=10, pady=10))
 
     root.mainloop()
 

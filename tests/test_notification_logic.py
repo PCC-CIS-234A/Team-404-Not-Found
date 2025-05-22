@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 from logic.notification_logic import validate_email, process_tags
 
+
 class TestNotificationValidation(unittest.TestCase):
 
     def test_email_format(self):
@@ -38,6 +39,7 @@ class TestNotificationValidation(unittest.TestCase):
             result = mock_insert("subject", "body", "2025-05-20", "user@example.com")
             mock_insert.assert_called_once_with("subject", "body", "2025-05-20", "user@example.com")
             self.assertTrue(result)
+
 
 if __name__ == '__main__':
     unittest.main()

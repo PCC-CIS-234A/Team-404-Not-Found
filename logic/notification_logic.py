@@ -29,6 +29,7 @@ def process_tags(template_str, tag_values):
         template_str = template_str.replace(f"{{{{{tag}}}}}", value)
     return template_str
 
+
 # Main function to send emails to multiple subscribers
 def send_email_to_subscribers(subject, message, subscribers, attachments=[], tag_values={}):
     sender_email = SENDER_EMAIL
@@ -49,10 +50,12 @@ def send_email_to_subscribers(subject, message, subscribers, attachments=[], tag
 
             # Personalize subject and message using tags
             personalized_subject = process_tags(subject, tag_values)
-            personalized_subject = personalized_subject.replace("{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+            personalized_subject = personalized_subject.replace(
+                "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
 
             personalized_message = process_tags(message, tag_values)
-            personalized_message = personalized_message.replace("{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+            personalized_message = personalized_message.replace(
+                "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
 
             # Setup email content
             email_msg = MIMEMultipart()

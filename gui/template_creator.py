@@ -85,4 +85,4 @@ save_button = tk.Button(
 save_button.pack(pady=(10, 10))
 
 # Run GUI loop
-# mainpage.mainloop()
+mainpage.mainloop()

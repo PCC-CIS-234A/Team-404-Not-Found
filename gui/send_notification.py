@@ -72,7 +72,7 @@ def NotificationPage():
 
         messagebox.showinfo("Success", f"Notification sent successfully to {number_of_recipients} subscribers.")
         winsound.MessageBeep()
-        cancelfieldsFun()
+        cancel_fields()
 
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred:\n{e}")
@@ -84,7 +84,7 @@ def set_active_widget(widget):
 
 
 # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
-def cancelfieldsFun():
+def cancel_fields():
     # Clearing subject and message fields
     mainpagesubjectentry.delete(0, tk.END)
     textmessage.delete("1.0", tk.END)
@@ -96,14 +96,14 @@ def cancelfieldsFun():
     selected_files.clear()
 
 
-def addingfileFun():
+def adding_file():
     file_path = filedialog.askopenfilename()
     if file_path:
         selected_files.append(file_path)
         attached_files_listbox.insert(tk.END, file_path)  # Insert into Listbox
 
 
-def removingfileFun():
+def removing_file():
     selected_indices = attached_files_listbox.curselection()
     if selected_indices:
         for index in reversed(selected_indices):
@@ -204,6 +204,7 @@ def insert_tag():
     else:
         messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
 
+
 insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=insert_tag, bg=PCCblue, fg="white")
 insert_btn.pack(side=tk.LEFT)
 
@@ -274,7 +275,8 @@ color_options = ["red", "blue", "green", "orange", "purple", "black"]
 selected_color = tk.StringVar(mainpage)
 selected_color.set("red")
 
-color_dropdown = ttk.Combobox(color_frame, textvariable=selected_color, values=color_options, state="readonly", width=10)
+color_dropdown = ttk.Combobox(color_frame, textvariable=selected_color, values=color_options, state="readonly",
+                              width=10)
 color_dropdown.pack(side=tk.LEFT, padx=5)
 
 btn_apply_color = tk.Button(
@@ -285,13 +287,13 @@ btn_apply_color.pack(side=tk.LEFT, padx=5)
 
 # Add Attachment button
 btn_add_attachment = tk.Button(
-    file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=addingfileFun
+    file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=adding_file
 )
 btn_add_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
 # Remove Attachment button
 btn_remove_attachment = tk.Button(
-    file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=removingfileFun
+    file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=removing_file
 )
 btn_remove_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
@@ -325,7 +327,7 @@ buttoncancel = tk.Button(
     font=("Helvetica", 11, "bold"),
     padx=12,
     pady=6,
-    command=cancelfieldsFun
+    command=cancel_fields
 )
 buttoncancel.pack(side=tk.LEFT, padx=10)
 
@@ -343,15 +345,16 @@ def wrap_selected_text(tag):
 
 
 def wrap_color_text(color):
-            try:
-                start = textmessage.index(tk.SEL_FIRST)
-                end = textmessage.index(tk.SEL_LAST)
-                selected = textmessage.get(start, end)
-                wrapped = f'<span style="color:{color}">{selected}</span>'
-                textmessage.delete(start, end)
-                textmessage.insert(start, wrapped)
-            except tk.TclError:
-                messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
+    try:
+        start = textmessage.index(tk.SEL_FIRST)
+        end = textmessage.index(tk.SEL_LAST)
+        selected = textmessage.get(start, end)
+        wrapped = f'<span style="color:{color}">{selected}</span>'
+        textmessage.delete(start, end)
+        textmessage.insert(start, wrapped)
+    except tk.TclError:
+        messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
+
 
 # Main GUI Loop
-# mainpage.mainloop()
+mainpage.mainloop()

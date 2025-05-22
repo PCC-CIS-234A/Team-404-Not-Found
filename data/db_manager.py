@@ -367,8 +367,9 @@ class Database:
         cursor.execute(sql, params)
         cls.__client.commit()
 
+    @staticmethod
     # Stub function for unit testing
-    def insert_notification(subject, message, date_sent, recipient_email):
+    def insert_notification(self, subject, message, date_sent, recipient_email):
         print(f"Inserting: {subject}, {message}, {date_sent}, {recipient_email}")
         return True
 
@@ -411,7 +412,6 @@ class Database:
         cls.close_connection()
         print(tags)
         return tags
-
 
     @classmethod
     def fetch_template_names(cls):
