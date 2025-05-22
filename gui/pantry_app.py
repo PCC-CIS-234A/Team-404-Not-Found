@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-3
+Last Modified: 2025-5-22
 Description:
 This module is the tkinter app that holds Frames for different interface pages.
 Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
@@ -37,7 +37,7 @@ class PantryApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.title("404 Food Pantry")
+        self.title("PCC Free Food Pantry")
         self.geometry("500x500")
         self.minsize(width=400, height=465)
 
