@@ -404,17 +404,14 @@ class Database:
 
     @classmethod
     def get_all_tags(cls):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT tag_name FROM dbo.tags")
-            tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
-            cls.close_connection()
-            print(tags)
-            return tags
-        except Exception as e:
-            print("Error fetching tags from database:", e)
-            return []
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT tag_name FROM dbo.tags")
+        tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
+        cls.close_connection()
+        print(tags)
+        return tags
+
 
     @classmethod
     def fetch_template_names(cls):

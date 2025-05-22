@@ -179,3 +179,7 @@ def run_app():
     ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W).pack(fill=tk.BOTH, padx=10, pady=10)
 
     root.mainloop()
+
+
+if __name__ == "__main__":
+    run_app()

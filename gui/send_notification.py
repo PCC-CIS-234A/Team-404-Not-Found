@@ -225,7 +225,7 @@ message_frame.pack(pady=(0, 10))
 message_scrollbar = tk.Scrollbar(message_frame)
 message_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-# Text Box with scrollbar, at first I forgot about the scrollbar but later I updated
+# Text Box with scrollbar, at first I forgot about the scrollbar, but later I updated
 textmessage = tk.Text(
     message_frame,
     height=12,

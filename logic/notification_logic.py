@@ -16,10 +16,12 @@ config.read(config_path)
 SENDER_EMAIL = config.get('EMAIL', 'sender_email')
 APP_PASSWORD = config.get('EMAIL', 'app_password')
 
+
 # Email format validator using regex
 def validate_email(email):
     pattern = r"[^@]+@[^@]+\.[^@]+"
     return re.match(pattern, email) is not None
+
 
 # Tag processor to replace placeholders in templates
 def process_tags(template_str, tag_values):
