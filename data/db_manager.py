@@ -379,7 +379,6 @@ class Database:
         cursor = cls.__client.cursor()
         cursor.execute("SELECT first_name, email FROM dbo.users WHERE role = 'subscriber'")
         result = [{"first_name": row[0], "email": row[1]} for row in cursor.fetchall()]
-        cls.close_connection()
         return result
 
     @classmethod
@@ -388,7 +387,6 @@ class Database:
         cursor = cls.__client.cursor()
         cursor.execute("SELECT user_id FROM dbo.users WHERE username = ?", (username,))
         result = cursor.fetchone()
-        cls.close_connection()
         return result[0] if result else None
 
     @classmethod
@@ -401,7 +399,6 @@ class Database:
             VALUES (?, ?, GETDATE(), ?, ?, ?)
         """, (subject, message, recipient_count, sender_id, attachment_names))
         cls.__client.commit()
-        cls.close_connection()
 
     @classmethod
     def get_all_tags(cls):
@@ -409,42 +406,29 @@ class Database:
         cursor = cls.__client.cursor()
         cursor.execute("SELECT tag_name FROM dbo.tags")
         tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
-        cls.close_connection()
-        print(tags)
+        # print(tags)
         return tags
 
     @classmethod
     def fetch_template_names(cls):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT name FROM dbo.templates")
-            template_names = [row[0] for row in cursor.fetchall()]
-            return template_names
-        except pyodbc.Error as e:
-            print(f"Database Error (fetch_template_names): {e}")
-            return []
-        finally:
-            cls.close_connection()
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT name FROM dbo.templates")
+        template_names = [row[0] for row in cursor.fetchall()]
+        return template_names
 
     # Fetch subject and message by template name
     @classmethod
     def fetch_template_by_name(cls, template_name):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
-            result = cursor.fetchone()
-            if result:
-                return result[0], result[1]
-            else:
-                print(f"Template '{template_name}' not found.")
-                return "", ""
-        except pyodbc.Error as e:
-            print(f"Database Error (fetch_template_by_name): {e}")
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
+        result = cursor.fetchone()
+        if result:
+            return result[0], result[1]
+        else:
+            print(f"Template '{template_name}' not found.")
             return "", ""
-        finally:
-            cls.close_connection()
 
     # Gets the notification logs from database
     @classmethod
@@ -467,22 +451,17 @@ class Database:
         notifications = []
         # Opens and closes database connection
         cls.connect()
+        cursor = cls.__client.cursor()
+        # Protects against SQL injection keeping query outside of cursor.execute
+        cursor.execute(query, (start_date, end_date))
 
-        try:
-            cursor = cls.__client.cursor()
-            # Protects against SQL injection keeping query outside of cursor.execute
-            cursor.execute(query, (start_date, end_date))
+        # Gets column names
+        columns = [column[0] for column in cursor.description]
 
-            # Gets column names
-            columns = [column[0] for column in cursor.description]
-
-            for row in cursor.fetchall():
-                # Converts tuples into dictionary
-                row_dict = dict(zip(columns, row))
-                notifications.append(Notification(**row_dict))
-        finally:
-            cls.close_connection()
-
+        for row in cursor.fetchall():
+            # Converts tuples into dictionary
+            row_dict = dict(zip(columns, row))
+            notifications.append(Notification(**row_dict))
         return notifications
 
 
