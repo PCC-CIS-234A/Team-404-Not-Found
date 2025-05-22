@@ -11,9 +11,7 @@ https://stackoverflow.com/questions/16519385/output-pyodbc-cursor-results-as-pyt
 """
 
 import pyodbc
-import os
 from logic.user import User
-from logic.notification import Notification
 
 
 class Database:
@@ -128,7 +126,7 @@ class Database:
             role VARCHAR(20) NOT NULL CHECK (role='Subscriber' OR role='Staff' OR role='Manager'),
             created_date DATETIME DEFAULT CURRENT_TIMESTAMP
             );
-            
+
         INSERT INTO dbo.more_users 
             (first_name, last_name, email, username, password_hash, role)
         VALUES
@@ -146,7 +144,7 @@ class Database:
             date_sent DATETIME DEFAULT CURRENT_TIMESTAMP,
             num_subscribers INTEGER
             );
-            
+
         INSERT INTO dbo.more_notifications 
             (sender_id, subject, message, num_subscribers)
         VALUES 
@@ -241,13 +239,13 @@ class Database:
             print(" read user rows", rows)
             return None
         else:
-            # print(rows)
+            print(rows)
             users = []
             columns = [column[0] for column in cursor.description]
             for row in rows:
                 user_dict = dict(zip(columns, row))
                 users.append(User(**user_dict))
-            # print("USER:", users)
+            print("USER:", users)
             return users
 
     @classmethod
@@ -367,127 +365,8 @@ class Database:
         cursor.execute(sql, params)
         cls.__client.commit()
 
-    # Stub function for unit testing
-    def insert_notification(subject, message, date_sent, recipient_email):
-        print(f"Inserting: {subject}, {message}, {date_sent}, {recipient_email}")
-        return True
-
-    @classmethod
-    def get_subscribers(cls):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        cursor.execute("SELECT first_name, email FROM dbo.users WHERE role = 'subscriber'")
-        result = [{"first_name": row[0], "email": row[1]} for row in cursor.fetchall()]
-        cls.close_connection()
-        return result
-
-    @classmethod
-    def get_sender_id(cls, username):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        cursor.execute("SELECT user_id FROM dbo.users WHERE username = ?", (username,))
-        result = cursor.fetchone()
-        cls.close_connection()
-        return result[0] if result else None
-
-    @classmethod
-    def log_notification(cls, subject, message, recipient_count, sender_id, attachments):
-        cls.connect()
-        cursor = cls.__client.cursor()
-        attachment_names = ", ".join([os.path.basename(file) for file in attachments])
-        cursor.execute("""
-            INSERT INTO dbo.notifications (subject, message, date_sent, num_subscribers, sender_id, attachment_names)
-            VALUES (?, ?, GETDATE(), ?, ?, ?)
-        """, (subject, message, recipient_count, sender_id, attachment_names))
-        cls.__client.commit()
-        cls.close_connection()
-
-    @classmethod
-    def get_all_tags(cls):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT tag_name FROM dbo.tags")
-            tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
-            cls.close_connection()
-            return tags
-        except Exception as e:
-            print("Error fetching tags from database:", e)
-            return []
-
-    @classmethod
-    def fetch_template_names(cls):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT name FROM dbo.templates")
-            template_names = [row[0] for row in cursor.fetchall()]
-            return template_names
-        except pyodbc.Error as e:
-            print(f"Database Error (fetch_template_names): {e}")
-            return []
-        finally:
-            cls.close_connection()
-
-    # Fetch subject and message by template name
-    @classmethod
-    def fetch_template_by_name(cls, template_name):
-        try:
-            cls.connect()
-            cursor = cls.__client.cursor()
-            cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
-            result = cursor.fetchone()
-            if result:
-                return result[0], result[1]
-            else:
-                print(f"Template '{template_name}' not found.")
-                return "", ""
-        except pyodbc.Error as e:
-            print(f"Database Error (fetch_template_by_name): {e}")
-            return "", ""
-        finally:
-            cls.close_connection()
-
-    # Gets the notification logs from database
-    @classmethod
-    def get_notification_log(cls, start_date, end_date):
-        """
-        Fetches Notification log from database
-        :param start_date: datetime, start date and time of notification sent
-        :param end_date: datetime, end date and time of notification sent
-        :return: Notification log
-        """
-        query = """
-            SELECT n.date_sent, n.subject, n.message, n.sender_id, n.num_subscribers, u.first_name
-            FROM dbo.Notifications n
-            JOIN dbo.Users u ON n.sender_id = u.user_id
-            WHERE n.date_sent BETWEEN ? AND ?
-            ORDER BY n.date_sent;
-        """
-
-        # Holds list objects from Notification table
-        notifications = []
-        # Opens and closes database connection
-        cls.connect()
-
-        try:
-            cursor = cls.__client.cursor()
-            # Protects against SQL injection keeping query outside of cursor.execute
-            cursor.execute(query, (start_date, end_date))
-
-            # Gets column names
-            columns = [column[0] for column in cursor.description]
-
-            for row in cursor.fetchall():
-                # Converts tuples into dictionary
-                row_dict = dict(zip(columns, row))
-                notifications.append(Notification(**row_dict))
-        finally:
-            cls.close_connection()
-
-        return notifications
-
 
 if __name__ == "__main__":
-    # Database.read_user("user1", "user1@test.edu")
-    Database.check_hash("rnixon")
+    Database.read_user("tuser", "test@email.com")
+    # Database.check_hash("rnixon")
+
