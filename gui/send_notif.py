@@ -18,6 +18,21 @@ from logic.notification_logic import send_email_to_subscribers
 from data.db_manager import Database
 from theme import *
 
+# Defining my attachments list here (GLOBAL SCOPE)
+selected_files = []
+
+# Track which field is active (subject or message)
+active_widget = None  # To store last focused widget
+
+# Load email credentials from config.ini
+config = configparser.ConfigParser()
+config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+config.read(config_path)
+
+SENDER_EMAIL = config.get('EMAIL', 'sender_email')
+APP_PASSWORD = config.get('EMAIL', 'app_password')
+print("Loaded INI Sections:", config.sections())
+
 
 class SendNotifPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -68,7 +83,7 @@ class SendNotifPage(tk.Frame):
                                     width=30)
         tag_dropdown.pack(side=tk.LEFT, padx=10)
 
-        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=self.insert_tag(), bg=PCCblue, fg="white")
+        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=lambda: self.insert_tag(), bg=PCCblue, fg="white")
         insert_btn.pack(side=tk.LEFT)
 
         # Message Label + Text Box (Change here team 404 if needed)
@@ -84,12 +99,7 @@ class SendNotifPage(tk.Frame):
         message_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Text Box with scrollbar, at first I forgot about the scrollbar, but later I updated
-        textmessage = tk.Text(
-            message_frame,
-            height=12,
-            width=70,
-            yscrollcommand=message_scrollbar.set
-        )
+        textmessage = tk.Text(message_frame, height=12, width=70, yscrollcommand=message_scrollbar.set)
         textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
         textmessage.bind("<FocusIn>", lambda e: self.set_active_widget(textmessage))
 
@@ -97,7 +107,7 @@ class SendNotifPage(tk.Frame):
         message_scrollbar.config(command=textmessage.yview)
 
         # Formatting Buttons (Bold, Italic, Underline)
-        format_buttons_frame = tk.Frame(main_page, bg=main_page["bg"])
+        format_buttons_frame = tk.Frame(main_page)
         format_buttons_frame.pack(pady=(5, 5))
 
         btn_bold = tk.Button(
@@ -166,12 +176,10 @@ class SendNotifPage(tk.Frame):
         btnsend = tk.Button(
             bottom_buttons_frame,
             text="Send Notification",
-            bg=Linkpccblue,
-            fg="white",
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
-            command=self.NotificationPage
+            command=self.send_notification
         )
         btnsend.pack(side=tk.LEFT, padx=10)
 
@@ -187,22 +195,6 @@ class SendNotifPage(tk.Frame):
             command=self.cancel_fields
         )
         buttoncancel.pack(side=tk.LEFT, padx=10)
-
-    # Defining my attachments list here (GLOBAL SCOPE)
-    selected_files = []
-
-    # Track which field is active (subject or message)
-    active_widget = None  # To store last focused widget
-
-    # Load email credentials from config.ini
-    config = configparser.ConfigParser()
-    config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
-    config.read(config_path)
-
-    SENDER_EMAIL = config.get('EMAIL', 'sender_email')
-    APP_PASSWORD = config.get('EMAIL', 'app_password')
-    print("Loaded INI Sections:", config.sections())
-
 
     def send_notification(self):
         subject = self.mainpagesubjectentry.get().strip()
@@ -242,6 +234,17 @@ class SendNotifPage(tk.Frame):
 
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred:\n{e}")
+
+    def insert_tag(self):
+        tag = self.selected_tag.get()
+        if tag and active_widget:
+            if isinstance(active_widget, tk.Entry):
+                pos = active_widget.index(tk.INSERT)  # Get current cursor position
+                active_widget.insert(pos, tag)
+            elif isinstance(active_widget, tk.Text):
+                active_widget.insert(tk.INSERT, tag)
+            else:
+                messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
 
     def set_active_widget(self, widget):
         global active_widget
