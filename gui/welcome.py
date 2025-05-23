@@ -27,8 +27,6 @@ class WelcomePage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        from search_logs_gui import run_app
-        # from send_notification import NotificationPage
         # from template_creator import TemplatePage
         from notification_logs import LogsPage
         from send_notif import SendNotifPage
