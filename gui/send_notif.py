@@ -36,8 +36,8 @@ class SendNotifPage(tk.Frame):
 
         # GUI Components Below
         # Template Dropdown Menu from Santhil
-        template_var = tk.StringVar(mainpage)
-        template_var.set("Select a Template")
+        self.template_var = tk.StringVar(mainpage)
+        self.template_var.set("Select a Template")
 
         try:
             template_names = Database.fetch_template_names()
@@ -45,7 +45,7 @@ class SendNotifPage(tk.Frame):
             template_names = []
             messagebox.showerror("Template Error", f"Failed to fetch templates: {e}")
 
-        template_menu = tk.OptionMenu(mainpage, template_var, *template_names, command=self.load_selected_template)
+        template_menu = tk.OptionMenu(mainpage, self.template_var, *template_names, command=self.load_selected_template)
         template_menu.pack(pady=(10, 10))
 
         # Subject Label + Entry Box (change here for looks.)
@@ -130,7 +130,6 @@ class SendNotifPage(tk.Frame):
 
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred:\n{e}")
-
 
     def set_active_widget(self, widget):
         global active_widget
