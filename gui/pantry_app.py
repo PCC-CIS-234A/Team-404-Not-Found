@@ -40,7 +40,7 @@ class PantryApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.title("PCC Free Food Pantry")
-        self.geometry("1000x1000")
+        self.geometry("750x750")
         self.minsize(width=400, height=465)
 
         apply_theme_styles(self)

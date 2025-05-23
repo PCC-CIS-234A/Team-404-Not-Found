@@ -43,7 +43,7 @@ class SendNotifPage(tk.Frame):
         default_font, label_font, button_font = get_fonts(self)
 
         main_page = ttk.Frame(self)
-        main_page.pack(pady=20)
+        main_page.pack(pady=5)
 
         PCCblue = "#008099"
         softcolorback = "#235578"
@@ -60,7 +60,8 @@ class SendNotifPage(tk.Frame):
             template_names = []
             messagebox.showerror("Template Error", f"Failed to fetch templates: {e}")
 
-        template_menu = tk.OptionMenu(main_page, self.template_var, *template_names, command=self.load_selected_template)
+        template_menu = tk.OptionMenu(main_page, self.template_var, *template_names,
+                                      command=lambda: load_selected_template())
         template_menu.pack(pady=(10, 10))
 
         # Subject Label + Entry Box (change here for looks.)
@@ -68,7 +69,7 @@ class SendNotifPage(tk.Frame):
 
         mainpagesubjectentry = tk.Entry(main_page, width=70)
         mainpagesubjectentry.pack(pady=(0, 10))
-        mainpagesubjectentry.bind("<FocusIn>", lambda e: self.set_active_widget(mainpagesubjectentry))
+        mainpagesubjectentry.bind("<FocusIn>", lambda e: set_active_widget(mainpagesubjectentry))
 
         # Common Tags Dropdown
         tk.Label(main_page, text="TAGS", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
@@ -83,7 +84,7 @@ class SendNotifPage(tk.Frame):
                                     width=30)
         tag_dropdown.pack(side=tk.LEFT, padx=10)
 
-        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=lambda: self.insert_tag(), bg=PCCblue, fg="white")
+        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=lambda: insert_tag(), bg=PCCblue, fg="white")
         insert_btn.pack(side=tk.LEFT)
 
         # Message Label + Text Box (Change here team 404 if needed)
@@ -101,7 +102,7 @@ class SendNotifPage(tk.Frame):
         # Text Box with scrollbar, at first I forgot about the scrollbar, but later I updated
         textmessage = tk.Text(message_frame, height=12, width=70, yscrollcommand=message_scrollbar.set)
         textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
-        textmessage.bind("<FocusIn>", lambda e: self.set_active_widget(textmessage))
+        textmessage.bind("<FocusIn>", lambda e: set_active_widget(textmessage))
 
         # Configure scrollbar to interact with text box
         message_scrollbar.config(command=textmessage.yview)
@@ -111,19 +112,19 @@ class SendNotifPage(tk.Frame):
         format_buttons_frame.pack(pady=(5, 5))
 
         btn_bold = tk.Button(
-            format_buttons_frame, text="Bold", command=lambda: self.wrap_selected_text("b"),
+            format_buttons_frame, text="Bold", command=lambda: wrap_selected_text("b"),
             bg=PCCblue, fg="white"
         )
         btn_bold.pack(side=tk.LEFT, padx=5)
 
         btn_italic = tk.Button(
-            format_buttons_frame, text="Italic", command=lambda: self.wrap_selected_text("i"),
+            format_buttons_frame, text="Italic", command=lambda: wrap_selected_text("i"),
             bg=PCCblue, fg="white"
         )
         btn_italic.pack(side=tk.LEFT, padx=5)
 
         btn_underline = tk.Button(
-            format_buttons_frame, text="Underline", command=lambda: self.wrap_selected_text("u"),
+            format_buttons_frame, text="Underline", command=lambda: wrap_selected_text("u"),
             bg=PCCblue, fg="white"
         )
         btn_underline.pack(side=tk.LEFT, padx=5)
@@ -148,19 +149,19 @@ class SendNotifPage(tk.Frame):
 
         btn_apply_color = tk.Button(
             color_frame, text="Apply Color", bg=PCCblue, fg="white",
-            command=lambda: self.wrap_color_text(selected_color.get())
+            command=lambda: wrap_color_text(selected_color.get())
         )
         btn_apply_color.pack(side=tk.LEFT, padx=5)
 
         # Add Attachment button
         btn_add_attachment = tk.Button(
-            file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=self.adding_file
+            file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=lambda: adding_file()
         )
         btn_add_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
         # Remove Attachment button
         btn_remove_attachment = tk.Button(
-            file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=self.removing_file
+            file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=lambda: removing_file()
         )
         btn_remove_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
@@ -179,7 +180,7 @@ class SendNotifPage(tk.Frame):
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
-            command=self.send_notification
+            command=lambda: send_notification
         )
         btnsend.pack(side=tk.LEFT, padx=10)
 
@@ -192,102 +193,122 @@ class SendNotifPage(tk.Frame):
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
-            command=self.cancel_fields
+            command=lambda: cancel_fields()
         )
         buttoncancel.pack(side=tk.LEFT, padx=10)
 
-    def send_notification(self):
-        subject = self.mainpagesubjectentry.get().strip()
-        message = self.textmessage.get("1.0", tk.END).strip()
+        def set_active_widget(widget):
+            global active_widget
+            active_widget = widget
 
-        sender_username = "Sarah Sam"  # Manager username from your DB
+        def wrap_selected_text(tag):
+            try:
+                start = textmessage.index(tk.SEL_FIRST)
+                end = textmessage.index(tk.SEL_LAST)
+                selected = textmessage.get(start, end)
+                wrapped = f"<{tag}>{selected}</{tag}>"
+                textmessage.delete(start, end)
+                textmessage.insert(start, wrapped)
+            except tk.TclError:
+                messagebox.showwarning("No Selection", "Please highlight some text in the message box to format.")
 
-        # Validating subject and message input here
-        if not subject or not message:
-            messagebox.showwarning("Missing Information", "Subject and Message are required.")
-            return
-        if len(subject) < 5 or len(message) < 10:
-            messagebox.showwarning("Validation Error", "Subject must be at least 5 characters; message at least 10.")
-            return
+        def wrap_color_text(color):
+            try:
+                start = textmessage.index(tk.SEL_FIRST)
+                end = textmessage.index(tk.SEL_LAST)
+                selected = textmessage.get(start, end)
+                wrapped = f'<span style="color:{color}">{selected}</span>'
+                textmessage.delete(start, end)
+                textmessage.insert(start, wrapped)
+            except tk.TclError:
+                messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
 
-        # Confirming sending notification
-        confirm = messagebox.askyesno("Review Notification",
-                                      f"Subject:\n{subject}\n\nMessage:\n{message}\n\nDo you want to send it?")
-        if not confirm:
-            return
+        def insert_tag():
+            tag = selected_tag.get()
+            if tag and active_widget:
+                if isinstance(active_widget, tk.Entry):
+                    pos = active_widget.index(tk.INSERT)  # Get current cursor position
+                    active_widget.insert(pos, tag)
+                elif isinstance(active_widget, tk.Text):
+                    active_widget.insert(tk.INSERT, tag)
+                else:
+                    messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
 
-        try:
-            subscribers = Database.get_subscribers()
-            number_of_recipients = len(subscribers)
-            sender_id = Database.get_sender_id(sender_username)
-            Database.log_notification(subject, message, number_of_recipients, sender_id, self.selected_files)
+        # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
+        def cancel_fields():
+            # Clearing subject and message fields
+            mainpagesubjectentry.delete(0, tk.END)
+            textmessage.delete("1.0", tk.END)
 
-            if not sender_id:
-                messagebox.showerror("Sender Error", f"Sender '{sender_username}' not found. Check username.")
+            # Clearing the attachments listbox
+            attached_files_listbox.delete(0, tk.END)
+
+            # Clearing the internal attachments list
+            selected_files.clear()
+
+        def send_notification():
+            subject = mainpagesubjectentry.get().strip()
+            message = textmessage.get("1.0", tk.END).strip()
+
+            sender_username = "Sarah Sam"  # Manager username from your DB
+
+            # Validating subject and message input here
+            if not subject or not message:
+                messagebox.showwarning("Missing Information", "Subject and Message are required.")
+                return
+            if len(subject) < 5 or len(message) < 10:
+                messagebox.showwarning("Validation Error", "Subject must be at least 5 characters; message at least 10.")
                 return
 
-            send_email_to_subscribers(subject, message, subscribers, self.selected_files, {})
+            # Confirming sending notification
+            confirm = messagebox.askyesno("Review Notification",
+                                          f"Subject:\n{subject}\n\nMessage:\n{message}\n\nDo you want to send it?")
+            if not confirm:
+                return
 
-            messagebox.showinfo("Success", f"Notification sent successfully to {number_of_recipients} subscribers.")
-            winsound.MessageBeep()
-            self.cancel_fields()
-
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred:\n{e}")
-
-    def insert_tag(self):
-        tag = self.selected_tag.get()
-        if tag and active_widget:
-            if isinstance(active_widget, tk.Entry):
-                pos = active_widget.index(tk.INSERT)  # Get current cursor position
-                active_widget.insert(pos, tag)
-            elif isinstance(active_widget, tk.Text):
-                active_widget.insert(tk.INSERT, tag)
-            else:
-                messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
-
-    def set_active_widget(self, widget):
-        global active_widget
-        active_widget = widget
-
-    # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
-    def cancel_fields(self):
-        # Clearing subject and message fields
-        self.mainpagesubjectentry.delete(0, tk.END)
-        self.textmessage.delete("1.0", tk.END)
-
-        # Clearing the attachments listbox
-        self.attached_files_listbox.delete(0, tk.END)
-
-        # Clearing the internal attachments list
-        self.selected_files.clear()
-
-    def adding_file(self):
-        file_path = filedialog.askopenfilename()
-        if file_path:
-            self.selected_files.append(file_path)
-            self.attached_files_listbox.insert(tk.END, file_path)  # Insert into Listbox
-
-    def removing_file(self):
-        selected_indices = self.attached_files_listbox.curselection()
-        if selected_indices:
-            for index in reversed(selected_indices):
-                self.attached_files_listbox.delete(index)
-                self.selected_files.pop(index)
-        else:
-            messagebox.showwarning("No Selection", "Please select a file to remove.")
-
-    # Loading Template Data When Selected
-    def load_selected_template(self, *args):
-        selected_template = self.template_var.get()
-        if selected_template != "Select a Template":
             try:
-                subject, message = Database.fetch_template_by_name(selected_template)
-                self.mainpagesubjectentry.delete(0, tk.END)
-                self.mainpagesubjectentry.insert(0, subject)
-                self.textmessage.delete("1.0", tk.END)
-                self.textmessage.insert(tk.END, message)
+                subscribers = Database.get_subscribers()
+                number_of_recipients = len(subscribers)
+                sender_id = Database.get_sender_id(sender_username)
+                Database.log_notification(subject, message, number_of_recipients, sender_id, selected_files)
+
+                if not sender_id:
+                    messagebox.showerror("Sender Error", f"Sender '{sender_username}' not found. Check username.")
+                    return
+
+                send_email_to_subscribers(subject, message, subscribers, selected_files, {})
+
+                messagebox.showinfo("Success", f"Notification sent successfully to {number_of_recipients} subscribers.")
+                winsound.MessageBeep()
+                cancel_fields()
+
             except Exception as e:
-                messagebox.showerror("Template Load Error", f"Could not load template:\n{e}")
+                messagebox.showerror("Error", f"An error occurred:\n{e}")
 
+        def adding_file():
+            file_path = filedialog.askopenfilename()
+            if file_path:
+                selected_files.append(file_path)
+                attached_files_listbox.insert(tk.END, file_path)  # Insert into Listbox
 
+        def removing_file():
+            selected_indices = attached_files_listbox.curselection()
+            if selected_indices:
+                for index in reversed(selected_indices):
+                    attached_files_listbox.delete(index)
+                    selected_files.pop(index)
+            else:
+                messagebox.showwarning("No Selection", "Please select a file to remove.")
+
+        # Loading Template Data When Selected
+        def load_selected_template(*args):
+            selected_template = self.template_var.get()
+            if selected_template != "Select a Template":
+                try:
+                    subject, message = Database.fetch_template_by_name(selected_template)
+                    mainpagesubjectentry.delete(0, tk.END)
+                    mainpagesubjectentry.insert(0, subject)
+                    textmessage.delete("1.0", tk.END)
+                    textmessage.insert(tk.END, message)
+                except Exception as e:
+                    messagebox.showerror("Template Load Error", f"Could not load template:\n{e}")
