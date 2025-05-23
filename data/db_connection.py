@@ -1,13 +1,13 @@
 # =============================================================================
-# Author:              Santhil Murugesan
-# File:                     db_connection.py
-# Created:            04/25/2025
-# Project:              Food Pantry Notification System
-# Module:           All modules in this project use this file as a common resource.
-# Description:    Provides database connectivity for template management.
+# Author:        Santhil Murugesan
+# File:          db_connection.py
+# Created:       04/25/2025
+# Project:       Food Pantry Notification System
+# Module:        All modules in this project use this file as a common resource.
+# Description:   Provides database connectivity for template management.
 # Functionality: Establishes and manages SQL Server connections.
-# Output:            Database connection objects for CRUD operations.
-# References:     Python Documentation, pyodbc Library
+# Output:        Database connection objects for CRUD operations.
+# References:    Python Documentation, pyodbc Library
 # =============================================================================
 
 import pyodbc
