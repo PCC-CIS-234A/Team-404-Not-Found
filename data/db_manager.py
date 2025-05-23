@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-16
-Last Modified: 2025-5-11
+Last Modified: 2025-5-23
 
 Description:
 This module contains the Database class and connects the logic layer to the SQL database.
@@ -128,7 +128,7 @@ class Database:
             role VARCHAR(20) NOT NULL CHECK (role='Subscriber' OR role='Staff' OR role='Manager'),
             created_date DATETIME DEFAULT CURRENT_TIMESTAMP
             );
-            
+
         INSERT INTO dbo.more_users 
             (first_name, last_name, email, username, password_hash, role)
         VALUES
@@ -146,7 +146,7 @@ class Database:
             date_sent DATETIME DEFAULT CURRENT_TIMESTAMP,
             num_subscribers INTEGER
             );
-            
+
         INSERT INTO dbo.more_notifications 
             (sender_id, subject, message, num_subscribers)
         VALUES 
@@ -369,7 +369,7 @@ class Database:
 
     @staticmethod
     # Stub function for unit testing
-    def insert_notification(self, subject, message, date_sent, recipient_email):
+    def insert_notification(subject, message, date_sent, recipient_email):
         print(f"Inserting: {subject}, {message}, {date_sent}, {recipient_email}")
         return True
 

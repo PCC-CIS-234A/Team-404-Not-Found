@@ -1,3 +1,15 @@
+"""
+Author: R-Nixon
+Creation Date: 2025-5-20
+Last Modified: 2025-5-21
+
+Description:
+This module contains the User class and contains methods for setting
+and getting User data, and also password hashing.
+"""
+# Two tests fail, as expected.
+# These were User functions I could not get to work properly in Sprint 1.
+
 import unittest
 from logic.user import User
 

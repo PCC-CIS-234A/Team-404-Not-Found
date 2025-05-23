@@ -49,10 +49,10 @@ def run_app():
             messagebox.showerror("Error", "No records for that date range.  Please try again.")
             return
 
-    # Clears results
+        # Clears results
         tree.delete(*tree.get_children())
 
-    # Displays results of search from database
+        # Displays results of search from database
         if not results:
             messagebox.showerror("Error", "No notification logs for that date range.  Please try again.")
         else:
