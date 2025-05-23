@@ -4,9 +4,8 @@
 # Sprint 1 Final - Send Notification with Templates, Validation, File Attachments, and Review
 
 # Modified version of send_notification.py
-# Modified 5-22-2025 by RNixon
+# Modified 5-23-2025 by RNixon
 
-# CURRENTLY DOES NOT WORK!!
 
 from tkinter import ttk
 import configparser
@@ -61,18 +60,18 @@ class SendNotifPage(tk.Frame):
             messagebox.showerror("Template Error", f"Failed to fetch templates: {e}")
 
         template_menu = tk.OptionMenu(main_page, self.template_var, *template_names,
-                                      command=lambda: load_selected_template())
+                                      command=lambda e: load_selected_template())
         template_menu.pack(pady=(10, 10))
 
         # Subject Label + Entry Box (change here for looks.)
-        tk.Label(main_page, text="Subject:", font=("Helvetica", 20, "bold")).pack(pady=(5, 5))
+        tk.Label(main_page, text="Subject:", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
 
         mainpagesubjectentry = tk.Entry(main_page, width=70)
         mainpagesubjectentry.pack(pady=(0, 10))
         mainpagesubjectentry.bind("<FocusIn>", lambda e: set_active_widget(mainpagesubjectentry))
 
         # Common Tags Dropdown
-        tk.Label(main_page, text="TAGS", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
+        tk.Label(main_page, text="Tags:", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
 
         common_tags = Database.get_all_tags()
 
@@ -100,7 +99,7 @@ class SendNotifPage(tk.Frame):
         message_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Text Box with scrollbar, at first I forgot about the scrollbar, but later I updated
-        textmessage = tk.Text(message_frame, height=12, width=70, yscrollcommand=message_scrollbar.set)
+        textmessage = tk.Text(message_frame, height=10, width=70, yscrollcommand=message_scrollbar.set)
         textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
         textmessage.bind("<FocusIn>", lambda e: set_active_widget(textmessage))
 
@@ -166,7 +165,7 @@ class SendNotifPage(tk.Frame):
         btn_remove_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
         # Attached Files Listbox (shows files being attached)
-        attached_files_listbox = tk.Listbox(main_page, width=100, height=5, bg="#e6f2ff")
+        attached_files_listbox = tk.Listbox(main_page, width=70, height=2, bg="#e6f2ff")
         attached_files_listbox.pack(pady=(10, 10))
 
         # Frame to align Send and Cancel buttons horizontally side by side
@@ -180,7 +179,7 @@ class SendNotifPage(tk.Frame):
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
-            command=lambda: send_notification
+            command=lambda: send_notification()
         )
         btnsend.pack(side=tk.LEFT, padx=10)
 
