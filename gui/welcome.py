@@ -29,7 +29,7 @@ class WelcomePage(tk.Frame):
         from home_page import HomePage
         # from template_creator import TemplatePage
         from notification_logs import LogsPage
-        from send_notif import SendNotifPage
+        from send_notification import SendNotificationPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -61,7 +61,7 @@ class WelcomePage(tk.Frame):
                                              font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
                                              fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
                                              activeforeground=BUTTON_TEXT,
-                                             command=lambda: controller.show_frame(SendNotifPage))
+                                             command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
         create_template_button = tk.Button(options_frame, text="Create Template",
                                            font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,

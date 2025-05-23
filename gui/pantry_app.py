@@ -21,7 +21,7 @@ from signup import SignupPage
 from login import LoginPage
 from welcome import WelcomePage
 from notification_logs import LogsPage
-from send_notif import SendNotifPage
+from send_notification import SendNotificationPage
 
 
 class PantryApp(tk.Tk):
@@ -56,7 +56,7 @@ class PantryApp(tk.Tk):
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
 
-        for F in (HomePage, LoginPage, SignupPage, WelcomePage, SendNotifPage, LogsPage):
+        for F in (HomePage, LoginPage, SignupPage, WelcomePage, SendNotificationPage, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
