@@ -8,7 +8,7 @@ This file produces the GUI for the employee's to search for
 notification logs by date range and displays
 log results and details.
 """
-# Modified version of search_logs_gui.py
+# Modified version of search_logs_gui file by jasag
 # Modified 5-22-2025 by RNixon
 # Needs styling applied
 
