@@ -37,7 +37,9 @@ class LoginPage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from signup import SignupPage
-        from welcome import WelcomePage
+        from subscriber_welcome import SubscriberWelcome
+        from manager_welcome import ManagerWelcome
+        from staff_welcome import StaffWelcome
 
         # GUI theme.
         apply_theme_styles(self)
@@ -99,7 +101,7 @@ class LoginPage(tk.Frame):
             Purpose: Primary attempt at a function to confirm login credentials.
             Confirm the user credentials from the GUI inputs.
             Username or email are checked against existing entries in the database.
-            Clears the form and switches to the WelcomePage upon successful login.
+            Clears the form and switches to role-specific welcome page upon successful login.
 
             :return: None
             """
@@ -119,8 +121,16 @@ class LoginPage(tk.Frame):
                     messagebox.showerror("Login Failed", "The login attempt failed.  Please check your "
                                                          "account information and try again")
                 else:
-                    clear_form()
-                    controller.show_frame(WelcomePage)
+                    role = Database.check_role(login_user)
+                    if role == "Manager":
+                        clear_form()
+                        controller.show_frame(ManagerWelcome)
+                    elif role == "Staff":
+                        clear_form()
+                        controller.show_frame(StaffWelcome)
+                    else:
+                        clear_form()
+                        controller.show_frame(SubscriberWelcome)
 
         def clear_form():
             """

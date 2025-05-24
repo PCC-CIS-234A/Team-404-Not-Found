@@ -37,7 +37,7 @@ class SignupPage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from login import LoginPage
-        from welcome import WelcomePage
+        from subscriber_welcome import SubscriberWelcome
 
         # GUI theme.
         apply_theme_styles(self)
@@ -174,7 +174,7 @@ class SignupPage(tk.Frame):
 
             User.add_to_database(first_name, last_name, email, username, password_hash, role)
             clear_form()
-            controller.show_frame(WelcomePage)
+            controller.show_frame(SubscriberWelcome)
 
         def clear_form():
             """

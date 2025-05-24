@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-16
-Last Modified: 2025-5-11
+Last Modified: 2025-5-23
 
 Description:
 This module contains the Database class and connects the logic layer to the SQL database.
@@ -333,6 +333,37 @@ class Database:
             print("row:", row[0])
             pass_hash = row[0]
             return pass_hash
+
+    @classmethod
+    def check_role(cls, login_user):
+        """
+        Function: check_hash
+        Author: R-Nixon
+        Date Created: 2025-4-26
+
+        Purpose: Check for a password hash in the database.
+
+        :param: cls: Database class
+        :param: login_user: string, user credential for login, email or username
+        :return: None, or Cursor object containing SQL result rows
+        """
+        cls.connect()
+        sql = """
+            SELECT role
+            FROM dbo.users
+            WHERE email = ?
+            OR username = ?
+            """
+        params = (login_user, login_user)
+        cursor = cls.__client.cursor()
+        cursor.execute(sql, params)
+        row = cursor.fetchone()
+        if not cursor.rowcount:
+            return None
+        else:
+            print("row:", row[0])
+            role = row[0]
+            return role
 
     # Add a user to the database.
     @classmethod
