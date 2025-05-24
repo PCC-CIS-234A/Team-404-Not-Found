@@ -304,7 +304,7 @@ class SendNotificationPage(tk.Frame):
             selected_template = self.template_var.get()
             if selected_template != "Select a Template":
                 try:
-                    subject, message = Database.fetch_template_by_name(selected_template)
+                    subject, message = Database.fetch_template_subject_message(selected_template)
                     mainpagesubjectentry.delete(0, tk.END)
                     mainpagesubjectentry.insert(0, subject)
                     textmessage.delete("1.0", tk.END)

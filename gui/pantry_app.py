@@ -22,6 +22,7 @@ from login import LoginPage
 from welcome import WelcomePage
 from notification_logs import LogsPage
 from send_notification import SendNotificationPage
+from template_creation import TemplatePage
 
 
 class PantryApp(tk.Tk):
@@ -41,7 +42,7 @@ class PantryApp(tk.Tk):
 
         self.title("PCC Free Food Pantry")
         self.geometry("750x750")
-        self.minsize(width=400, height=465)
+        self.minsize(width=720, height=500)
 
         apply_theme_styles(self)
 
@@ -56,7 +57,7 @@ class PantryApp(tk.Tk):
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
 
-        for F in (HomePage, LoginPage, SignupPage, WelcomePage, SendNotificationPage, LogsPage):
+        for F in (HomePage, LoginPage, SignupPage, WelcomePage, SendNotificationPage, TemplatePage, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

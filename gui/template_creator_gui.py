@@ -23,11 +23,6 @@ from gui.theme import (
     BUTTON_HOVER,
     BUTTON_TEXT
 )
-from logic.template_logic import (
-    insert_or_update_template,
-    fetch_template_names,
-    fetch_template_by_name
-)
 from data.db_manager import Database
 
 
@@ -44,7 +39,7 @@ current_mode = "Creating New Template"
 
 def refresh_template_dropdown():
     """Refresh the template dropdown with available template names."""
-    names = fetch_template_names()
+    names = Database.fetch_template_names()
     template_dropdown["values"] = names
     template_var.set("")
 
@@ -68,7 +63,7 @@ def load_template(template_name):
     if not template_name or template_name == "Creating New Template":
         return
 
-    template = fetch_template_by_name(template_name)
+    template = Database.fetch_template_by_name(template_name)
     if template:
         # Populate form fields
         template_var.set(template[0])  # Keep dropdown and entry synced
@@ -136,7 +131,7 @@ def save_template():
                 "Missing Info", "Please fill out all required fields."
             )
             return
-        existing_templates = fetch_template_names()
+        existing_templates = Database.fetch_template_names()
         if name in existing_templates:
             messagebox.showerror(
                 "Duplicate Name",
@@ -146,7 +141,7 @@ def save_template():
             return
 
     try:
-        insert_or_update_template(
+        Database.insert_or_update_template(
             name, None, subject, body, creator_id=1,
             original_name=original_name
         )

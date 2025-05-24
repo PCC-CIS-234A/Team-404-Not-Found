@@ -27,7 +27,7 @@ class WelcomePage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        # from template_creator import TemplatePage
+        from template_creation import TemplatePage
         from notification_logs import LogsPage
         from send_notification import SendNotificationPage
 
@@ -66,7 +66,8 @@ class WelcomePage(tk.Frame):
         create_template_button = tk.Button(options_frame, text="Create Template",
                                            font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
                                            fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                           activeforeground=BUTTON_TEXT)
+                                           activeforeground=BUTTON_TEXT,
+                                           command=lambda: controller.show_frame(TemplatePage))
         create_template_button.grid(row=0, column=1)
         notification_logs_button = tk.Button(options_frame, text="Notification Logs",
                                              font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
