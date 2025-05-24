@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-3
+Last Modified: 2025-5-22
 Description:
 This module is the tkinter app that holds Frames for different interface pages.
 Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
@@ -19,10 +19,13 @@ from gui.theme import *
 from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
+
 from subscriber_welcome import SubscriberWelcome
 from staff_welcome import StaffWelcome
 from manager_welcome import ManagerWelcome
-
+from notification_logs import LogsPage
+from send_notification import SendNotificationPage
+from template_creation import TemplatePage
 
 
 class PantryApp(tk.Tk):
@@ -41,8 +44,8 @@ class PantryApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.title("PCC Free Food Pantry")
-        self.geometry("500x500")
-        self.minsize(width=400, height=465)
+        self.geometry("750x750")
+        self.minsize(width=720, height=500)
 
         apply_theme_styles(self)
 
@@ -56,7 +59,9 @@ class PantryApp(tk.Tk):
         # Iterate through a tuple containing the different page layouts.
         # Initialize a frame for each object in the loop.
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
-        for F in (HomePage, LoginPage, SignupPage, SubscriberWelcome, StaffWelcome, ManagerWelcome):
+
+        for F in (HomePage, LoginPage, SignupPage, SubscriberWelcome, StaffWelcome, ManagerWelcome,
+                  SendNotificationPage, TemplatePage, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

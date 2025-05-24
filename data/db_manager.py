@@ -11,7 +11,10 @@ https://stackoverflow.com/questions/16519385/output-pyodbc-cursor-results-as-pyt
 """
 
 import pyodbc
+import os
+from tkinter import messagebox
 from logic.user import User
+from logic.notification import Notification
 
 
 class Database:
@@ -396,8 +399,203 @@ class Database:
         cursor.execute(sql, params)
         cls.__client.commit()
 
+    @staticmethod
+    # Stub function for unit testing
+    def insert_notification(subject, message, date_sent, recipient_email):
+        print(f"Inserting: {subject}, {message}, {date_sent}, {recipient_email}")
+        return True
+
+    @classmethod
+    def get_subscribers(cls):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT first_name, email FROM dbo.users WHERE role = 'subscriber'")
+        result = [{"first_name": row[0], "email": row[1]} for row in cursor.fetchall()]
+        return result
+
+    @classmethod
+    def get_sender_id(cls, username):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT user_id FROM dbo.users WHERE username = ?", (username,))
+        result = cursor.fetchone()
+        return result[0] if result else None
+
+    @classmethod
+    def log_notification(cls, subject, message, recipient_count, sender_id, attachments):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        attachment_names = ", ".join([os.path.basename(file) for file in attachments])
+        cursor.execute("""
+            INSERT INTO dbo.notifications (subject, message, date_sent, num_subscribers, sender_id, attachment_names)
+            VALUES (?, ?, GETDATE(), ?, ?, ?)
+        """, (subject, message, recipient_count, sender_id, attachment_names))
+        cls.__client.commit()
+
+    @classmethod
+    def get_all_tags(cls):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT tag_name FROM dbo.tags")
+        tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
+        # print(tags)
+        return tags
+
+    @classmethod
+    def fetch_template_names(cls):
+        """
+        Fetch a list of all distinct template names from the database.
+
+        Returns:
+            list: A list of template names.
+        """
+        cls.connect()
+        cursor = cls.__client.cursor()
+        names = []
+        cursor.execute(
+                    "SELECT DISTINCT name FROM dbo.templates"
+                )
+        rows = cursor.fetchall()
+        names = [row[0] for row in rows if row[0]]
+        return names
+
+    # Fetch subject and message by template name
+    # Sayan's method
+    @classmethod
+    def fetch_template_subject_message(cls, template_name):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
+        result = cursor.fetchone()
+        if result:
+            return result[0], result[1]
+        else:
+            print(f"Template '{template_name}' not found.")
+            return "", ""
+
+    @classmethod
+    def fetch_template_by_name(cls, name):
+        """
+        Fetch a single template's details by its name.
+
+        Args:
+            name (str): The name of the template to fetch.
+
+        Returns:
+            tuple or None: Template data (name, category, subject, message) or None if not found.
+        """
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute(
+                    """
+                    SELECT name, category, subject, message
+                    FROM dbo.templates
+                    WHERE name = ?
+                    """,
+                    (name,)
+                )
+        return cursor.fetchone()
+
+    @classmethod
+    def insert_or_update_template(cls, name, category, subject, message, creator_id=1, original_name=None):
+        """
+        Insert a new template or update an existing template in the database.
+
+        Args:
+            name (str): Template name.
+            category (str): Template category.
+            subject (str): Template subject.
+            message (str): Template message body.
+            creator_id (int, optional): ID of the creator. Defaults to 1.
+            original_name (str, optional): Original name for lookup during update.
+
+        Returns:
+            None
+        """
+        cls.connect()
+        cursor = cls.__client.cursor()
+
+        # Determine whether this is an insert or update
+        lookup_name = original_name if original_name else name
+
+        cursor.execute("SELECT template_id FROM dbo.templates WHERE name = ?",
+                    (lookup_name,)
+                )
+        existing = cursor.fetchone()
+
+        if existing and not original_name:
+            # Adding new but name already exists
+            messagebox.showwarning(
+                "Duplicate Name",
+                f"A template named '{name}' already exists. "
+                "Please choose a different name."
+                )
+            return
+
+        if existing:
+            # Updating an existing template
+            cursor.execute(
+                    """
+                    UPDATE dbo.templates
+                    SET name       = ?,
+                        category   = ?,
+                        subject    = ?,
+                        message    = ?,
+                        creator_id = ?
+                    WHERE template_id = ?
+                    """,
+                    (name, category, subject, message, creator_id, existing[0])
+                    )
+            cls.__client.commit()
+            # Info message disabled to avoid duplicate popups
+        else:
+            # Adding a new template
+            cursor.execute(
+                """
+                INSERT INTO dbo.templates
+                    (creator_id, name, category, subject, message)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (creator_id, name, category, subject, message)
+                )
+            cls.__client.commit()
+
+
+    # Gets the notification logs from database
+    @classmethod
+    def get_notification_log(cls, start_date, end_date):
+        """
+        Fetches Notification log from database
+        :param start_date: datetime, start date and time of notification sent
+        :param end_date: datetime, end date and time of notification sent
+        :return: Notification log
+        """
+        query = """
+            SELECT n.date_sent, n.subject, n.message, n.sender_id, n.num_subscribers, u.first_name
+            FROM dbo.Notifications n
+            JOIN dbo.Users u ON n.sender_id = u.user_id
+            WHERE n.date_sent BETWEEN ? AND ?
+            ORDER BY n.date_sent;
+        """
+
+        # Holds list objects from Notification table
+        notifications = []
+        # Opens and closes database connection
+        cls.connect()
+        cursor = cls.__client.cursor()
+        # Protects against SQL injection keeping query outside of cursor.execute
+        cursor.execute(query, (start_date, end_date))
+
+        # Gets column names
+        columns = [column[0] for column in cursor.description]
+
+        for row in cursor.fetchall():
+            # Converts tuples into dictionary
+            row_dict = dict(zip(columns, row))
+            notifications.append(Notification(**row_dict))
+        return notifications
+
 
 if __name__ == "__main__":
-    Database.read_user("tuser", "test@email.com")
-    # Database.check_hash("rnixon")
-
+    # Database.read_user("tuser", "test@email.com")
+    Database.get_all_tags()

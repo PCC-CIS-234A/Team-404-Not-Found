@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-5-1
-Last Modified: 2025-5-11
+Last Modified: 2025-5-22
 Description:
 This module is the welcome page after a user signs into the system.
 This page greets both new users and returning users, and contains a button for the user
@@ -27,9 +27,9 @@ class WelcomePage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        # from send_notification import NotificationPage
-        # from template_creator import TemplatePage
-        # from notification_logs import LogsPage
+        from template_creation import TemplatePage
+        from notification_logs import LogsPage
+        from send_notification import SendNotificationPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -57,20 +57,23 @@ class WelcomePage(tk.Frame):
         # Navigation options.
         options_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
-        send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+        send_notification_button = tk.Button(options_frame, text="Send Notification",
+                                             font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
-        create_template_button = tk.Button(options_frame, text="Create Template", font=(button_font, 12, "underline",
-                                                                                        "bold"), bg=APP_BACKGROUND,
+        create_template_button = tk.Button(options_frame, text="Create Template",
+                                           font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
                                            fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                           activeforeground=BUTTON_TEXT)
+                                           activeforeground=BUTTON_TEXT,
+                                           command=lambda: controller.show_frame(TemplatePage))
         create_template_button.grid(row=0, column=1)
-        notification_logs_button = tk.Button(options_frame, text="Notification Logs", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+        notification_logs_button = tk.Button(options_frame, text="Notification Logs",
+                                             font=(button_font, 12, "underline", "bold"), bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(LogsPage))
         notification_logs_button.grid(row=0, column=2)
 
         # Logout button.

@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-11
+Last Modified: 2025-5-22
 Description:
 This module is the initial user interface for pantry system.
 The user may choose to log in or sign up.

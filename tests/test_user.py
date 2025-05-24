@@ -11,7 +11,7 @@ and getting User data, and also password hashing.
 # These were User functions I could not get to work properly in Sprint 1.
 
 import unittest
-from user import User
+from logic.user import User
 
 
 class TestUser(unittest.TestCase):
