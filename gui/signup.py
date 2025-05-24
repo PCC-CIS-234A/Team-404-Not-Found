@@ -143,10 +143,10 @@ class SignupPage(tk.Frame):
                 messagebox.showerror("Error", "Passwords must match")
             elif validate_email(email) is False:
                 messagebox.showerror("Error", "Invalid Email")
-            elif Database.check_email(email) is not None:
+            elif Database.check_username(username) is not None:
                 messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
                                                                 "your account information and try again")
-            elif Database.check_username(username) is not None:
+            elif Database.check_email(email) is not None:
                 messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
                                                                 "your account information and try again")
             else:
