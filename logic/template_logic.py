@@ -13,7 +13,11 @@
 # =============================================================================
 
 from tkinter import messagebox
+<<<<<<< HEAD
 from data.db_manager import Database
+=======
+from data.db_connection import get_connection
+>>>>>>> santhil_template_creation
 
 # -----------------------------------------------------------------------------
 # Database Operations
@@ -37,7 +41,11 @@ def insert_or_update_template(
     Returns:
         None
     """
+<<<<<<< HEAD
     conn = Database.connect()
+=======
+    conn = get_connection()
+>>>>>>> santhil_template_creation
     if conn:
         try:
             cursor = conn.cursor()
@@ -95,3 +103,60 @@ def insert_or_update_template(
             conn.close()
     else:
         messagebox.showerror("Connection Error", "Unable to connect to the database.")
+<<<<<<< HEAD
+=======
+
+
+def fetch_template_by_name(name):
+    """
+    Fetch a single template's details by its name.
+
+    Args:
+        name (str): The name of the template to fetch.
+
+    Returns:
+        tuple or None: Template data (name, category, subject, message) or None if not found.
+    """
+    conn = get_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT name, category, subject, message
+                FROM dbo.templates
+                WHERE name = ?
+                """,
+                (name,)
+            )
+            return cursor.fetchone()
+        except Exception as e:
+            print("Fetch error:", e)
+        finally:
+            conn.close()
+    return None
+
+
+def fetch_template_names():
+    """
+    Fetch a list of all distinct template names from the database.
+
+    Returns:
+        list: A list of template names.
+    """
+    conn = get_connection()
+    names = []
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT DISTINCT name FROM dbo.templates"
+            )
+            rows = cursor.fetchall()
+            names = [row[0] for row in rows if row[0]]
+        except Exception as e:
+            print("Error fetching template names:", e)
+        finally:
+            conn.close()
+    return names
+>>>>>>> santhil_template_creation
