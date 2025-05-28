@@ -468,6 +468,7 @@ class Database:
         cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
         result = cursor.fetchone()
         if result:
+            print("subject:", result[0], " message:", result[1])
             return result[0], result[1]
         else:
             print(f"Template '{template_name}' not found.")
@@ -560,7 +561,6 @@ class Database:
                 )
             cls.__client.commit()
 
-
     # Gets the notification logs from database
     @classmethod
     def get_notification_log(cls, start_date, end_date):
@@ -598,4 +598,4 @@ class Database:
 
 if __name__ == "__main__":
     # Database.read_user("tuser", "test@email.com")
-    Database.get_all_tags()
+    Database.fetch_template_subject_message("Email Confirmation")

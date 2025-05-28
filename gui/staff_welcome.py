@@ -27,7 +27,7 @@ class StaffWelcome(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        # from send_notification import NotificationPage
+        from send_notification import SendNotificationPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -58,7 +58,8 @@ class StaffWelcome(tk.Frame):
         send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
                                                                                             "underline", "bold"),
                                              bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
 
         # Logout button.

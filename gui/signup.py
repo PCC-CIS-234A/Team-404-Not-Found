@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-6
+Last Modified: 2025-5-27
 Description:
 This module is the interface for a new user to sign up in the system.
 The user enters first name, last name, email, username, and password to sign up.
@@ -38,6 +38,7 @@ class SignupPage(tk.Frame):
 
         from login import LoginPage
         from subscriber_welcome import SubscriberWelcome
+        from logic.email_confirmation import send_confirmation
 
         # GUI theme.
         apply_theme_styles(self)
@@ -146,11 +147,18 @@ class SignupPage(tk.Frame):
             elif Database.check_username(username) is not None:
                 messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
                                                                 "your account information and try again")
-            elif Database.check_email(email) is not None:
-                messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
-                                                                "your account information and try again")
+            # Original logic before email confirmation requirement
+            # elif Database.check_email(email) is not None:
+            #     messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
+            #                                                     "your account information and try again")
+            # else:
+            #     create_user()
             else:
-                create_user()
+                send_confirmation()
+
+        def confirm_email():
+            email = self.email_entry.get().strip()
+            Database.check_email(email)
 
         def create_user():
             """
