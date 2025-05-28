@@ -63,6 +63,7 @@ def send_confirmation_email(subject, message, recipient, tag_values={}):
         # Hardcoded to test logic
         first_name = recipient
         recipient_email = "rebecca.nixon1@pcc.edu"
+        otp_code = generate_code()
 
         # Personalize subject and message using tags
         personalized_subject = process_tags(subject, tag_values)
@@ -70,8 +71,11 @@ def send_confirmation_email(subject, message, recipient, tag_values={}):
                 "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
 
         personalized_message = process_tags(message, tag_values)
-        personalized_message = personalized_message.replace(
-                "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+        personalized_message = (personalized_message
+                                .replace("{{first_name}}", first_name)
+                                .replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+                                .replace("{{time}}", datetime.datetime.now().strftime('%H:%M:%S'))
+                                .replace("{{otp_code}}", otp_code))
 
         # Setup email content
         email_msg = MIMEMultipart()
@@ -91,12 +95,12 @@ def send_confirmation_email(subject, message, recipient, tag_values={}):
         raise Exception(f"Email Sending Error: {e}")
 
 
-# def generate_code():
-#     secret_key = pyotp.random_base32()
-#     hotp = pyotp.HOTP(secret_key)
-#     otp_code = hotp.at(0)
-#     print(otp_code)
-#     return otp_code
+def generate_code():
+    secret_key = pyotp.random_base32()
+    hotp = pyotp.HOTP(secret_key)
+    otp_code = hotp.at(0)
+    print(otp_code)
+    return otp_code
 #
 #
 # def show_entry_in_main():
