@@ -1,9 +1,9 @@
 """
-uthor: R-Nixon
+Author: R-Nixon
 Creation Date: 2025-5-23
 Last Modified: 2025-5-27
 Description:
-This module is a stub to test the functionality of
+This module is currently a stub to test the functionality of
 one-time-password generation using pytop and email confirmation.
 Code will eventually be integrated into signup.py
 and possibly notification_logic.py for email sending.
@@ -97,7 +97,12 @@ def generate_code():
     hotp = pyotp.HOTP(secret_key)
     otp_code = hotp.at(0)
     print(otp_code)
+    print(hotp)
     return otp_code
+
+
+def verify_code(hotp, code_entry):
+    print(hotp.verify(code_entry))
 #
 #
 # def show_entry_in_main():
@@ -106,7 +111,7 @@ def generate_code():
 #     confirmation_label.pack()
 #     entry_text.set(entry.get())
 #     popup.destroy()  # This will close the popup window
-#
+
 #
 # def open_popup():
 #     global popup, entry
@@ -119,7 +124,7 @@ def generate_code():
 #     entry = tk.Entry(popup)
 #     entry.pack(pady=(20, 10))
 #     # Submit button that will call the show entry function which will set the text to the variable
-#     btn_ok = tk.Button(popup, text="Submit", command=show_entry_in_main)
+#     btn_ok = tk.Button(popup, text="Submit", command=[verify_code(), popup.destroy()])
 #     btn_ok.pack()
 #
 #

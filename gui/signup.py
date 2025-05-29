@@ -12,7 +12,7 @@ https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-pa
 """
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from theme import *
 from logic.user import User
 from logic.input_validation import validate_email, validate_password
@@ -136,10 +136,10 @@ class SignupPage(tk.Frame):
             Date Created: 2025-4-26
 
             Purpose: Validate user's GUI inputs.
-            Username and email are checked against existing entries in the database.
+            Username is checked against existing entries in the database.
             Password entries are verified against minimum criteria
             and checked for re-entry matching.
-            Calls the create_user function.
+            Calls functions for confirming user email.
 
             :return: None
             """
@@ -172,6 +172,7 @@ class SignupPage(tk.Frame):
             #     create_user()
             else:
                 send_confirmation_email()
+                confirm_email()
 
         def send_confirmation_email(tag_values={}):
             sender_email = SENDER_EMAIL
@@ -179,7 +180,7 @@ class SignupPage(tk.Frame):
 
             subject, message = Database.fetch_template_subject_message("Email Confirmation")
 
-            sender_username = "Sarah Sam"  # Manager username from your DB
+            sender_username = "Sarah Sam"  # Manager username from DB
 
             # Recipient hardcoded for testing
             sender_id = Database.get_sender_id(sender_username)
@@ -225,8 +226,11 @@ class SignupPage(tk.Frame):
                 raise Exception(f"Email Sending Error: {e}")
 
         def confirm_email():
-            email = self.email_entry.get().strip()
-            Database.check_email(email)
+            user_code = simpledialog.askstring(
+                "Enter Code", "Please enter the confirmation code from your email:")
+            # Print for debugging only.
+            print("user code:", user_code)
+            # Need a way to compare the user_code with the generated otp_code
 
         def create_user():
             """
@@ -236,7 +240,7 @@ class SignupPage(tk.Frame):
 
             Purpose: Create a new user from the GUI inputs.
             Adds a new user to the database.
-            Clears the form and switches to the WelcomePage upon successful signup.
+            Clears the form and switches to the SubscriberWelcome upon successful signup.
 
             :return: None
             """
