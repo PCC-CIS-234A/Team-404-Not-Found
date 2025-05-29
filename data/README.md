@@ -1,4 +1,4 @@
-# Sprint 2 – Send Notification (Part 1)
+# Sprint 2 – Send Notification (Part 2)
 
 **Developer:** Sayan Tajul  
 **Course:** CIS 234A  
@@ -9,109 +9,126 @@
 
 ## Overview
 
-This feature delivers a complete "Send Notification" experience with a refined user interface, integrated templates, rich tag insertion, and full N-Tier architecture separation. The system enables users to dynamically build email notifications with placeholders, preview them, attach files, and deliver them using Gmail SMTP — all with validation and confirmation steps.
+This feature finalizes the "Send Notification" system with fully integrated database-backed tags, rich text formatting, attachment handling, and refined PCC-themed UI. The system now delivers a professional notification experience using a Tkinter GUI, Gmail SMTP for email delivery, and SQL Server for subscriber and template management. 
 
 ---
 
-## New Features & Highlights
+## New Features & Enhancements (Part 2)
 
-### Dynamic Tag Support (From DB)
-- All tags (`{{tag_name}}`) now load from the SQL `dbo.tags` table.
-- Tags can be inserted directly into both the subject and message at the **exact cursor position**.
-- Dropdown reflects database values like `{Time}`, `{Location}`, etc.
-- Tags are inserted in `{tag}` format for consistency and easy templating.
+### PCC-Themed UI & Styling
+- `theme.py` centralizes all visual styles: colors, fonts, and layout consistency
+- Consistent white backgrounds, PCC Blue buttons, and Helvetica font styles
+- Section headers like **Template** are now wrapped in styled `LabelFrame` boxes for improved readability
 
-### Focus Tracking
-- The active field (subject or message) is tracked with `active_widget`.
-- Tag inserts behave intuitively based on cursor focus, improving UX.
+### Modular Architecture Finalized (N-Tier)
+- **GUI Layer**: `send_notification.py`, `template_creator.py`
+- **Logic Layer**: `notification_logic.py`, `template_logic.py`
+- **Data Layer**: `database_access.py`
+- **Styling Layer**: `theme.py` (new)
+- **Testing Layer**: `test_notification_logic.py`
 
-### Updated N-Tier Architecture
-- GUI: `send_notification.py`, `template_creator.py` (Tkinter-based)
-- Logic: `notification_logic.py`, `template_logic.py`, `tag_logic.py` *(optional)*
-- Data: `database_access.py`
-- Tests: `test_notification_logic.py`
+### Template Selection Improvements
+- Dropdown menu for selecting templates is centered inside a `LabelFrame`
+- “Template” caption is centered above the dropdown
+- Auto-loads subject and message from DB when template is selected
 
-### Email Features
-- Uses secure Gmail SMTP via `config.ini`
-- Sends HTML emails with formatting (line breaks, bold, etc.)
-- File attachment support (PDF, PNG, JPG, etc.)
-- Placeholder tags like `{{first_name}}`, `{{date}}` are auto-replaced per recipient
+### Rich Text Formatting
+- Message box supports:
+  - **Bold**, *Italic*, and _Underline_ via HTML-style tags
+  - Inline color styling (e.g., `<span style="color:red">text</span>`)
+- Buttons dynamically wrap selected message text in appropriate formatting
 
-### Validation
-- Verifies subject/message are not empty and meet length requirements
-- Ensures email format validity
-- Prompts for confirmation before sending
+### Attachments Enhanced
+- Files (PDF, PNG, JPG, DOCX, etc.) can be attached via file dialog
+- Attachment list is displayed in a dedicated `Listbox`
+- Remove button updates both the list and internal tracking state
 
-### Unit Testing (5+ Cases)
-- `validate_email()` testing
-- Tag replacement test with `process_tags()`
-- File attachment type test
-- DB insert mocked with `unittest.mock`
-- Missing field error handling
+### Email & Tag Logic
+- Tags auto-populate from the `dbo.tags` table
+- Tags like `{{first_name}}` and `{{date}}` are auto-replaced per recipient
+- Active focus tracking ensures tags go where the user is typing (subject or message)
+
+---
+
+## Completed Deliverables (Part 2)
+
+- [x] Added `theme.py` with centralized styling and PCC branding
+- [x] Redesigned Template dropdown using `LabelFrame` for clarity
+- [x] Rich-text options (bold, italic, underline, color) now functional
+- [x] Attachments preview and removal finalized
+- [x] Code cleaned and formatted according to **PEP 8**
+- [x] High DPI support for Windows (`SetProcessDpiAwareness`)
+- [x] Resolved path, import, and N-Tier separation issues
 
 ---
 
 ## Project Structure
-
 project/
 ├── data/
-│ ├── database_access.py # DB connection + fetch/insert logic
-│ ├── notifications.db # SQL Server (or SQLite backup)
-│ └── README.md # (optional) DB documentation
+
+│ ├── database_access.py # DB connection and SQL queries
+
 │
+
 ├── gui/
-│ ├── send_notification.py # Notification sender GUI
-│ ├── template_creator.py # Create new templates (with tag insert)
-│ └── config.ini # Securely stores Gmail credentials
+
+│ ├── send_notification.py # GUI for sending notifications
+
+│ ├── template_creator.py # GUI for building templates
+
+│ └── config.ini # Secure Gmail credentials
+
 │
+
 ├── logic/
+
 │ ├── notification_logic.py # Email sending, tag processing
-│ ├── tag_logic.py # Popup-based tag UI (optional legacy)
-│ └── template_logic.py # DB template loading
+
+│ ├── tag_logic.py # Optional legacy tag popup (not used in final)
+
+│ ├── template_logic.py # Template loading from SQL
+
+│ ├── theme.py # Centralized fonts/colors for UI
+
 │
+
 ├── tests/
-│ └── test_notification_logic.py # Unit tests with mocks & validation
 
+│ └── test_notification_logic.py # Unit tests for email and logic
 
-- **GUI Layer**: Tkinter UI logic
-- **Logic Layer**: Business rules, email sending, tag formatting
-- **Data Layer**: All SQL operations, queries, and connection
-- **Tests Layer**: Ensures correctness of logic and behaviors
 
 ---
 
-## Sprint 2 - Completed Deliverables
+## Unit Testing Summary
 
-- [x] Refactored into full N-Tier architecture
-- [x] Tag dropdown populated from `dbo.tags`
-- [x] Cursor-aware tag insertion in both Entry and Text widgets
-- [x] Tag logic fallback (popup UI kept in `tag_logic.py`)
-- [x] Subject/message validation + confirmation dialogs
-- [x] HTML email support with Gmail SMTP + attachments
-- [x] All tag logic and dynamic tag replacement in subject/message
-- [x] Unit tests with `unittest` and `mock`
-- [x] Final code follows **PEP 8** standards and is cleanly modularized
-
----
-
-## Remaining Tasks
-
-- [ ] Save template logic with full DB support in `template_creator.py`
-- [ ] Polish edge-case validation (e.g., empty tag insertions)
-- [ ] Prepare for Sprint 2 part 2.
-- [ ] Merge teammate features into main (e.g., login/auth, logs)
+- ✅ `validate_email()` regex validation
+- ✅ Tag placeholder replacement with `process_tags()`
+- ✅ File attachment simulation and name formatting
+- ✅ Subject/message validation edge cases
+- ✅ Mocked DB inserts and tag fetch using `unittest.mock`
 
 ---
 
 ## Security Notes
 
-- App password and sender email are stored securely in `config.ini` (excluded from GitHub).
-- DB credentials should be further protected using `.env` or vault solution in production.
+- `config.ini` securely stores `sender_email` and `app_password` for Gmail SMTP.
+- File excluded from GitHub version control.
+- In production, migrate credentials to environment variables or a secure vault.
 
 ---
 
-## Author:
+##  Remaining Improvements (Post-Sprint)
+
+- [ ] Add rich-text preview and photos before sending (HTML renderer or browser-based window)
+- [ ] Export sent notification logs for review maybe.
+- [ ] Finalize `template_creator.py` with DB insert functionality
+- [ ] Consolidate tag logic (remove legacy popup system if unused)
+
+---
+
+## Author
+
 **Sayan Tajul**  
 _CIS 234A – Team 404: Team Not Found_
 
-> Thank you for reviewing my Sprint 2 implementation. Looking forward to your feedback!
+> Thank you for reviewing my Sprint 2 Part 2 submission. I look forward to your feedback!
