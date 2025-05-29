@@ -1,3 +1,11 @@
+"""
+Author: Sayan Tajul
+Created: 05/20/2025
+Last Modified: 05/28/2025
+File: send_notification.py
+Course: CIS 234A – PCC Sprint 2 Part 2
+"""
+
 # database_access.py
 # Data Layer - Handles all SQL Server interactions for the Notification System
 
