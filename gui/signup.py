@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-27
+Last Modified: 2025-5-28
 Description:
 This module is the interface for a new user to sign up in the system.
 The user enters first name, last name, email, username, and password to sign up.
@@ -17,6 +17,24 @@ from theme import *
 from logic.user import User
 from logic.input_validation import validate_email, validate_password
 from data.db_manager import Database
+
+import pyotp
+import configparser
+import os
+import smtplib
+import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from logic.notification_logic import process_tags
+from logic.email_confirmation import generate_code
+
+
+config = configparser.ConfigParser()
+config_path = os.path.join(os.path.dirname(__file__), '../gui/config.ini')
+config.read(config_path)
+
+SENDER_EMAIL = config.get('EMAIL', 'sender_email')
+APP_PASSWORD = config.get('EMAIL', 'app_password')
 
 
 # Problems with the code:
@@ -38,7 +56,6 @@ class SignupPage(tk.Frame):
 
         from login import LoginPage
         from subscriber_welcome import SubscriberWelcome
-        from logic.email_confirmation import send_confirmation
 
         # GUI theme.
         apply_theme_styles(self)
@@ -154,7 +171,58 @@ class SignupPage(tk.Frame):
             # else:
             #     create_user()
             else:
-                send_confirmation()
+                send_confirmation_email()
+
+        def send_confirmation_email(tag_values={}):
+            sender_email = SENDER_EMAIL
+            app_password = APP_PASSWORD
+
+            subject, message = Database.fetch_template_subject_message("Email Confirmation")
+
+            sender_username = "Sarah Sam"  # Manager username from your DB
+
+            # Recipient hardcoded for testing
+            sender_id = Database.get_sender_id(sender_username)
+            attachments = "NULL"
+            Database.log_notification(subject, message, 1, sender_id, attachments)
+
+            try:
+                # Connect to Gmail SMTP securely
+                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.login(sender_email, app_password)
+
+                first_name = self.first_name_entry.get().strip()
+                recipient_email = self.email_entry.get().strip()
+                otp_code = generate_code()
+
+                # Personalize subject and message using tags
+                personalized_subject = process_tags(subject, tag_values)
+                personalized_subject = personalized_subject.replace(
+                    "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+
+                personalized_message = process_tags(message, tag_values)
+                personalized_message = (personalized_message
+                                        .replace("{{first_name}}", first_name)
+                                        .replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+                                        .replace("{{time}}", datetime.datetime.now().strftime('%H:%M:%S'))
+                                        .replace("{{otp_code}}", otp_code))
+
+                # Setup email content
+                email_msg = MIMEMultipart()
+                email_msg['From'] = sender_email
+                email_msg['To'] = recipient_email
+                email_msg['Subject'] = personalized_subject
+                email_msg.attach(MIMEText(personalized_message, 'html'))
+
+                print("Sending to:", recipient_email)
+                print("Message preview:\n", personalized_message)
+
+                server.send_message(email_msg)
+
+                server.quit()
+
+            except Exception as e:
+                raise Exception(f"Email Sending Error: {e}")
 
         def confirm_email():
             email = self.email_entry.get().strip()

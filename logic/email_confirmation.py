@@ -37,7 +37,11 @@ SENDER_EMAIL = config.get('EMAIL', 'sender_email')
 APP_PASSWORD = config.get('EMAIL', 'app_password')
 
 
-def send_confirmation():
+# Duplicated in signup.py without the hardcoded values
+def send_confirmation_email(tag_values={}):
+    sender_email = SENDER_EMAIL
+    app_password = APP_PASSWORD
+
     subject, message = Database.fetch_template_subject_message("Email Confirmation")
 
     sender_username = "Sarah Sam"  # Manager username from your DB
@@ -47,13 +51,6 @@ def send_confirmation():
     sender_id = Database.get_sender_id(sender_username)
     attachments = "NULL"
     Database.log_notification(subject, message, 1, sender_id, attachments)
-
-    send_confirmation_email(subject, message, recipient, {})
-
-
-def send_confirmation_email(subject, message, recipient, tag_values={}):
-    sender_email = SENDER_EMAIL
-    app_password = APP_PASSWORD
 
     try:
         # Connect to Gmail SMTP securely
@@ -140,7 +137,3 @@ def generate_code():
 # label = tk.Label(root, textvariable=entry_text)
 # label.pack(pady=(50, 10))
 # root.mainloop()
-#
-#
-# def send_confirmation_email():
-#     pass
