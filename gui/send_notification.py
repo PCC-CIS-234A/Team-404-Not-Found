@@ -34,10 +34,11 @@ from tkinter import ttk, messagebox, filedialog
 import configparser
 import os
 import winsound
-
-from logic.notification_logic import send_email_to_subscribers
-from data.db_manager import Database
 from theme import apply_theme_styles, get_fonts
+from logic.notification_logic import send_email_to_subscribers
+from data.database_access import get_subscribers, get_sender_id, log_notification, get_all_tags
+from logic.template_logic import fetch_template_names, fetch_template_by_name
+
 
 # Enable High DPI awareness on Windows
 try:
@@ -86,17 +87,32 @@ class SendNotificationPage(tk.Frame):
         tk.Button(top_nav, text="⌂ Home", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.go_home).pack(side="left", padx=(0, 10))
         tk.Button(top_nav, text="← Back", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.go_back).pack(side="left")
 
-        # === Template Dropdown ===
-        template_frame = tk.Frame(main_content, bg="white")
-        template_frame.pack(anchor="center", pady=(10, 0))
-        tk.Label(template_frame, text="Template:", font=PCC_LABEL_FONT, bg="white").pack(anchor="center")
-        self.template_var = tk.StringVar(value="Select a Template")
+        # === Fetch Template Names Before UI ===
         try:
-            template_names = Database.fetch_template_names()
+            template_names = fetch_template_names()
         except Exception as e:
             messagebox.showerror("Template Error", str(e))
             template_names = []
-        ttk.OptionMenu(template_frame, self.template_var, self.template_var.get(), *template_names, command=self.load_selected_template).pack()
+
+        # === Template Dropdown (Centered Box + Label) ===
+        template_frame = tk.LabelFrame(
+            main_content,
+            text="Template",
+            font=PCC_LABEL_FONT,
+            bg="white",
+            fg="#333333",
+            bd=2,
+            relief="groove",
+            padx=20,
+            pady=10,
+            labelanchor="n"  # Places label at top-center
+        )
+        template_frame.pack(anchor="center", pady=(10, 0), ipadx=5)
+
+        self.template_var = tk.StringVar(value="Select a Template")
+        template_menu = ttk.OptionMenu(template_frame, self.template_var, self.template_var.get(), *template_names,
+                                       command=self.load_selected_template)
+        template_menu.pack(anchor="center", padx=5)
 
         # === Subject ===
         subject_frame = tk.Frame(main_content, bg="white")
@@ -111,7 +127,7 @@ class SendNotificationPage(tk.Frame):
         tags_frame.pack(anchor="center", pady=(10, 10))
         tk.Label(tags_frame, text="Tags:", font=PCC_LABEL_FONT, bg="white").pack(side="left", padx=(0, 10))
         self.selected_tag = tk.StringVar()
-        common_tags = Database.get_all_tags()
+        common_tags = get_all_tags()
         ttk.Combobox(tags_frame, textvariable=self.selected_tag, values=common_tags, state="readonly", width=30).pack(side="left")
         tk.Button(tags_frame, text="Insert Tag", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.insert_tag).pack(side="left", padx=(10, 0))
 
@@ -218,7 +234,7 @@ class SendNotificationPage(tk.Frame):
     def load_selected_template(self, selected_template):
         if selected_template and selected_template != "Select a Template":
             try:
-                subject, message = Database.fetch_template_subject_message(selected_template)
+                subject, message = fetch_template_by_name(selected_template)
                 self.subject_entry.delete(0, tk.END)
                 self.subject_entry.insert(0, subject)
                 self.message_box.delete("1.0", tk.END)
@@ -238,9 +254,9 @@ class SendNotificationPage(tk.Frame):
             return
 
         try:
-            subscribers = Database.get_subscribers()
-            sender_id = Database.get_sender_id("Sarah Sam")
-            Database.log_notification(subject, message, len(subscribers), sender_id, selected_files)
+            subscribers = get_subscribers()
+            sender_id = get_sender_id("Sarah Sam")
+            log_notification(subject, message, len(subscribers), sender_id, selected_files)
             send_email_to_subscribers(subject, message, subscribers, selected_files, {})
             messagebox.showinfo("Sent", f"Notification sent to {len(subscribers)} subscribers.")
             winsound.MessageBeep()
