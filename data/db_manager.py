@@ -594,7 +594,10 @@ class Database:
             row_dict = dict(zip(columns, row))
             notifications.append(Notification(**row_dict))
         return notifications
-
+    @classmethod
+    def get_cursor(cls):
+        cls.connect()
+        return cls.__client.cursor()
 
 if __name__ == "__main__":
     # Database.read_user("tuser", "test@email.com")

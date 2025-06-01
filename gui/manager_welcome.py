@@ -16,6 +16,7 @@ from tkinter import ttk
 from theme import *
 
 
+
 class ManagerWelcome(tk.Frame):
     """
     Author: R-Nixon
@@ -23,6 +24,7 @@ class ManagerWelcome(tk.Frame):
     Purpose: This class is a tkinter frame that contains the welcome page for managers.
     Only managers will see this page after a successful login.
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(background=APP_BACKGROUND)
@@ -38,11 +40,14 @@ class ManagerWelcome(tk.Frame):
 
         # Styling for the frame title.
         shadow_offset = 2
-        shadow_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+        shadow_label = tk.Label(self, text="WELCOME!", font=label_font,
+                                bg=BUTTON_HOVER, fg="#333333", padx=11,
                                 pady=6)
-        shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
+        shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset,
+                           y=shadow_offset)
 
-        title_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+        title_label = tk.Label(self, text="WELCOME!", font=label_font,
+                               bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
                                pady=5)
         title_label.place(relx=0.5, rely=0.03, anchor="n")
 
@@ -50,35 +55,65 @@ class ManagerWelcome(tk.Frame):
         welcome_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         welcome_frame.place(relx=0.5, rely=0.2, anchor="n")
 
-        welcome_label1 = ttk.Label(welcome_frame, text="Welcome to the", font=label_font)
+        welcome_label1 = ttk.Label(welcome_frame, text="Welcome to the",
+                                   font=label_font)
         welcome_label1.grid(row=0, column=0)
-        welcome_label2 = ttk.Label(welcome_frame, text="PCC Free Food Pantry!", font=label_font)
+        welcome_label2 = ttk.Label(welcome_frame, text="PCC Free Food Pantry!",
+                                   font=label_font)
         welcome_label2.grid(row=1, column=0)
 
         # Navigation options.
         options_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
-        send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+
+        send_notification_button = tk.Button(options_frame,
+                                             text="Send Notification",
+                                             font=(button_font, 12,
+                                                   "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR, relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT)
         send_notification_button.grid(row=0, column=0)
-        create_template_button = tk.Button(options_frame, text="Create Template", font=(button_font, 12, "underline",
-                                                                                        "bold"), bg=APP_BACKGROUND,
-                                           fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                           activeforeground=BUTTON_TEXT)
+
+        create_template_button = tk.Button(
+            options_frame,
+            text="Create Template",
+            font=(button_font, 12, "underline", "bold"),
+            bg=APP_BACKGROUND,
+            fg=BUTTON_COLOR,
+            relief="flat",
+            activebackground=BUTTON_HOVER,
+            activeforeground=BUTTON_TEXT,
+            command=lambda: self.show_template_creator(controller)
+            # command=lambda: controller.show_frame(TemplateCreatorGUI)
+            # ✅ Add this line
+        )
         create_template_button.grid(row=0, column=1)
-        notification_logs_button = tk.Button(options_frame, text="Notification Logs", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+
+        notification_logs_button = tk.Button(options_frame,
+                                             text="Notification Logs",
+                                             font=(button_font, 12,
+                                                   "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR, relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT)
         notification_logs_button.grid(row=0, column=2)
 
         # Logout button.
         logout_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         logout_frame.place(relx=0.5, rely=0.6, anchor="n")
 
-        logout_button = tk.Button(logout_frame, text="Logout", font=(button_font, 12, "underline", "bold"),
-                                  bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                  activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(HomePage))
+        logout_button = tk.Button(logout_frame, text="Logout",
+                                  font=(button_font, 12, "underline", "bold"),
+                                  bg=APP_BACKGROUND, fg=BUTTON_COLOR,
+                                  relief="flat", activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT,
+                                  command=lambda: controller.show_frame(
+                                      HomePage))
         logout_button.grid(row=0, column=0)
+    def show_template_creator(self, controller):
+        from template_creator_gui import \
+            TemplateCreatorGUI  # Delayed import prevents circular imports
+        controller.show_frame(TemplateCreatorGUI)

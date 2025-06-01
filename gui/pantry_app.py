@@ -25,7 +25,7 @@ from staff_welcome import StaffWelcome
 from manager_welcome import ManagerWelcome
 from notification_logs import LogsPage
 from send_notification import SendNotificationPage
-from template_creation import TemplatePage
+from  template_creator_gui import  TemplateCreatorGUI
 
 
 class PantryApp(tk.Tk):
@@ -44,8 +44,8 @@ class PantryApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.title("PCC Free Food Pantry")
-        self.geometry("750x750")
-        self.minsize(width=720, height=500)
+        self.geometry("1000x750")
+        self.minsize(width=799, height=500)
 
         apply_theme_styles(self)
 
@@ -61,14 +61,14 @@ class PantryApp(tk.Tk):
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
 
         for F in (HomePage, LoginPage, SignupPage, SubscriberWelcome, StaffWelcome, ManagerWelcome,
-                  SendNotificationPage, TemplatePage, LogsPage):
+                  SendNotificationPage, TemplateCreatorGUI, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(HomePage)
 
-    def show_frame(self, cont):
+    def show_frame(self, name):
         """
         Function: show_frame
         Author: R-Nixon
@@ -79,7 +79,7 @@ class PantryApp(tk.Tk):
         :param cont: container that holds the tkinter frame
         :return: None
         """
-        frame = self.frames[cont]
+        frame = self.frames[name]
         frame.tkraise()
 
 
