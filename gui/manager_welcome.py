@@ -17,7 +17,7 @@ from theme import *
 
 from home_page import HomePage
 from send_notification import SendNotificationPage
-from template_creator_gui import TemplatePage
+from template_creator_gui import TemplateCreatorGUI
 from notification_logs import LogsPage
 
 
@@ -72,7 +72,7 @@ class ManagerWelcome(tk.Frame):
             options_frame, text="Create Template", font=(button_font, 12, "underline", "bold"),
             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-            command=lambda: controller.show_frame(TemplatePage)
+            command=lambda: controller.show_frame(TemplateCreatorGUI)
         )
         create_template_button.grid(row=0, column=1, padx=5)
 
