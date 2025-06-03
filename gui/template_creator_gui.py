@@ -1,11 +1,11 @@
 # =============================================================================
-# Author:        Santhil Murugesan (UI Refinements by AI)
-# File:          template_creator_gui.py
-# Created:       04/25/2025
-# Project:       Food Pantry Notification System
+# Author:           Santhil Murugesan (UI Refinements by AI)
+# File:                 template_creator_gui.py
+# Created:         04/25/2025
+# Project:          Food Pantry Notification System
 # Module:        Template Manager
-# Description:   GUI interface for creating, editing, and managing templates.
-#                Uses an image for the main title.
+# Description: GUI interface for creating, editing, and managing templates.
+#                          Uses an image for the main title.
 # =============================================================================
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
@@ -285,7 +285,9 @@ class TemplateCreatorGUI(tk.Frame):
                                  sticky="w")  # Align buttons to the left
 
         button_definitions = [
-            ("+ New", self.clear_form, "new_button", "TButton", None),
+          #  ("+ New", self.clear_form, "new_button", "TButton", None),
+            ("+ New", self._new_template_mode, "new_button",
+             "TButton", None),
             ("Edit", self.enable_edit_mode, "edit_button", "TButton", None),
             ("Save As...", self.save_as_template, "save_as_button", "TButton",
              None),
@@ -324,6 +326,10 @@ class TemplateCreatorGUI(tk.Frame):
         self.clear_form()
         self._update_tk_entry_border(self.subject_entry, BORDER_COLOR)
 
+    def _new_template_mode(self):
+        self.clear_form()
+        self.cancel_button.config(state="normal")
+
     def _update_tk_entry_border(self, widget, color):
         if widget == self.subject_entry:
             widget.configure(highlightbackground=color, highlightcolor=color)
@@ -341,7 +347,8 @@ class TemplateCreatorGUI(tk.Frame):
 
     def load_tags(self):
         try:
-            cursor = Database.get_cursor()
+            Database.connect()
+            cursor = Database._Database__client.cursor()
             cursor.execute("SELECT tag_name, description FROM dbo.tags")
             return [f"{desc} – {tag}" for tag, desc in cursor.fetchall()]
         except Exception as e:
@@ -583,12 +590,19 @@ class TemplateCreatorGUI(tk.Frame):
     def on_template_selected(self, event=None):
         selected = self.template_dropdown.get()
         if selected: self.load_template(selected)
+        self.delete_button.config(state="normal")
+        self.delete_button.config(state="normal")
+        self.delete_button.update_idletasks()
+
+        self.cancel_button.config(state="disabled")
 
     def enable_edit_mode(self):
         self._set_text_widget_state(self.subject_entry, tk.NORMAL)
         self._set_text_widget_state(self.body_text, tk.NORMAL)
         self.save_button.config(state="normal")
         self.edit_button.config(state="disabled")
+        self.cancel_button.config(state="normal")
+        self.cancel_button.update_idletasks()
 
         current_focus = self.focus_get()
         current_hint_text = self.hint_label.cget("text")
@@ -618,6 +632,7 @@ class TemplateCreatorGUI(tk.Frame):
                 self._update_tk_entry_border(self.subject_entry,
                                              FOCUS_BORDER_COLOR)
         self._update_save_as_button_state()
+        self.cancel_button.config(state="normal")
 
     def delete_template(self):
         name = self.template_var.get()
