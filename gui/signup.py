@@ -1,11 +1,12 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-28
+Last Modified: 2025-6-3
 Description:
 This module is the interface for a new user to sign up in the system.
 The user enters first name, last name, email, username, and password to sign up.
-The user may also choose to log in if they already have user credentials.
+The user must enter a confirmation code in a popup window before signup is complete.
+The user may also choose to switch to the login page if they already have user credentials.
 
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
@@ -18,7 +19,6 @@ from logic.user import User
 from logic.input_validation import validate_email, validate_password
 from data.db_manager import Database
 
-import pyotp
 import configparser
 import os
 import smtplib
@@ -26,7 +26,7 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from logic.notification_logic import process_tags
-from logic.email_confirmation import generate_code
+from logic.email_confirmation import generate_key, generate_totp, generate_code
 
 
 config = configparser.ConfigParser()
@@ -38,8 +38,6 @@ APP_PASSWORD = config.get('EMAIL', 'app_password')
 
 
 # Problems with the code:
-# The GUI layer should not connect directly with the database?
-
 
 class SignupPage(tk.Frame):
     """
@@ -162,30 +160,20 @@ class SignupPage(tk.Frame):
             elif validate_email(email) is False:
                 messagebox.showerror("Error", "Invalid Email")
             elif Database.check_username(username) is not None:
-                messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
-                                                                "your account information and try again")
-            # Original logic before email confirmation requirement
-            # elif Database.check_email(email) is not None:
-            #     messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
-            #                                                     "your account information and try again")
-            # else:
-            #     create_user()
+                messagebox.showerror("Account Creation Failed", "The username already exists.  Please choose"
+                                                                "another username and try again.")
             else:
-                send_confirmation_email()
-                confirm_email()
+                user_key = generate_key()
+                totp = generate_totp(user_key)
+                otp_code = generate_code(totp)
+                send_confirmation_email(otp_code)
+                confirm_email(otp_code)
 
-        def send_confirmation_email(tag_values={}):
+        def send_confirmation_email(otp_code, tag_values={}):
             sender_email = SENDER_EMAIL
             app_password = APP_PASSWORD
 
             subject, message = Database.fetch_template_subject_message("Email Confirmation")
-
-            sender_username = "Sarah Sam"  # Manager username from DB
-
-            # Recipient hardcoded for testing
-            sender_id = Database.get_sender_id(sender_username)
-            attachments = "NULL"
-            Database.log_notification(subject, message, 1, sender_id, attachments)
 
             try:
                 # Connect to Gmail SMTP securely
@@ -194,7 +182,6 @@ class SignupPage(tk.Frame):
 
                 first_name = self.first_name_entry.get().strip()
                 recipient_email = self.email_entry.get().strip()
-                otp_code = generate_code()
 
                 # Personalize subject and message using tags
                 personalized_subject = process_tags(subject, tag_values)
@@ -215,6 +202,7 @@ class SignupPage(tk.Frame):
                 email_msg['Subject'] = personalized_subject
                 email_msg.attach(MIMEText(personalized_message, 'html'))
 
+                # Print statements for debugging
                 print("Sending to:", recipient_email)
                 print("Message preview:\n", personalized_message)
 
@@ -225,12 +213,27 @@ class SignupPage(tk.Frame):
             except Exception as e:
                 raise Exception(f"Email Sending Error: {e}")
 
-        def confirm_email():
-            user_code = simpledialog.askstring(
-                "Enter Code", "Please enter the confirmation code from your email:")
-            # Print for debugging only.
-            print("user code:", user_code)
-            # Need a way to compare the user_code with the generated otp_code
+        def confirm_email(otp_code):
+            counter = 3
+            email = self.email_entry.get().strip()
+            for i in range(counter):
+                user_code = simpledialog.askstring(
+                    "Enter Code", "Please enter the confirmation code\nfrom your email:")
+                if user_code == otp_code:
+                    # Check if email is already in the database
+                    if Database.check_email(email) is not None:
+                        messagebox.showerror("Account Creation Failed", "An account already exists for this email.  "
+                                                                        "Please login to your existing account or check"
+                                                                        " your information and try again.")
+                        clear_form()
+                    else:
+                        create_user()
+                elif user_code != otp_code:
+                    messagebox.showerror("Confirmation Error", "Incorrect confirmation code.  Please try again.")
+                    i += 1
+                    if i == counter:
+                        messagebox.showerror("Confirmation Error", "Incorrect code limit exceeded.")
+                        clear_form()
 
         def create_user():
             """

@@ -92,17 +92,26 @@ def send_confirmation_email(tag_values={}):
         raise Exception(f"Email Sending Error: {e}")
 
 
-def generate_code():
+def generate_key():
     secret_key = pyotp.random_base32()
-    hotp = pyotp.HOTP(secret_key)
-    otp_code = hotp.at(0)
-    print(otp_code)
-    print(hotp)
+    print("secret key:", secret_key)
+    return secret_key
+
+
+def generate_totp(secret_key):
+    totp = pyotp.TOTP(secret_key)
+    return totp
+
+
+def generate_code(totp):
+    otp_code = totp.now()
+    print("otp code:", otp_code)
+    print("totp: ", totp)
     return otp_code
 
 
-def verify_code(hotp, code_entry):
-    print(hotp.verify(code_entry))
+def verify_code(totp, code_entry):
+    print(totp.verify(code_entry))
 #
 #
 # def show_entry_in_main():
