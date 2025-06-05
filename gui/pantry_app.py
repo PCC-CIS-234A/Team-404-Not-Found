@@ -1,41 +1,44 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-22
+Last Modified: 2025-6-04
 Description:
-This module is the tkinter app that holds Frames for different interface pages.
-Uses code from home_page.py, signup.py, login.py, and welcome.py as the current frames.
+This module is the tkinter application that manages multiple interface pages.
+It dynamically changes the window title based on the currently active frame.
 
-Code Reference:
+References:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
 """
 
-# Problems with the code:
-# The window title does not change to reflect the current frame.
-
-
 import tkinter as tk
-from gui.theme import *
+from gui.theme import apply_theme_styles
+
+# Import all GUI page classes
 from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
-
 from subscriber_welcome import SubscriberWelcome
 from staff_welcome import StaffWelcome
 from manager_welcome import ManagerWelcome
 from notification_logs import LogsPage
 from send_notification import SendNotificationPage
-from template_creation import TemplatePage
+from template_creator_gui import TemplatePage
 
 
 class PantryApp(tk.Tk):
     """
     Author: R-Nixon
     Creation Date: 2025-04-22
-    Purpose: This class is a tkinter app that contains the frames for the user home page, login page, and sign up page.
+    Purpose: Tkinter application managing frames for different GUI pages.
     """
+
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+        self.geometry("1920x1080")
+        self.minsize(width=720, height=500)
+
+        apply_theme_styles(self)
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -43,45 +46,51 @@ class PantryApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.title("PCC Free Food Pantry")
-        self.geometry("750x750")
-        self.minsize(width=720, height=500)
-
-        apply_theme_styles(self)
-
-        # Initialize frames to an empty array.
+        # Dictionary to store frame instances
         self.frames = {}
 
-        # Possible to iterate through the frames to change the window title?
-        # for t in (HomePage, LoginPage, SignupPage, WelcomePage):
-        # change the title for each object in the loop?
+        # Define all pages here for easy maintenance
+        pages = (
+            HomePage, LoginPage, SignupPage,
+            SubscriberWelcome, StaffWelcome, ManagerWelcome,
+            SendNotificationPage, TemplatePage, LogsPage
+        )
 
-        # Iterate through a tuple containing the different page layouts.
-        # Initialize a frame for each object in the loop.
-        # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
-
-        for F in (HomePage, LoginPage, SignupPage, SubscriberWelcome, StaffWelcome, ManagerWelcome,
-                  SendNotificationPage, TemplatePage, LogsPage):
-            frame = F(container, self)
-            self.frames[F] = frame
+        # Initialize each frame and store it
+        for Page in pages:
+            frame = Page(container, self)
+            self.frames[Page] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
+        # Show the default starting page
         self.show_frame(HomePage)
 
-    def show_frame(self, cont):
+    def show_frame(self, page_class):
         """
-        Function: show_frame
-        Author: R-Nixon
-        Date Created: 2025-4-22
+        Raise the specified frame to the top and dynamically update the window title.
 
-        Purpose: Display the current tkinter frame passed as a parameter.
-
-        :param cont: container that holds the tkinter frame
-        :return: None
+        :param page_class: class of the frame to be displayed
         """
-        frame = self.frames[cont]
+        frame = self.frames[page_class]
         frame.tkraise()
 
+        # Dictionary mapping frames to their window titles
+        page_titles = {
+            HomePage: "Home - PCC Free Food Pantry",
+            LoginPage: "Login - PCC Free Food Pantry",
+            SignupPage: "Signup - PCC Free Food Pantry",
+            SubscriberWelcome: "Subscriber Welcome - PCC Free Food Pantry",
+            StaffWelcome: "Staff Welcome - PCC Free Food Pantry",
+            ManagerWelcome: "Manager Welcome - PCC Free Food Pantry",
+            SendNotificationPage: "Send Notification - PCC Free Food Pantry",
+            TemplatePage: "Template Manager - PCC Free Food Pantry",
+            LogsPage: "Notification Logs - PCC Free Food Pantry"
+        }
 
-app = PantryApp()
-app.mainloop()
+        # Set window title based on current frame
+        self.title(page_titles.get(page_class, "PCC Free Food Pantry"))
+
+
+if __name__ == "__main__":
+    app = PantryApp()
+    app.mainloop()
