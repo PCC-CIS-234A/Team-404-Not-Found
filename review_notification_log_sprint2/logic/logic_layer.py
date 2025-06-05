@@ -2,7 +2,7 @@
 """
 Author(s): jasag
 Creation Date: 2025-04-25
-Last Modified: 2025-05-31
+Last Modified: 2025-06-05
 
 Description:
 This file is the logic layer, which requests data from
@@ -90,3 +90,12 @@ def search_logs_keyword(keyword):
         })
 
     return result
+
+
+# NEW Sprint#2 A9 get_today_date_str logic
+def get_today_date_str():
+    """
+    Returns today's date when resetting search fields
+    :return: today date as string
+    """
+    return datetime.today().strftime("%Y-%m-%d")
