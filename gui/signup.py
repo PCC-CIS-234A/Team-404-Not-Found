@@ -26,7 +26,7 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from logic.notification_logic import process_tags
-from logic.email_confirmation import generate_key, generate_totp, generate_code
+from logic.otp import generate_otp_code, verify_otp_code
 
 
 config = configparser.ConfigParser()
@@ -137,7 +137,8 @@ class SignupPage(tk.Frame):
             Username is checked against existing entries in the database.
             Password entries are verified against minimum criteria
             and checked for re-entry matching.
-            Calls functions for confirming user email.
+            Calls functions to create a totp code, send a confirmation email, and
+            for confirming user email.
 
             :return: None
             """
@@ -163,13 +164,29 @@ class SignupPage(tk.Frame):
                 messagebox.showerror("Account Creation Failed", "The username already exists.  Please choose"
                                                                 "another username and try again.")
             else:
-                user_key = generate_key()
-                totp = generate_totp(user_key)
-                otp_code = generate_code(totp)
+                # Function returns a tuple
+                otp = generate_otp_code()
+                # Retrieve specific values from the tuple
+                totp = otp[0]
+                otp_code = otp[1]
                 send_confirmation_email(otp_code)
-                confirm_email(otp_code)
+                confirm_email(totp)
 
         def send_confirmation_email(otp_code, tag_values={}):
+            """
+             Function: signup_user
+             Author: R-Nixon
+             Date Created: 2025-5-27
+
+             Purpose: Send a confirmation email to a new user attempting to sign up.
+             Email is personalized to include the first name entry from the signup form.
+
+             Code and logic from Sayan's files notification_logic.py and send_notification.py
+
+             :param otp_code: string,
+             :param tag_values: dictionary, values of template tags
+             :return: None
+             """
             sender_email = SENDER_EMAIL
             app_password = APP_PASSWORD
 
@@ -213,22 +230,39 @@ class SignupPage(tk.Frame):
             except Exception as e:
                 raise Exception(f"Email Sending Error: {e}")
 
-        def confirm_email(otp_code):
+        def confirm_email(totp):
+            """
+             Function: confirm_email
+             Author: R-Nixon
+             Date Created: 2025-6-1
+
+             Purpose: Confirm a new user's email address.
+             User is prompted to enter the totp code from their email.
+             User is given 3 tries to provide the correct code.
+             Checks if email exists in the database.
+             If all validations are passed, calls function to create a new user.
+
+             :param totp: TOTP object
+             :return: None
+             """
             counter = 3
             email = self.email_entry.get().strip()
             for i in range(counter):
                 user_code = simpledialog.askstring(
                     "Enter Code", "Please enter the confirmation code\nfrom your email:")
-                if user_code == otp_code:
+                if verify_otp_code(totp, user_code):
                     # Check if email is already in the database
                     if Database.check_email(email) is not None:
                         messagebox.showerror("Account Creation Failed", "An account already exists for this email.  "
                                                                         "Please login to your existing account or check"
                                                                         " your information and try again.")
                         clear_form()
+                        counter += counter
+                        break
                     else:
                         create_user()
-                elif user_code != otp_code:
+                        break
+                else:
                     messagebox.showerror("Confirmation Error", "Incorrect confirmation code.  Please try again.")
                     i += 1
                     if i == counter:

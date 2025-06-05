@@ -53,6 +53,10 @@ class SubscriberWelcome(tk.Frame):
         welcome_label2.grid(row=1, column=0)
 
         # Specific Subscriber welcome message
+        message_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
+        message_frame.place(relx=0.5, rely=0.4, anchor="n")
+        message_label = ttk.Label(message_frame, text="Check back soon for subscriber menu options!")
+        message_label.grid(row=0, column=0)
 
         # Logout button.
         logout_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
