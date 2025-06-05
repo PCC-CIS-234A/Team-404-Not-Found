@@ -2,7 +2,7 @@
 """
 Author(s): jasag
 Creation Date: 2025-04-25
-Last Modified: 2025-05-31
+Last Modified: 2025-06-05
 
 Description:
 This file produces the GUI for the employee's to search for
@@ -10,7 +10,7 @@ notification logs by date range and displays
 log results and details.
 """
 # ***************************************************************
-from logic.logic_layer import search_logs, search_logs_keyword
+from logic.logic_layer import search_logs, search_logs_keyword, get_today_date_str
 
 # GUI builder - Tkinter library
 import tkinter as tk
@@ -127,6 +127,21 @@ def run_app():
                 row["num_subscribers"]
             ))
 
+
+    # NEW Sprint#2 A9 Clears search fields and logs
+    def clear_search_fields():
+        """
+        Clears search fields and results
+        :return: n/a
+        """
+        today = get_today_date_str()
+        start_date_box.set_date(today)
+        end_date_box.set_date(today)
+        keyword_entry.delete(0, tk.END)
+        tree.delete(*tree.get_children())
+        details_text.set("")
+
+
     # Creates main window
     root = tk.Tk()
     root.title("Notification Logs Search")
@@ -206,6 +221,8 @@ def run_app():
     # NEW Sprint#2 A8 keyword search button
     ttk.Button(top_frame, text="Search Keyword", command=keyword_search_click).grid(row=0, column=7, padx=10)
 
+    # NEW Sprint#2 A9 clear button
+    ttk.Button(top_frame, text="Clear", command=clear_search_fields).grid(row=0, column=8, padx=10)
 
     # Adds a treeview with column headers
     tree_frame = ttk.Frame(root)
