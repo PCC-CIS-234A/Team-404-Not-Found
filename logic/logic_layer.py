@@ -38,18 +38,18 @@ def search_logs(start_date_str, end_date_str):
         notifications = Database.get_notification_log(start_date, end_date)
     # Returns error if trouble retrieving data
     except Exception as e:
-           raise ValueError(f"Error getting notification logs: {str(e)}")
+        raise ValueError(f"Error getting notification logs: {str(e)}")
 
     # Turns notification log objects into dictionaries
     result = []
     for n in notifications or []:
         result.append({
             # Dictionary keys
-            "date_sent" : n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
-            "subject" : n.subject,
-            "message" : n.message,
-            "first_name" : n.first_name,
-            "num_subscribers" : n.num_subscribers
+            "date_sent": n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
+            "subject": n.subject,
+            "message": n.message,
+            "first_name": n.first_name,
+            "num_subscribers": n.num_subscribers
         })
 
     return result

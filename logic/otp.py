@@ -16,6 +16,7 @@ https://stackoverflow.com/questions/51133948/change-default-expiry-period-of-pyo
 """
 
 import pyotp
+from datetime import datetime
 
 
 def generate_otp_code():
@@ -30,7 +31,7 @@ def generate_otp_code():
         :return: tuple (totp, otp_code)
         """
     secret_key = pyotp.random_base32()
-    totp = pyotp.TOTP(secret_key, interval=300)
+    totp = pyotp.TOTP(secret_key, interval=900)
     otp_code = totp.now()
     return totp, otp_code
 
@@ -48,4 +49,3 @@ def verify_otp_code(totp, code_entry):
         :return: boolean True False
         """
     return totp.verify(code_entry)
-

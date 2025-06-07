@@ -102,9 +102,16 @@ class SignupPage(tk.Frame):
         re_password_entry.grid(column=1, row=5, padx=5, pady=3)
 
         # Primary function button.
-        signup_button = tk.Button(self, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
-                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-                                  relief="flat", command=lambda: signup_user())
+        signup_button = tk.Button(self,
+                                  text="Sign Up",
+                                  font=button_font,
+                                  width=7,
+                                  bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT,
+                                  activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT,
+                                  relief="flat",
+                                  command=lambda: signup_user())
         signup_button.place(relx=0.5, rely=0.7, anchor="n")
 
         # Frame to hold the login option.
@@ -112,11 +119,15 @@ class SignupPage(tk.Frame):
         login_frame.place(relx=0.5, rely=0.8, anchor="n")
         login_label = ttk.Label(login_frame, text="Already a User?")
         login_label.grid(column=0, row=0)
-        login_button = tk.Button(login_frame, text="Login", font=(button_font, 11, "underline", "bold"),
-                                 bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                 activeforeground=BUTTON_TEXT, command=lambda: [clear_form(),
-                                                                                controller.show_frame(LoginPage)])
-
+        login_button = tk.Button(login_frame,
+                                 text="Login",
+                                 font=(button_font, 11, "underline", "bold"),
+                                 bg=APP_BACKGROUND,
+                                 fg=BUTTON_COLOR,
+                                 relief="flat",
+                                 activebackground=BUTTON_HOVER,
+                                 activeforeground=BUTTON_TEXT,
+                                 command=lambda: [clear_form(), controller.show_frame(LoginPage)])
         login_button.grid(column=1, row=0)
 
         # Initialize the entries.
@@ -181,9 +192,9 @@ class SignupPage(tk.Frame):
              Purpose: Send a confirmation email to a new user attempting to sign up.
              Email is personalized to include the first name entry from the signup form.
 
-             Code and logic from Sayan's files notification_logic.py and send_notification.py
+             **Code and logic from Sayan's files notification_logic.py and send_notification.py
 
-             :param otp_code: string,
+             :param otp_code: string, one time password code
              :param tag_values: dictionary, values of template tags
              :return: None
              """
@@ -219,10 +230,6 @@ class SignupPage(tk.Frame):
                 email_msg['Subject'] = personalized_subject
                 email_msg.attach(MIMEText(personalized_message, 'html'))
 
-                # Print statements for debugging
-                print("Sending to:", recipient_email)
-                print("Message preview:\n", personalized_message)
-
                 server.send_message(email_msg)
 
                 server.quit()
@@ -245,12 +252,18 @@ class SignupPage(tk.Frame):
              :param totp: TOTP object
              :return: None
              """
+            # Give the user 3 tries to enter the correct code
             counter = 3
             email = self.email_entry.get().strip()
             for i in range(counter):
                 user_code = simpledialog.askstring(
                     "Enter Code", "Please enter the confirmation code\nfrom your email:")
-                if verify_otp_code(totp, user_code):
+                # If the user hits the "Cancel" button.
+                if user_code is None:
+                    clear_form()
+                    counter += counter
+                    break
+                elif verify_otp_code(totp, user_code):
                     # Check if email is already in the database
                     if Database.check_email(email) is not None:
                         messagebox.showerror("Account Creation Failed", "An account already exists for this email.  "

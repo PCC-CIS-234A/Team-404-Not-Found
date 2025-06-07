@@ -39,14 +39,15 @@ class SendNotificationPage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         apply_theme_styles(self)
-        default_font, label_font, button_font = get_fonts(self)
+        # apply style from theme
+        # default_font, label_font, button_font = get_fonts(self)
 
         main_page = ttk.Frame(self)
         main_page.pack(pady=5)
 
-        PCCblue = "#008099"
-        softcolorback = "#235578"
-        Linkpccblue = "#1690b4"
+        pcc_blue = "#008099"
+        # soft_color_back = "#235578"
+        # link_pcc_blue = "#1690b4"
 
         # GUI Components Below
         # Template Dropdown Menu from Santhil
@@ -66,9 +67,9 @@ class SendNotificationPage(tk.Frame):
         # Subject Label + Entry Box (change here for looks.)
         tk.Label(main_page, text="Subject:", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
 
-        mainpagesubjectentry = tk.Entry(main_page, width=70)
-        mainpagesubjectentry.pack(pady=(0, 10))
-        mainpagesubjectentry.bind("<FocusIn>", lambda e: set_active_widget(mainpagesubjectentry))
+        mainpage_subject_entry = tk.Entry(main_page, width=70)
+        mainpage_subject_entry.pack(pady=(0, 10))
+        mainpage_subject_entry.bind("<FocusIn>", lambda e: set_active_widget(mainpage_subject_entry))
 
         # Common Tags Dropdown
         tk.Label(main_page, text="Tags:", font=("Helvetica", 12, "bold")).pack(pady=(5, 5))
@@ -83,7 +84,7 @@ class SendNotificationPage(tk.Frame):
                                     width=30)
         tag_dropdown.pack(side=tk.LEFT, padx=10)
 
-        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=lambda: insert_tag(), bg=PCCblue, fg="white")
+        insert_btn = tk.Button(dropdown_frame, text="Insert Tag", command=lambda: insert_tag(), bg=pcc_blue, fg="white")
         insert_btn.pack(side=tk.LEFT)
 
         # Message Label + Text Box (Change here team 404 if needed)
@@ -99,12 +100,12 @@ class SendNotificationPage(tk.Frame):
         message_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Text Box with scrollbar, at first I forgot about the scrollbar, but later I updated
-        textmessage = tk.Text(message_frame, height=10, width=70, yscrollcommand=message_scrollbar.set)
-        textmessage.pack(side=tk.LEFT, fill=tk.BOTH)
-        textmessage.bind("<FocusIn>", lambda e: set_active_widget(textmessage))
+        text_message = tk.Text(message_frame, height=10, width=70, yscrollcommand=message_scrollbar.set)
+        text_message.pack(side=tk.LEFT, fill=tk.BOTH)
+        text_message.bind("<FocusIn>", lambda e: set_active_widget(text_message))
 
         # Configure scrollbar to interact with text box
-        message_scrollbar.config(command=textmessage.yview)
+        message_scrollbar.config(command=text_message.yview)
 
         # Formatting Buttons (Bold, Italic, Underline)
         format_buttons_frame = tk.Frame(main_page)
@@ -112,19 +113,19 @@ class SendNotificationPage(tk.Frame):
 
         btn_bold = tk.Button(
             format_buttons_frame, text="Bold", command=lambda: wrap_selected_text("b"),
-            bg=PCCblue, fg="white"
+            bg=pcc_blue, fg="white"
         )
         btn_bold.pack(side=tk.LEFT, padx=5)
 
         btn_italic = tk.Button(
             format_buttons_frame, text="Italic", command=lambda: wrap_selected_text("i"),
-            bg=PCCblue, fg="white"
+            bg=pcc_blue, fg="white"
         )
         btn_italic.pack(side=tk.LEFT, padx=5)
 
         btn_underline = tk.Button(
             format_buttons_frame, text="Underline", command=lambda: wrap_selected_text("u"),
-            bg=PCCblue, fg="white"
+            bg=pcc_blue, fg="white"
         )
         btn_underline.pack(side=tk.LEFT, padx=5)
 
@@ -147,20 +148,20 @@ class SendNotificationPage(tk.Frame):
         color_dropdown.pack(side=tk.LEFT, padx=5)
 
         btn_apply_color = tk.Button(
-            color_frame, text="Apply Color", bg=PCCblue, fg="white",
+            color_frame, text="Apply Color", bg=pcc_blue, fg="white",
             command=lambda: wrap_color_text(selected_color.get())
         )
         btn_apply_color.pack(side=tk.LEFT, padx=5)
 
         # Add Attachment button
         btn_add_attachment = tk.Button(
-            file_buttons_frame, text="Add Attachments", bg=PCCblue, fg="white", command=lambda: adding_file()
+            file_buttons_frame, text="Add Attachments", bg=pcc_blue, fg="white", command=lambda: adding_file()
         )
         btn_add_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
         # Remove Attachment button
         btn_remove_attachment = tk.Button(
-            file_buttons_frame, text="Remove Attachments", bg=PCCblue, fg="white", command=lambda: removing_file()
+            file_buttons_frame, text="Remove Attachments", bg=pcc_blue, fg="white", command=lambda: removing_file()
         )
         btn_remove_attachment.pack(side=tk.LEFT, padx=10, pady=5)
 
@@ -173,28 +174,29 @@ class SendNotificationPage(tk.Frame):
         bottom_buttons_frame.pack(pady=(15, 20))
 
         # Send Notification Button
-        btnsend = tk.Button(
+        btn_send = tk.Button(
             bottom_buttons_frame,
             text="Send Notification",
+
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
             command=lambda: send_notification()
         )
-        btnsend.pack(side=tk.LEFT, padx=10)
+        btn_send.pack(side=tk.LEFT, padx=10)
 
         # Cancel Button
-        buttoncancel = tk.Button(
+        button_cancel = tk.Button(
             bottom_buttons_frame,
             text="Cancel",
-            bg=PCCblue,
+            bg=pcc_blue,
             fg="white",
             font=("Helvetica", 11, "bold"),
             padx=12,
             pady=6,
             command=lambda: cancel_fields()
         )
-        buttoncancel.pack(side=tk.LEFT, padx=10)
+        button_cancel.pack(side=tk.LEFT, padx=10)
 
         def set_active_widget(widget):
             global active_widget
@@ -202,23 +204,23 @@ class SendNotificationPage(tk.Frame):
 
         def wrap_selected_text(tag):
             try:
-                start = textmessage.index(tk.SEL_FIRST)
-                end = textmessage.index(tk.SEL_LAST)
-                selected = textmessage.get(start, end)
+                start = text_message.index(tk.SEL_FIRST)
+                end = text_message.index(tk.SEL_LAST)
+                selected = text_message.get(start, end)
                 wrapped = f"<{tag}>{selected}</{tag}>"
-                textmessage.delete(start, end)
-                textmessage.insert(start, wrapped)
+                text_message.delete(start, end)
+                text_message.insert(start, wrapped)
             except tk.TclError:
                 messagebox.showwarning("No Selection", "Please highlight some text in the message box to format.")
 
         def wrap_color_text(color):
             try:
-                start = textmessage.index(tk.SEL_FIRST)
-                end = textmessage.index(tk.SEL_LAST)
-                selected = textmessage.get(start, end)
+                start = text_message.index(tk.SEL_FIRST)
+                end = text_message.index(tk.SEL_LAST)
+                selected = text_message.get(start, end)
                 wrapped = f'<span style="color:{color}">{selected}</span>'
-                textmessage.delete(start, end)
-                textmessage.insert(start, wrapped)
+                text_message.delete(start, end)
+                text_message.insert(start, wrapped)
             except tk.TclError:
                 messagebox.showwarning("No Selection", "Please highlight some text in the message box to apply color.")
 
@@ -233,11 +235,11 @@ class SendNotificationPage(tk.Frame):
                 else:
                     messagebox.showwarning("No Target", "Click on the Subject or Message box before inserting a tag.")
 
-        # Cancel/Clear Functions as Professor recommneded (Currently Cancel Button)
+        # Cancel/Clear Functions as Professor recommended (Currently Cancel Button)
         def cancel_fields():
             # Clearing subject and message fields
-            mainpagesubjectentry.delete(0, tk.END)
-            textmessage.delete("1.0", tk.END)
+            mainpage_subject_entry.delete(0, tk.END)
+            text_message.delete("1.0", tk.END)
 
             # Clearing the attachments listbox
             attached_files_listbox.delete(0, tk.END)
@@ -246,8 +248,8 @@ class SendNotificationPage(tk.Frame):
             selected_files.clear()
 
         def send_notification():
-            subject = mainpagesubjectentry.get().strip()
-            message = textmessage.get("1.0", tk.END).strip()
+            subject = mainpage_subject_entry.get().strip()
+            message = text_message.get("1.0", tk.END).strip()
 
             sender_username = "Sarah Sam"  # Manager username from your DB
 
@@ -256,7 +258,8 @@ class SendNotificationPage(tk.Frame):
                 messagebox.showwarning("Missing Information", "Subject and Message are required.")
                 return
             if len(subject) < 5 or len(message) < 10:
-                messagebox.showwarning("Validation Error", "Subject must be at least 5 characters; message at least 10.")
+                messagebox.showwarning("Validation Error",
+                                       "Subject must be at least 5 characters; message at least 10.")
                 return
 
             # Confirming sending notification
@@ -305,9 +308,9 @@ class SendNotificationPage(tk.Frame):
             if selected_template != "Select a Template":
                 try:
                     subject, message = Database.fetch_template_subject_message(selected_template)
-                    mainpagesubjectentry.delete(0, tk.END)
-                    mainpagesubjectentry.insert(0, subject)
-                    textmessage.delete("1.0", tk.END)
-                    textmessage.insert(tk.END, message)
+                    mainpage_subject_entry.delete(0, tk.END)
+                    mainpage_subject_entry.insert(0, subject)
+                    text_message.delete("1.0", tk.END)
+                    text_message.insert(tk.END, message)
                 except Exception as e:
                     messagebox.showerror("Template Load Error", f"Could not load template:\n{e}")

@@ -38,11 +38,21 @@ class ManagerWelcome(tk.Frame):
 
         # Styling for the frame title.
         shadow_offset = 2
-        shadow_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_HOVER, fg="#333333", padx=11,
+        shadow_label = tk.Label(self,
+                                text="WELCOME!",
+                                font=label_font,
+                                bg=BUTTON_HOVER,
+                                fg="#333333",
+                                padx=11,
                                 pady=6)
         shadow_label.place(relx=0.5, rely=0.03, anchor="n", x=shadow_offset, y=shadow_offset)
 
-        title_label = tk.Label(self, text="WELCOME!", font=label_font, bg=BUTTON_COLOR, fg=BUTTON_TEXT, padx=10,
+        title_label = tk.Label(self,
+                               text="WELCOME!",
+                               font=label_font,
+                               bg=BUTTON_COLOR,
+                               fg=BUTTON_TEXT,
+                               padx=10,
                                pady=5)
         title_label.place(relx=0.5, rely=0.03, anchor="n")
 
@@ -58,22 +68,33 @@ class ManagerWelcome(tk.Frame):
         # Navigation options.
         options_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
-        send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
+        send_notification_button = tk.Button(options_frame,
+                                             text="Send Notification",
+                                             font=(button_font, 12, "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR,
+                                             relief="flat",
                                              activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
                                              command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
-        create_template_button = tk.Button(options_frame, text="Create Template", font=(button_font, 12, "underline",
-                                                                                        "bold"), bg=APP_BACKGROUND,
-                                           fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+        create_template_button = tk.Button(options_frame,
+                                           text="Create Template",
+                                           font=(button_font, 12, "underline", "bold"),
+                                           bg=APP_BACKGROUND,
+                                           fg=BUTTON_COLOR,
+                                           relief="flat",
+                                           activebackground=BUTTON_HOVER,
                                            activeforeground=BUTTON_TEXT,
                                            command=lambda: controller.show_frame(TemplatePage))
         create_template_button.grid(row=0, column=1)
-        notification_logs_button = tk.Button(options_frame, text="Notification Logs", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+        notification_logs_button = tk.Button(options_frame,
+                                             text="Notification Logs",
+                                             font=(button_font, 12, "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR,
+                                             relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
                                              command=lambda: controller.show_frame(LogsPage))
         notification_logs_button.grid(row=0, column=2)
 
@@ -81,7 +102,13 @@ class ManagerWelcome(tk.Frame):
         logout_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         logout_frame.place(relx=0.5, rely=0.6, anchor="n")
 
-        logout_button = tk.Button(logout_frame, text="Logout", font=(button_font, 12, "underline", "bold"),
-                                  bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                  activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(HomePage))
+        logout_button = tk.Button(logout_frame,
+                                  text="Logout",
+                                  font=(button_font, 12, "underline", "bold"),
+                                  bg=APP_BACKGROUND,
+                                  fg=BUTTON_COLOR,
+                                  relief="flat",
+                                  activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT,
+                                  command=lambda: controller.show_frame(HomePage))
         logout_button.grid(row=0, column=0)

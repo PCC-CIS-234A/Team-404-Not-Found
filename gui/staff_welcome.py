@@ -5,7 +5,7 @@ Last Modified: 2025-5-23
 Description:
 This module is the welcome page after a staff member signs into the system.
 This page contains links to staff features - send notification
-and contains a button for the staaff member to exit to the login/signup home page.
+and contains a button for the staff member to exit to the login/signup home page.
 
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
