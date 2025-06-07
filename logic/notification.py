@@ -1,3 +1,6 @@
+# Sayan's Send Notification logics
+# Last Modified 06/06/2025
+
 class Notification:
 
     def __init__(self, date_sent, subject, message, sender_id, num_subscribers, first_name):
