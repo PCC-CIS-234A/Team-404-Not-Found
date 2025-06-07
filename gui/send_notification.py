@@ -1,9 +1,17 @@
+# Sayan Tajul
+# CIS 234A Sprint Final Presentation
+# sayan_send_notification
+# Date: 06/06/2025
+
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import configparser
 import os
 import winsound
 from PIL import Image, ImageTk
+from tkhtmlview import HTMLLabel
+from html import unescape
+import re
 from logic.notification_logic import send_email_to_subscribers
 from data.db_manager import Database
 from theme import apply_theme_styles, get_fonts
@@ -137,8 +145,11 @@ class SendNotificationPage(tk.Frame):
             end = self.message_box.index(tk.SEL_LAST)
             selected = self.message_box.get(start, end)
             color = self.color_var.get()
+
+            clean_selected = re.sub(r'</?span[^>]*>', '', selected)
+
             self.message_box.delete(start, end)
-            self.message_box.insert(start, f'<span style="color:{color}">{selected}</span>')
+            self.message_box.insert(start, f'<span style="color:{color}">{clean_selected}</span>')
         except tk.TclError:
             messagebox.showwarning("No Selection", "Please highlight text to color.")
 
@@ -177,23 +188,99 @@ class SendNotificationPage(tk.Frame):
         selected_files.clear()
         self.update_image_preview()
 
+    def show_review_popup(self, subject, message_html):
+        review_window = tk.Toplevel(self)
+        review_window.title("Review Notification")
+        review_window.geometry("800x600")
+        review_window.configure(bg="white")
+        review_window.grab_set()
+
+        tk.Label(
+            review_window,
+            text=f"Subject: {subject}",
+            font=("Helvetica", 14, "bold"),
+            fg="#005c6d",
+            bg="white"
+        ).pack(pady=(15, 5))
+
+        message_html = message_html.replace('\n', '<br>')
+
+        container = tk.Frame(review_window, bg="white")
+        container.pack(fill="both", expand=True, padx=10, pady=5)
+
+        canvas = tk.Canvas(container, bg="white", highlightthickness=0)
+        scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg="white")
+
+        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        html_view = HTMLLabel(
+            scrollable_frame,
+            html=message_html,
+            width=90,
+            background="white",
+            padx=10,
+            pady=10
+        )
+        html_view.pack(fill="both", expand=True)
+
+        # === Image Preview in Review ===
+        preview_frame = tk.Frame(scrollable_frame, bg="white")
+        preview_frame.pack(pady=10)
+
+        review_images = []  # prevent garbage collection
+        for filepath in selected_files[:6]:
+            try:
+                img = Image.open(filepath)
+                img.thumbnail((120, 120))
+                img_tk = ImageTk.PhotoImage(img)
+                review_images.append(img_tk)
+                img_label = tk.Label(preview_frame, image=img_tk, bg="white")
+                img_label.pack(side="left", padx=5)
+            except Exception as e:
+                print(f"Review Preview Error: {e}")
+
+        review_window.image_refs = review_images  # store references on window
+
+        button_frame = tk.Frame(review_window, bg="white")
+        button_frame.pack(pady=(5, 15))
+
+        btn_style = {
+            "bg": "#008099",
+            "fg": "white",
+            "font": ("Helvetica", 10, "bold"),
+            "width": 12,
+            "padx": 5,
+            "pady": 4,
+            "relief": "flat"
+        }
+
+        tk.Button(button_frame, text="Send", command=lambda: [review_window.destroy(), self.finalize_send(subject, message_html)], **btn_style).pack(pady=3)
+        tk.Button(button_frame, text="Cancel", command=review_window.destroy, **btn_style).pack(pady=3)
+
+    def finalize_send(self, subject, message_html):
+        subscribers = Database.get_subscribers()
+        sender_id = Database.get_sender_id("Sarah Sam")
+        Database.log_notification(subject, message_html, len(subscribers), sender_id, selected_files)
+        send_email_to_subscribers(subject, message_html, subscribers, selected_files, {})
+        messagebox.showinfo("Sent", f"Notification sent to {len(subscribers)} subscribers.")
+        winsound.MessageBeep()
+        self.clear_fields()
+
     def send_notification(self):
         subject = self.subject_entry.get().strip()
         message = self.message_box.get("1.0", tk.END).strip()
         if not subject or not message:
             messagebox.showwarning("Missing Info", "Subject and Message are required.")
             return
-        confirm = messagebox.askyesno("Review", f"Subject: {subject}\n\nPreview:\n{message}")
-        if not confirm:
-            return
-        subscribers = Database.get_subscribers()
-        sender_id = Database.get_sender_id("Sarah Sam")
-        Database.log_notification(subject, message, len(subscribers), sender_id, selected_files)
-        send_email_to_subscribers(subject, message, subscribers, selected_files, {})
-        messagebox.showinfo("Sent", f"Notification sent to {len(subscribers)} subscribers.")
-        winsound.MessageBeep()
-        self.clear_fields()
 
+        self.show_review_popup(subject, message)
 
 if __name__ == '__main__':
     root = tk.Tk()

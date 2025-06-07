@@ -1,7 +1,8 @@
 """
-Author: R-Nixon
+Author: R-Nixon/ Modified by Sayan
 Creation Date: 2025-5-23
-Last Modified: 2025-6-04
+Last Modified: 06/06/2025
+
 Description:
 This module is the welcome page after a manager signs into the system.
 It contains links to manager features (send notification, create template, view notification logs)

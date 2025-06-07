@@ -1,3 +1,6 @@
+# Sayan Tajul
+# Last modified 06/06/2025
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from gui.theme import apply_theme_styles, get_fonts, APP_BACKGROUND, BUTTON_COLOR, BUTTON_HOVER, BUTTON_TEXT

@@ -1,7 +1,8 @@
 """
-Author: R-Nixon
+Author: R-Nixon / Modidified by Sayan
 Creation Date: 2025-4-22
-Last Modified: 2025-6-04
+Last Modified: 06/06/2025
+
 Description:
 This module is the tkinter application that manages multiple interface pages.
 It dynamically changes the window title based on the currently active frame.

@@ -1,7 +1,7 @@
 # =============================================================================
-# Author:        Santhil Murugesan
+# Author:        Sayan Tajul
 # File:          theme.py
-# Created:       04/25/2025
+# Created:       06/05/2025
 # Project:       Food Pantry Notification System
 # Module:        All modules in this project use this file as a common resource.
 # Description:   Centralized theming for consistent GUI design.
@@ -52,7 +52,7 @@ def get_fonts(root):
 
     label_bold = tkfont.Font(
         family=base.actual("family"),
-        size=16,
+        size=12,
         weight="bold"
     )
 
@@ -97,7 +97,7 @@ def apply_theme_styles(root=None):
         "TButton",
         background=BUTTON_COLOR,
         foreground=BUTTON_TEXT,
-        padding=6,
+        padding=4,
         relief="flat"
     )
     style.map(
