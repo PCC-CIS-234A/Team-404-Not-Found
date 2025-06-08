@@ -239,7 +239,6 @@ class Database:
         cursor.execute(sql, params)
         rows = cursor.fetchall()
         if not cursor.rowcount:
-            print(" read user rows", rows)
             return None
         else:
             print(rows)
@@ -248,7 +247,6 @@ class Database:
             for row in rows:
                 user_dict = dict(zip(columns, row))
                 users.append(User(**user_dict))
-            print("USER:", users)
             return users
 
     @classmethod
@@ -274,7 +272,6 @@ class Database:
         cursor.execute(sql, param)
         rows = cursor.fetchall()
         if not cursor.rowcount:
-            print("rows", rows)
             return None
         else:
             return rows
@@ -333,7 +330,6 @@ class Database:
         if not cursor.rowcount:
             return None
         else:
-            print("row:", row[0])
             pass_hash = row[0]
             return pass_hash
 
@@ -364,7 +360,6 @@ class Database:
         if not cursor.rowcount:
             return None
         else:
-            print("row:", row[0])
             role = row[0]
             return role
 
@@ -438,7 +433,6 @@ class Database:
         cursor = cls.__client.cursor()
         cursor.execute("SELECT tag_name FROM dbo.tags")
         tags = [f"{{{row[0]}}}" for row in cursor.fetchall()]  # Wrap each with {}
-        # print(tags)
         return tags
 
     @classmethod
@@ -468,6 +462,7 @@ class Database:
         cursor.execute("SELECT subject, message FROM dbo.templates WHERE name = ?", (template_name,))
         result = cursor.fetchone()
         if result:
+            print("subject:", result[0], " message:", result[1])
             return result[0], result[1]
         else:
             print(f"Template '{template_name}' not found.")
@@ -519,8 +514,8 @@ class Database:
         lookup_name = original_name if original_name else name
 
         cursor.execute("SELECT template_id FROM dbo.templates WHERE name = ?",
-                    (lookup_name,)
-                )
+                       (lookup_name,)
+                       )
         existing = cursor.fetchone()
 
         if existing and not original_name:
@@ -560,7 +555,6 @@ class Database:
                 )
             cls.__client.commit()
 
-
     # Gets the notification logs from database
     @classmethod
     def get_notification_log(cls, start_date, end_date):
@@ -594,8 +588,3 @@ class Database:
             row_dict = dict(zip(columns, row))
             notifications.append(Notification(**row_dict))
         return notifications
-
-
-if __name__ == "__main__":
-    # Database.read_user("tuser", "test@email.com")
-    Database.get_all_tags()

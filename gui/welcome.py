@@ -10,6 +10,9 @@ to exit to the login/signup home page.
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
 """
+
+# Generic welcome page not needed as each role has its own welcome page
+
 import tkinter as tk
 from tkinter import ttk
 from theme import *

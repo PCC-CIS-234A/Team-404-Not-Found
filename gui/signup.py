@@ -1,27 +1,43 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-22
-Last Modified: 2025-5-6
+Last Modified: 2025-6-3
 Description:
 This module is the interface for a new user to sign up in the system.
 The user enters first name, last name, email, username, and password to sign up.
-The user may also choose to log in if they already have user credentials.
+The user must enter a confirmation code in a popup window before signup is complete.
+The user may also choose to switch to the login page if they already have user credentials.
 
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
 """
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from theme import *
 from logic.user import User
 from logic.input_validation import validate_email, validate_password
 from data.db_manager import Database
 
+import configparser
+import os
+import smtplib
+import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from logic.notification_logic import process_tags
+from logic.otp import generate_otp_code, verify_otp_code
+
+
+config = configparser.ConfigParser()
+config_path = os.path.join(os.path.dirname(__file__), '../gui/config.ini')
+config.read(config_path)
+
+SENDER_EMAIL = config.get('EMAIL', 'sender_email')
+APP_PASSWORD = config.get('EMAIL', 'app_password')
+
 
 # Problems with the code:
-# The GUI layer should not connect directly with the database?
-
 
 class SignupPage(tk.Frame):
     """
@@ -86,9 +102,16 @@ class SignupPage(tk.Frame):
         re_password_entry.grid(column=1, row=5, padx=5, pady=3)
 
         # Primary function button.
-        signup_button = tk.Button(self, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
-                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-                                  relief="flat", command=lambda: signup_user())
+        signup_button = tk.Button(self,
+                                  text="Sign Up",
+                                  font=button_font,
+                                  width=7,
+                                  bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT,
+                                  activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT,
+                                  relief="flat",
+                                  command=lambda: signup_user())
         signup_button.place(relx=0.5, rely=0.7, anchor="n")
 
         # Frame to hold the login option.
@@ -96,11 +119,15 @@ class SignupPage(tk.Frame):
         login_frame.place(relx=0.5, rely=0.8, anchor="n")
         login_label = ttk.Label(login_frame, text="Already a User?")
         login_label.grid(column=0, row=0)
-        login_button = tk.Button(login_frame, text="Login", font=(button_font, 11, "underline", "bold"),
-                                 bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                 activeforeground=BUTTON_TEXT, command=lambda: [clear_form(),
-                                                                                controller.show_frame(LoginPage)])
-
+        login_button = tk.Button(login_frame,
+                                 text="Login",
+                                 font=(button_font, 11, "underline", "bold"),
+                                 bg=APP_BACKGROUND,
+                                 fg=BUTTON_COLOR,
+                                 relief="flat",
+                                 activebackground=BUTTON_HOVER,
+                                 activeforeground=BUTTON_TEXT,
+                                 command=lambda: [clear_form(), controller.show_frame(LoginPage)])
         login_button.grid(column=1, row=0)
 
         # Initialize the entries.
@@ -118,10 +145,11 @@ class SignupPage(tk.Frame):
             Date Created: 2025-4-26
 
             Purpose: Validate user's GUI inputs.
-            Username and email are checked against existing entries in the database.
+            Username is checked against existing entries in the database.
             Password entries are verified against minimum criteria
             and checked for re-entry matching.
-            Calls the create_user function.
+            Calls functions to create a totp code, send a confirmation email, and
+            for confirming user email.
 
             :return: None
             """
@@ -143,14 +171,116 @@ class SignupPage(tk.Frame):
                 messagebox.showerror("Error", "Passwords must match")
             elif validate_email(email) is False:
                 messagebox.showerror("Error", "Invalid Email")
-            elif Database.check_email(email) is not None:
-                messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
-                                                                "your account information and try again")
             elif Database.check_username(username) is not None:
-                messagebox.showerror("Account Creation Failed", "The account creation failed.  Please check "
-                                                                "your account information and try again")
+                messagebox.showerror("Account Creation Failed", "The username already exists.  Please choose"
+                                                                "another username and try again.")
             else:
-                create_user()
+                # Function returns a tuple
+                otp = generate_otp_code()
+                # Retrieve specific values from the tuple
+                totp = otp[0]
+                otp_code = otp[1]
+                send_confirmation_email(otp_code)
+                confirm_email(totp)
+
+        def send_confirmation_email(otp_code, tag_values={}):
+            """
+             Function: signup_user
+             Author: R-Nixon
+             Date Created: 2025-5-27
+
+             Purpose: Send a confirmation email to a new user attempting to sign up.
+             Email is personalized to include the first name entry from the signup form.
+
+             **Code and logic from Sayan's files notification_logic.py and send_notification.py
+
+             :param otp_code: string, one time password code
+             :param tag_values: dictionary, values of template tags
+             :return: None
+             """
+            sender_email = SENDER_EMAIL
+            app_password = APP_PASSWORD
+
+            subject, message = Database.fetch_template_subject_message("Email Confirmation")
+
+            try:
+                # Connect to Gmail SMTP securely
+                server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.login(sender_email, app_password)
+
+                first_name = self.first_name_entry.get().strip()
+                recipient_email = self.email_entry.get().strip()
+
+                # Personalize subject and message using tags
+                personalized_subject = process_tags(subject, tag_values)
+                personalized_subject = personalized_subject.replace(
+                    "{{first_name}}", first_name).replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+
+                personalized_message = process_tags(message, tag_values)
+                personalized_message = (personalized_message
+                                        .replace("{{first_name}}", first_name)
+                                        .replace("{{date}}", datetime.datetime.now().strftime('%Y-%m-%d'))
+                                        .replace("{{time}}", datetime.datetime.now().strftime('%H:%M:%S'))
+                                        .replace("{{otp_code}}", otp_code))
+
+                # Setup email content
+                email_msg = MIMEMultipart()
+                email_msg['From'] = sender_email
+                email_msg['To'] = recipient_email
+                email_msg['Subject'] = personalized_subject
+                email_msg.attach(MIMEText(personalized_message, 'html'))
+
+                server.send_message(email_msg)
+
+                server.quit()
+
+            except Exception as e:
+                raise Exception(f"Email Sending Error: {e}")
+
+        def confirm_email(totp):
+            """
+             Function: confirm_email
+             Author: R-Nixon
+             Date Created: 2025-6-1
+
+             Purpose: Confirm a new user's email address.
+             User is prompted to enter the totp code from their email.
+             User is given 3 tries to provide the correct code.
+             Checks if email exists in the database.
+             If all validations are passed, calls function to create a new user.
+
+             :param totp: TOTP object
+             :return: None
+             """
+            # Give the user 3 tries to enter the correct code
+            counter = 3
+            email = self.email_entry.get().strip()
+            for i in range(counter):
+                user_code = simpledialog.askstring(
+                    "Enter Code", "Please enter the confirmation code\nfrom your email:")
+                # If the user hits the "Cancel" button.
+                if user_code is None:
+                    clear_form()
+                    counter += counter
+                    break
+                elif verify_otp_code(totp, user_code):
+                    # Check if email is already in the database
+                    if Database.check_email(email) is not None:
+                        messagebox.showerror("Account Creation Failed", "An account already exists for this email.  "
+                                                                        "Please login to your existing account or check"
+                                                                        " your information and try again.")
+                        clear_form()
+                        counter += counter
+                        break
+                    else:
+                        create_user()
+                        break
+                else:
+                    messagebox.showerror("Confirmation Error", "Incorrect confirmation code.  Please try again.")
+                    i += 1
+                    if i == counter:
+                        messagebox.showerror("Confirmation Error", "Incorrect code limit exceeded.")
+                        clear_form()
 
         def create_user():
             """
@@ -160,7 +290,7 @@ class SignupPage(tk.Frame):
 
             Purpose: Create a new user from the GUI inputs.
             Adds a new user to the database.
-            Clears the form and switches to the WelcomePage upon successful signup.
+            Clears the form and switches to the SubscriberWelcome upon successful signup.
 
             :return: None
             """

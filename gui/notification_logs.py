@@ -17,7 +17,8 @@ from logic.logic_layer import search_logs
 
 # GUI builder - Tkinter library
 import tkinter as tk
-from tkinter import ttk, messagebox, font
+from tkinter import ttk, messagebox
+# from tkinter import font
 # Tkinter library to build calendar
 from tkcalendar import DateEntry
 
@@ -30,7 +31,8 @@ class LogsPage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         apply_theme_styles(self)
-        default_font, label_font, button_font = get_fonts(self)
+        # to apply theme styling
+        # default_font, label_font, button_font = get_fonts(self)
 
         top_frame = ttk.Frame(self)
         top_frame.pack(pady=20)

@@ -5,7 +5,7 @@ Last Modified: 2025-5-23
 Description:
 This module is the welcome page after a staff member signs into the system.
 This page contains links to staff features - send notification
-and contains a button for the staaff member to exit to the login/signup home page.
+and contains a button for the staff member to exit to the login/signup home page.
 
 Code Reference:
 https://www.geeksforgeeks.org/tkinter-application-to-switch-between-different-page-frames/
@@ -27,7 +27,7 @@ class StaffWelcome(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        # from send_notification import NotificationPage
+        from send_notification import SendNotificationPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -55,10 +55,16 @@ class StaffWelcome(tk.Frame):
         # Navigation options.
         options_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
-        send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+
+        send_notification_button = tk.Button(options_frame,
+                                             text="Send Notification",
+                                             font=(button_font, 12, "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR,
+                                             relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
 
         # Logout button.
