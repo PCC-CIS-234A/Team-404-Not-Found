@@ -20,12 +20,13 @@ from home_page import HomePage
 from signup import SignupPage
 from login import LoginPage
 
+
 from subscriber_welcome import SubscriberWelcome
 from staff_welcome import StaffWelcome
 from manager_welcome import ManagerWelcome
 from notification_logs import LogsPage
 from send_notification import SendNotificationPage
-from template_creation import TemplatePage
+# from template_creation import TemplatePage
 
 
 class PantryApp(tk.Tk):
@@ -61,7 +62,7 @@ class PantryApp(tk.Tk):
         # In a future sprint, add landing pages to the tuple: SubscriberPage, StaffPage, ManagerPage
 
         for F in (HomePage, LoginPage, SignupPage, SubscriberWelcome, StaffWelcome, ManagerWelcome,
-                  SendNotificationPage, TemplatePage, LogsPage):
+                  SendNotificationPage, LogsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

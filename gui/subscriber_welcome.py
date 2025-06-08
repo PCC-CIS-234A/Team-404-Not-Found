@@ -58,7 +58,12 @@ class SubscriberWelcome(tk.Frame):
         logout_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         logout_frame.place(relx=0.5, rely=0.6, anchor="n")
 
-        logout_button = tk.Button(logout_frame, text="Logout", font=(button_font, 12, "underline", "bold"),
-                                  bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
-                                  activeforeground=BUTTON_TEXT, command=lambda: controller.show_frame(HomePage))
+        logout_button = tk.Button(logout_frame,
+                                  text="Logout",
+                                  font=(button_font, 12, "underline", "bold"),
+                                  bg=APP_BACKGROUND,
+                                  fg=BUTTON_COLOR, relief="flat",
+                                  activebackground=BUTTON_HOVER,
+                                  activeforeground=BUTTON_TEXT,
+                                  command=lambda: controller.show_frame(HomePage))
         logout_button.grid(row=0, column=0)

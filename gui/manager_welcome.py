@@ -28,9 +28,9 @@ class ManagerWelcome(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        # from send_notification import NotificationPage
+        from send_notification import SendNotificationPage
         # from template_creator import TemplatePage
-        # from notification_logs import LogsPage
+        from notification_logs import LogsPage
 
         # GUI theme.
         apply_theme_styles(self)
@@ -58,20 +58,35 @@ class ManagerWelcome(tk.Frame):
         # Navigation options.
         options_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
         options_frame.place(relx=0.5, rely=0.4, anchor="n")
-        send_notification_button = tk.Button(options_frame, text="Send Notification", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+        send_notification_button = tk.Button(options_frame,
+                                             text="Send Notification",
+                                             font=(button_font, 12, "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR,
+                                             relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
-        create_template_button = tk.Button(options_frame, text="Create Template", font=(button_font, 12, "underline",
-                                                                                        "bold"), bg=APP_BACKGROUND,
-                                           fg=BUTTON_COLOR, relief="flat", activebackground=BUTTON_HOVER,
+        # Missing template creation page.
+        create_template_button = tk.Button(options_frame,
+                                           text="Create Template",
+                                           font=(button_font, 12, "underline", "bold"),
+                                           bg=APP_BACKGROUND,
+                                           fg=BUTTON_COLOR,
+                                           relief="flat",
+                                           activebackground=BUTTON_HOVER,
                                            activeforeground=BUTTON_TEXT)
         create_template_button.grid(row=0, column=1)
-        notification_logs_button = tk.Button(options_frame, text="Notification Logs", font=(button_font, 12,
-                                                                                            "underline", "bold"),
-                                             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT)
+        notification_logs_button = tk.Button(options_frame,
+                                             text="Notification Logs",
+                                             font=(button_font, 12, "underline", "bold"),
+                                             bg=APP_BACKGROUND,
+                                             fg=BUTTON_COLOR,
+                                             relief="flat",
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
+                                             command=lambda: controller.show_frame(LogsPage))
         notification_logs_button.grid(row=0, column=2)
 
         # Logout button.
