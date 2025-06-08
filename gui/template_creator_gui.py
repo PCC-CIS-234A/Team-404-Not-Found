@@ -3,8 +3,7 @@
 # File:          template_creator_gui.py
 # Created:       04/25/2025
 # Project:       Food Pantry Notification System
-# Module:        Template Manager  (db_connection.py, template_logic.py,
-#                template_creator_gui.py and theme.py)
+# Module:        Template Manager  (template_creator_gui.py and theme.py)
 # Description:   GUI interface for creating, editing, and managing templates.
 # Functionality: Supports adding new templates, updating existing ones,
 #                and deleting templates through a user-friendly interface.
@@ -23,6 +22,7 @@ from gui.theme import (
     BUTTON_HOVER,
     BUTTON_TEXT
 )
+
 from data.db_manager import Database
 
 

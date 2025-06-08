@@ -1,15 +1,14 @@
-# =============================================================================
-# Author:              Santhil Murugesan
-# File:                    theme.py
-# Created:            04/25/2025
-# Project:              Food Pantry Notification System
-# Module:           All modules in this project use this file as a common resource.
-# Description:    Centralized theming for consistent GUI design.
+# Author:        Santhil Murugesan
+# File:          theme.py
+# Created:       04/25/2025
+# Project:       Food Pantry Notification System
+# Module:        All modules in this project use this file as a common resource.
+# Description:   Centralized theming for consistent GUI design.
 # Functionality: Defines colors, fonts, and widget styles for uniform
-#                              appearance.
-# Output:             Consistent look and feel across all GUI windows and
-#                              controls.
-# References:     Python Documentation, Tkinter ttk Styling
+#                appearance.
+# Output:        Consistent look and feel across all GUI windows and
+#                controls.
+# References:    Python Documentation, Tkinter ttk Styling
 # =============================================================================
 
 import tkinter.font as tkfont
@@ -124,4 +123,3 @@ def apply_theme_styles(root=None):
         background=[("active", BUTTON_HOVER)],
         foreground=[("active", BUTTON_TEXT)]
     )
-    

@@ -29,7 +29,7 @@ class ManagerWelcome(tk.Frame):
 
         from home_page import HomePage
         from send_notification import SendNotificationPage
-        from template_creation import TemplatePage
+        # from template_creator_gui import TemplatePage
         from notification_logs import LogsPage
 
         # GUI theme.
@@ -74,9 +74,11 @@ class ManagerWelcome(tk.Frame):
                                              bg=APP_BACKGROUND,
                                              fg=BUTTON_COLOR,
                                              relief="flat",
-                                             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                             activebackground=BUTTON_HOVER,
+                                             activeforeground=BUTTON_TEXT,
                                              command=lambda: controller.show_frame(SendNotificationPage))
         send_notification_button.grid(row=0, column=0)
+        # Missing template creation page.
         create_template_button = tk.Button(options_frame,
                                            text="Create Template",
                                            font=(button_font, 12, "underline", "bold"),
@@ -84,8 +86,7 @@ class ManagerWelcome(tk.Frame):
                                            fg=BUTTON_COLOR,
                                            relief="flat",
                                            activebackground=BUTTON_HOVER,
-                                           activeforeground=BUTTON_TEXT,
-                                           command=lambda: controller.show_frame(TemplatePage))
+                                           activeforeground=BUTTON_TEXT)
         create_template_button.grid(row=0, column=1)
         notification_logs_button = tk.Button(options_frame,
                                              text="Notification Logs",
