@@ -1,191 +1,133 @@
-"""
-Author: Sayan Tajul
-Created: 05/20/2025
-Last Modified: 05/28/2025
-File: send_notification.py
-Course: CIS 234A – PCC Sprint 2 Part 2
+# Sayan Tajul
+# CIS 234A Sprint Final Presentation
+# sayan_send_notification
+# Date: 06/06/2025
 
-Description:
-This module implements the "Send Notification" feature for the Food Insecurity Notification System.
-It provides a user-friendly Tkinter GUI for composing and sending email notifications to pantry subscribers.
-
-Key Features:
-- Dropdown to select existing templates (auto-fills subject and message).
-- Entry fields for subject, rich-text formatted message, and dynamic tag insertion.
-- Rich text options include: bold, italic, underline, and color styling.
-- Attachment handling: add, preview, and remove attachments.
-- Confirmation popup before sending.
-- Logs notifications in the database with subscriber count and sender ID.
-
-Implements:
-- PEP 8-compliant formatting
-- N-Tier architecture with separation of GUI, logic, and data layers
-- High DPI scaling, PCC-themed colors, and font styling
-
-Note:
-This file is part of the Sprint 2 – Part 2 development, improving upon previous Sprint 1 functionality
-by adding formatting tools, enhanced template handling, and backend integration.
-"""
-
-# send_notification.py (Refactored GUI - Sprint 2 with PCC Colors, Fonts, High DPI, and Aligned Labels)
-# Imports
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import configparser
 import os
 import winsound
-
+from PIL import Image, ImageTk
+from tkhtmlview import HTMLLabel
+from html import unescape
+import re
 from logic.notification_logic import send_email_to_subscribers
 from data.db_manager import Database
 from theme import apply_theme_styles, get_fonts
 
-# Enable High DPI awareness on Windows
-try:
-    from ctypes import windll
-    windll.shcore.SetProcessDpiAwareness(1)
-except Exception:
-    pass
-
-# Global state
 selected_files = []
-active_widget = None
-
-# Load credentials
-config = configparser.ConfigParser()
-config.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
-SENDER_EMAIL = config.get('EMAIL', 'sender_email')
-APP_PASSWORD = config.get('EMAIL', 'app_password')
-
-# PCC Colors
-PCC_BLUE = "#008099"
-PCC_LIGHT_BLUE = "#e6f2ff"
-PCC_FONT = ("Helvetica", 11)
-PCC_LABEL_FONT = ("Helvetica", 12, "bold")
-
 
 class SendNotificationPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.controller = controller
         self.configure(bg="white")
         apply_theme_styles(self)
+        self.active_widget = None
 
-        # Layout containers
-        top_nav = tk.Frame(self, bg="white")
-        top_nav.pack(anchor="nw", padx=10, pady=5, fill="x")
+        # Main layout container
+        wrapper = tk.Frame(self, bg="white")
+        wrapper.pack(expand=True, padx=30, pady=30)
 
-        content_wrapper = tk.Frame(self, bg="white")
-        content_wrapper.pack(fill="both", expand=True)
+        wrapper.columnconfigure(0, weight=1)
+        wrapper.columnconfigure(1, weight=0)
 
-        main_content = tk.Frame(content_wrapper, bg="white")
-        main_content.pack(side="left", padx=40, pady=20, fill="both", expand=True)
+        # === LEFT side: Content ===
+        content_frame = tk.Frame(wrapper, bg="white")
+        content_frame.grid(row=0, column=0, sticky="n")
 
-        side_buttons = tk.Frame(content_wrapper, bg="white")
-        side_buttons.pack(side="left", padx=30, pady=80, anchor="n")
+        # Home nav
+        top_nav = tk.Frame(content_frame, bg="white")
+        top_nav.pack(anchor="nw", pady=5, fill="x")
+        tk.Button(top_nav, text="⌂ Home", bg="#008099", fg="white", command=self.go_home).pack(side="left")
 
-        # === Top Nav Buttons ===
-        (tk.Button(top_nav, text="⌂ Home", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.go_home)
-         .pack(side="left", padx=(0, 10)))
-        (tk.Button(top_nav, text="← Back", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.go_back)
-         .pack(side="left"))
-
-        # === Template Dropdown ===
-        template_frame = tk.Frame(main_content, bg="white")
-        template_frame.pack(anchor="center", pady=(10, 0))
-        tk.Label(template_frame, text="Template:", font=PCC_LABEL_FONT, bg="white").pack(anchor="center")
+        # Template dropdown
+        template_names = Database.fetch_template_names()
         self.template_var = tk.StringVar(value="Select a Template")
-        try:
-            template_names = Database.fetch_template_names()
-        except Exception as e:
-            messagebox.showerror("Template Error", str(e))
-            template_names = []
-        ttk.OptionMenu(template_frame, self.template_var, self.template_var.get(), *template_names,
-                       command=self.load_selected_template).pack()
+        ttk.OptionMenu(content_frame, self.template_var, self.template_var.get(),
+                       *template_names, command=self.load_selected_template).pack(pady=5)
 
-        # === Subject ===
-        subject_frame = tk.Frame(main_content, bg="white")
-        subject_frame.pack(anchor="center", pady=(10, 10))
-        tk.Label(subject_frame, text="Subject:", font=PCC_LABEL_FONT, bg="white").pack(anchor="center")
-        self.subject_entry = tk.Entry(subject_frame, width=70, font=PCC_FONT, relief="solid", bd=1)
-        self.subject_entry.pack(ipady=4)
-        self.subject_entry.bind("<FocusIn>", lambda e: self.set_active_widget(self.subject_entry))
+        # Subject
+        tk.Label(content_frame, text="Subject:", font=("Helvetica", 12, "bold"), bg="white").pack()
+        self.subject_entry = tk.Entry(content_frame, width=70)
+        self.subject_entry.pack(pady=5)
 
-        # === Tags ===
-        tags_frame = tk.Frame(main_content, bg="white")
-        tags_frame.pack(anchor="center", pady=(10, 10))
-        tk.Label(tags_frame, text="Tags:", font=PCC_LABEL_FONT, bg="white").pack(side="left", padx=(0, 10))
-        self.selected_tag = tk.StringVar()
-        common_tags = Database.get_all_tags()
-        (ttk.Combobox(tags_frame, textvariable=self.selected_tag, values=common_tags, state="readonly", width=30)
-         .pack(side="left"))
-        (tk.Button(tags_frame, text="Insert Tag", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.insert_tag)
-         .pack(side="left", padx=(10, 0)))
+        # Tags
+        tk.Label(content_frame, text="Tags:", font=("Helvetica", 12, "bold"), bg="white").pack()
+        self.tag_var = tk.StringVar()
+        tag_dropdown = ttk.Combobox(content_frame, textvariable=self.tag_var,
+                                    values=Database.get_all_tags(), state="readonly")
+        tag_dropdown.bind("<<ComboboxSelected>>", self.insert_tag)
+        tag_dropdown.pack(pady=5)
 
-        # === Message ===
-        message_frame = tk.Frame(main_content, bg="white")
-        message_frame.pack(anchor="center", pady=(10, 0))
-        tk.Label(message_frame, text="Message:", font=PCC_LABEL_FONT, bg="white").pack(anchor="center")
-        self.message_box = tk.Text(message_frame, height=12, width=70, font=PCC_FONT, relief="solid", bd=1)
-        self.message_box.pack()
-        scrollbar = tk.Scrollbar(message_frame, command=self.message_box.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.message_box.config(yscrollcommand=scrollbar.set)
-        self.message_box.bind("<FocusIn>", lambda e: self.set_active_widget(self.message_box))
+        # Message
+        tk.Label(content_frame, text="Message:", font=("Helvetica", 12, "bold"), bg="white").pack()
+        self.message_box = tk.Text(content_frame, height=10, width=70)
+        self.message_box.pack(pady=5)
 
-        # === Rich Text Buttons ===
-        format_frame = tk.Frame(main_content, bg="white")
-        format_frame.pack(anchor="center", pady=5)
+        # Formatting
+        format_frame = tk.Frame(content_frame, bg="white")
+        format_frame.pack(pady=5)
         for tag in ["Bold", "Italic", "Underline"]:
-            tk.Button(format_frame, text=tag, font=PCC_FONT, bg=PCC_BLUE, fg="white",
+            tk.Button(format_frame, text=tag, bg="#008099", fg="white",
                       command=lambda t=tag.lower()[0]: self.wrap_tag(t)).pack(side="left", padx=5)
 
-        # === Text Color ===
-        color_frame = tk.Frame(main_content, bg="white")
-        color_frame.pack(anchor="center", pady=5)
-        tk.Label(color_frame, text="Text Color:", font=PCC_FONT, bg="white").pack(side="left")
+        # Text Color
+        color_frame = tk.Frame(content_frame, bg="white")
+        color_frame.pack(pady=5)
+        tk.Label(color_frame, text="Text Color:", bg="white").pack(side="left")
         self.color_var = tk.StringVar(value="red")
-        (ttk.Combobox(color_frame, textvariable=self.color_var,
-                      values=["red", "blue", "green", "orange", "purple", "black"], state="readonly", width=10)
-         .pack(side="left", padx=5))
-        (tk.Button(color_frame, text="Apply Color", font=PCC_FONT, bg=PCC_BLUE, fg="white", command=self.apply_color)
-         .pack(side="left"))
+        ttk.Combobox(color_frame, textvariable=self.color_var,
+                     values=["red", "blue", "green", "orange", "purple", "black"],
+                     state="readonly", width=10).pack(side="left", padx=5)
+        tk.Button(color_frame, text="Apply Color", bg="#008099", fg="white",
+                  command=self.apply_color).pack(side="left")
 
-        # === Attachment Section ===
-        attachment_frame = tk.Frame(main_content, bg="white")
-        attachment_frame.pack(anchor="center", pady=(10, 2))
-        self.attachment_listbox = tk.Listbox(attachment_frame, height=3, width=70, font=PCC_FONT, bg=PCC_LIGHT_BLUE)
-        self.attachment_listbox.pack()
-        tk.Button(attachment_frame, text="Add Attachments", font=PCC_FONT, bg=PCC_BLUE, fg="white",
-                  command=self.add_attachment).pack(pady=2)
-        tk.Button(attachment_frame, text="Remove Attachments", font=PCC_FONT, bg=PCC_BLUE, fg="white",
-                  command=self.remove_attachment).pack(pady=2)
+        # Attachments List
+        self.attachment_listbox = tk.Listbox(content_frame, height=3, width=70)
+        self.attachment_listbox.pack(pady=10)
 
-        # === Side Buttons (Now moved closer to form) ===
-        for label, command in [
-            ("Send Notification", self.send_notification),
-            ("Add Image", self.add_attachment),
-            ("Clear Form", self.clear_fields),
-            ("Exit", self.quit)
-        ]:
-            tk.Button(side_buttons, text=label, font=PCC_FONT, bg=PCC_BLUE, fg="white", width=18,
-                      command=command).pack(pady=5)
+        btn_row = tk.Frame(content_frame, bg="white")
+        btn_row.pack(pady=5)
+        tk.Button(btn_row, text="Add Attachment", bg="#008099", fg="white",
+                  command=self.add_attachment).pack(side="left", padx=5)
+        tk.Button(btn_row, text="Remove Attachment", bg="#008099", fg="white",
+                  command=self.remove_attachment).pack(side="left", padx=5)
+
+        # Image Preview
+        self.image_preview_frame = tk.Frame(content_frame, bg="white")
+        self.image_preview_frame.pack(pady=10)
+
+        # === RIGHT side: Sidebar Buttons ===
+        side_buttons = tk.Frame(wrapper, bg="white")
+        side_buttons.grid(row=0, column=1, sticky="n", padx=(40, 10))
+
+        tk.Button(side_buttons, text="Send Notification", width=20, bg="#008099", fg="white",
+                  command=self.send_notification).pack(pady=5)
+        tk.Button(side_buttons, text="Add Photo", width=20, bg="#008099", fg="white",
+                  command=self.add_attachment).pack(pady=5)
+        tk.Button(side_buttons, text="Clear Form", width=20, bg="#008099", fg="white",
+                  command=self.clear_fields).pack(pady=5)
+        tk.Button(side_buttons, text="Exit", width=20, bg="#008099", fg="white",
+                  command=self.quit).pack(pady=5)
 
     def go_home(self):
-        print("Go to Welcome Page")
+        if self.controller:
+            from manager_welcome import ManagerWelcome
+            self.controller.show_frame(ManagerWelcome)
 
-    def go_back(self):
-        print("Go to Template Creation Page")
+    def load_selected_template(self, selected_template):
+        if selected_template != "Select a Template":
+            subject, message = Database.fetch_template_subject_message(selected_template)
+            self.subject_entry.delete(0, tk.END)
+            self.subject_entry.insert(0, subject)
+            self.message_box.delete("1.0", tk.END)
+            self.message_box.insert(tk.END, message)
 
-    def set_active_widget(self, widget):
-        global active_widget
-        active_widget = widget
-
-    def insert_tag(self):
-        tag = self.selected_tag.get()
-        if tag and active_widget:
-            if isinstance(active_widget, tk.Entry):
-                active_widget.insert(active_widget.index(tk.INSERT), tag)
-            elif isinstance(active_widget, tk.Text):
-                active_widget.insert(tk.INSERT, tag)
+    def insert_tag(self, event):
+        tag = self.tag_var.get()
+        self.message_box.insert(tk.INSERT, tag)
 
     def wrap_tag(self, tag):
         try:
@@ -203,67 +145,147 @@ class SendNotificationPage(tk.Frame):
             end = self.message_box.index(tk.SEL_LAST)
             selected = self.message_box.get(start, end)
             color = self.color_var.get()
+
+            clean_selected = re.sub(r'</?span[^>]*>', '', selected)
+
             self.message_box.delete(start, end)
-            self.message_box.insert(start, f'<span style="color:{color}">{selected}</span>')
+            self.message_box.insert(start, f'<span style="color:{color}">{clean_selected}</span>')
         except tk.TclError:
             messagebox.showwarning("No Selection", "Please highlight text to color.")
 
     def add_attachment(self):
-        path = filedialog.askopenfilename()
-        if path:
-            selected_files.append(path)
-            self.attachment_listbox.insert(tk.END, path)
+        filepath = filedialog.askopenfilename()
+        if filepath:
+            selected_files.append(filepath)
+            self.attachment_listbox.insert(tk.END, filepath)
+            self.update_image_preview()
 
     def remove_attachment(self):
-        selection = self.attachment_listbox.curselection()
-        for i in reversed(selection):
+        selected = self.attachment_listbox.curselection()
+        for i in reversed(selected):
             selected_files.pop(i)
             self.attachment_listbox.delete(i)
+        self.update_image_preview()
+
+    def update_image_preview(self):
+        for widget in self.image_preview_frame.winfo_children():
+            widget.destroy()
+        for filepath in selected_files[:6]:
+            try:
+                img = Image.open(filepath)
+                img.thumbnail((100, 100))
+                img = ImageTk.PhotoImage(img)
+                lbl = tk.Label(self.image_preview_frame, image=img)
+                lbl.image = img
+                lbl.pack(side="left", padx=5)
+            except Exception as e:
+                print(f"Preview Error: {e}")
 
     def clear_fields(self):
         self.subject_entry.delete(0, tk.END)
         self.message_box.delete("1.0", tk.END)
         self.attachment_listbox.delete(0, tk.END)
         selected_files.clear()
+        self.update_image_preview()
 
-    def load_selected_template(self, selected_template):
-        if selected_template and selected_template != "Select a Template":
+    def show_review_popup(self, subject, message_html):
+        review_window = tk.Toplevel(self)
+        review_window.title("Review Notification")
+        review_window.geometry("800x600")
+        review_window.configure(bg="white")
+        review_window.grab_set()
+
+        tk.Label(
+            review_window,
+            text=f"Subject: {subject}",
+            font=("Helvetica", 14, "bold"),
+            fg="#005c6d",
+            bg="white"
+        ).pack(pady=(15, 5))
+
+        message_html = message_html.replace('\n', '<br>')
+
+        container = tk.Frame(review_window, bg="white")
+        container.pack(fill="both", expand=True, padx=10, pady=5)
+
+        canvas = tk.Canvas(container, bg="white", highlightthickness=0)
+        scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg="white")
+
+        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        html_view = HTMLLabel(
+            scrollable_frame,
+            html=message_html,
+            width=90,
+            background="white",
+            padx=10,
+            pady=10
+        )
+        html_view.pack(fill="both", expand=True)
+
+        # === Image Preview in Review ===
+        preview_frame = tk.Frame(scrollable_frame, bg="white")
+        preview_frame.pack(pady=10)
+
+        review_images = []  # prevent garbage collection
+        for filepath in selected_files[:6]:
             try:
-                subject, message = Database.fetch_template_subject_message(selected_template)
-                self.subject_entry.delete(0, tk.END)
-                self.subject_entry.insert(0, subject)
-                self.message_box.delete("1.0", tk.END)
-                self.message_box.insert(tk.END, message)
+                img = Image.open(filepath)
+                img.thumbnail((120, 120))
+                img_tk = ImageTk.PhotoImage(img)
+                review_images.append(img_tk)
+                img_label = tk.Label(preview_frame, image=img_tk, bg="white")
+                img_label.pack(side="left", padx=5)
             except Exception as e:
-                messagebox.showerror("Template Load Error", f"Could not load template:\n{e}")
+                print(f"Review Preview Error: {e}")
+
+        review_window.image_refs = review_images  # store references on window
+
+        button_frame = tk.Frame(review_window, bg="white")
+        button_frame.pack(pady=(5, 15))
+
+        btn_style = {
+            "bg": "#008099",
+            "fg": "white",
+            "font": ("Helvetica", 10, "bold"),
+            "width": 12,
+            "padx": 5,
+            "pady": 4,
+            "relief": "flat"
+        }
+
+        tk.Button(button_frame, text="Send", command=lambda: [review_window.destroy(), self.finalize_send(subject, message_html)], **btn_style).pack(pady=3)
+        tk.Button(button_frame, text="Cancel", command=review_window.destroy, **btn_style).pack(pady=3)
+
+    def finalize_send(self, subject, message_html):
+        subscribers = Database.get_subscribers()
+        sender_id = Database.get_sender_id("Sarah Sam")
+        Database.log_notification(subject, message_html, len(subscribers), sender_id, selected_files)
+        send_email_to_subscribers(subject, message_html, subscribers, selected_files, {})
+        messagebox.showinfo("Sent", f"Notification sent to {len(subscribers)} subscribers.")
+        winsound.MessageBeep()
+        self.clear_fields()
 
     def send_notification(self):
         subject = self.subject_entry.get().strip()
         message = self.message_box.get("1.0", tk.END).strip()
-
         if not subject or not message:
             messagebox.showwarning("Missing Info", "Subject and Message are required.")
             return
 
-        if not messagebox.askyesno("Confirm",
-                                   f"Subject: {subject}\n\nMessage Preview:\n{message[:500]}...\n\nSend this message?"):
-            return
-
-        try:
-            subscribers = Database.get_subscribers()
-            sender_id = Database.get_sender_id("Sarah Sam")
-            Database.log_notification(subject, message, len(subscribers), sender_id, selected_files)
-            send_email_to_subscribers(subject, message, subscribers, selected_files, {})
-            messagebox.showinfo("Sent", f"Notification sent to {len(subscribers)} subscribers.")
-            winsound.MessageBeep()
-            self.clear_fields()
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
+        self.show_review_popup(subject, message)
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Send Notification")
+    root.title("Send Notification - PCC Free Food Pantry")
     root.geometry("1920x1080")
-    SendNotificationPage(root, None).pack(fill="both", expand=True)
+    app = SendNotificationPage(root, None)
+    app.pack(fill="both", expand=True)
     root.mainloop()

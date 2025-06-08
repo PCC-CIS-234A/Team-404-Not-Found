@@ -1,7 +1,7 @@
 """
 Author: R-Nixon
 Creation Date: 2025-5-1
-Last Modified: 2025-5-22
+Last Modified: 06/06/2025 by Sayan
 Description:
 This module is the welcome page after a user signs into the system.
 This page greets both new users and returning users, and contains a button for the user
@@ -30,7 +30,7 @@ class WelcomePage(tk.Frame):
         self.configure(background=APP_BACKGROUND)
 
         from home_page import HomePage
-        from template_creation import TemplatePage
+        from template_creator_gui import TemplatePage
         from notification_logs import LogsPage
         from send_notification import SendNotificationPage
 

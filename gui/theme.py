@@ -1,45 +1,42 @@
-# Author:        Santhil Murugesan
+# =============================================================================
+# Author:        Sayan Tajul
 # File:          theme.py
-# Created:       04/25/2025
+# Created:       06/05/2025
 # Project:       Food Pantry Notification System
 # Module:        All modules in this project use this file as a common resource.
 # Description:   Centralized theming for consistent GUI design.
-# Functionality: Defines colors, fonts, and widget styles for uniform
-#                appearance.
-# Output:        Consistent look and feel across all GUI windows and
-#                controls.
+# Functionality: Defines colors, fonts, and widget styles for uniform appearance.
+# Output:        Consistent look and feel across all GUI windows and controls.
 # References:    Python Documentation, Tkinter ttk Styling
 # =============================================================================
 
 import tkinter.font as tkfont
 
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Brand Colors
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 LOGO_GROCERY_BAG = "#235578"
 LOGO_TEXT = "#1690b4"
 
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # PCC & UI Palette
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 PCC_HEADER = "#008099"
 PCC_TEAL_SHADOW = "#00667a"
 PCC_BLUE_SHADOW = "#263c53"
 BG_LIGHT = "#f5f5f5"
 APP_BACKGROUND = "#f7f9fb"  # Unified app background
 
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Button Colors
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 BUTTON_COLOR = "#007b8a"
 BUTTON_HOVER = "#005f69"
 BUTTON_TEXT = "#ffffff"
 
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Font Utilities
-# -----------------------------------------------------------------------------
-
-
+# --------------------------------------------------------------------------
 def get_fonts(root):
     """
     Returns a tuple of (default_font, bold_label_font, bold_button_font).
@@ -55,7 +52,7 @@ def get_fonts(root):
 
     label_bold = tkfont.Font(
         family=base.actual("family"),
-        size=16,
+        size=12,
         weight="bold"
     )
 
@@ -67,11 +64,9 @@ def get_fonts(root):
 
     return base, label_bold, button_bold
 
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # Style Utilities
-# -----------------------------------------------------------------------------
-
-
+# --------------------------------------------------------------------------
 def apply_theme_styles(root=None):
     """
     Apply font, color, and widget style themes across the application.
@@ -93,29 +88,16 @@ def apply_theme_styles(root=None):
     style.configure("Form.TFrame", background=APP_BACKGROUND)
 
     # Label styles
-    style.configure(
-        "TLabel",
-        background=APP_BACKGROUND,
-        foreground="#333333"
-    )
-
-    style.configure(
-        "Header.TLabel",
-        background=PCC_HEADER,
-        foreground="white"
-    )
-    style.configure(
-        "Preview.TLabel",
-        background=PCC_TEAL_SHADOW,
-        foreground="white"
-    )
+    style.configure("TLabel", background=APP_BACKGROUND, foreground="#333333")
+    style.configure("Header.TLabel", background=PCC_HEADER, foreground="white")
+    style.configure("Preview.TLabel", background=PCC_TEAL_SHADOW, foreground="white")
 
     # Button styles (for ttk.Button only)
     style.configure(
         "TButton",
         background=BUTTON_COLOR,
         foreground=BUTTON_TEXT,
-        padding=6,
+        padding=4,
         relief="flat"
     )
     style.map(
