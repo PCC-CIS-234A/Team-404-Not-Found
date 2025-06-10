@@ -172,8 +172,8 @@ class SignupPage(tk.Frame):
             elif validate_email(email) is False:
                 messagebox.showerror("Error", "Invalid Email")
             elif Database.check_username(username) is not None:
-                messagebox.showerror("Account Creation Failed", "The username already exists.  Please choose"
-                                                                "another username and try again.")
+                messagebox.showerror("Account Creation Failed", "Account creation failed.  Please check your"
+                                                                "entries and try again.")
             else:
                 # Function returns a tuple
                 otp = generate_otp_code()
