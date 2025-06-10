@@ -49,6 +49,7 @@ class Database:
             )
 
             print("Connected to: ", cls.__client)
+            return cls.__client
 
     @classmethod
     def close_connection(cls):
