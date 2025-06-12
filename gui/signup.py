@@ -257,7 +257,7 @@ class SignupPage(tk.Frame):
             email = self.email_entry.get().strip()
             for i in range(counter):
                 user_code = simpledialog.askstring(
-                    "Enter Code", "Please enter the confirmation code\nfrom your email:")
+                    "Enter Code", "Please check your email and\nenter the confirmation code:")
                 # If the user hits the "Cancel" button.
                 if user_code is None:
                     clear_form()

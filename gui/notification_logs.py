@@ -1,7 +1,7 @@
 """
-Author(s): jasag
+Author(s): jasag / Modified by Sayan
 Creation Date: 2025-04-25
-Last Modified: 2025-05-06
+Last Modified: 06/06/2025
 
 Description:
 This file produces the GUI for the employee's to search for

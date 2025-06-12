@@ -1,3 +1,6 @@
+# Sayan's Send Notification logics
+# Last Modified 06/06/2025# Sayan's Send Notification logics
+# # Last Modified 06/06/2025
 import configparser
 import os
 import smtplib

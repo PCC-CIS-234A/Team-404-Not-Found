@@ -1,7 +1,8 @@
 """
 Author: R-Nixon
 Creation Date: 2025-4-16
-Last Modified: 2025-5-11
+
+Last Modified 06/06/2025 by Sayan
 
 Description:
 This module contains the User class and contains methods for setting
@@ -133,7 +134,7 @@ class User:
            :param password: string, user's password
            :return: Boolean, True if password is valid, False otherwise
            """
-        return bcrypt.checkpw(password.encode(), self.__password_hash())
+        return bcrypt.checkpw(password.encode(), self.__password_hash.encode())
 
     @staticmethod
     def hash_password(password):

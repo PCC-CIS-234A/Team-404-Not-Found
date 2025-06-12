@@ -1,7 +1,8 @@
 """
-Author: R-Nixon
+Author: R-Nixon / Modified by Sayan
 Creation Date: 2025-4-22
-Last Modified: 2025-5-22
+Last Modified: 06/06/2025
+
 Description:
 This module is the initial user interface for pantry system.
 The user may choose to log in or sign up.
@@ -54,25 +55,11 @@ class HomePage(tk.Frame):
         # Frame to hold the login and signup buttons.
         button_frame = ttk.Frame(self, style="Form.TFrame")
         button_frame.place(relx=0.5, rely=0.5, anchor="n")
-        login_button = tk.Button(button_frame,
-                                 text="Login",
-                                 font=button_font,
-                                 width=7,
-                                 bg=BUTTON_COLOR,
-                                 fg=BUTTON_TEXT,
-                                 activebackground=BUTTON_HOVER,
-                                 activeforeground=BUTTON_TEXT,
-                                 relief="flat",
-                                 command=lambda: controller.show_frame(LoginPage))
-        signup_button = tk.Button(button_frame,
-                                  text="Sign Up",
-                                  font=button_font,
-                                  width=7,
-                                  bg=BUTTON_COLOR,
-                                  fg=BUTTON_TEXT,
-                                  activebackground=BUTTON_HOVER,
-                                  activeforeground=BUTTON_TEXT,
-                                  relief="flat",
-                                  command=lambda: controller.show_frame(SignupPage))
+        login_button = tk.Button(button_frame, text="Login", font=button_font, width=7, bg=BUTTON_COLOR, fg=BUTTON_TEXT,
+                                 activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                 relief="flat", command=lambda: controller.show_frame(LoginPage))
+        signup_button = tk.Button(button_frame, text="Sign Up", font=button_font, width=7, bg=BUTTON_COLOR,
+                                  fg=BUTTON_TEXT, activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
+                                  relief="flat", command=lambda: controller.show_frame(SignupPage))
         login_button.grid(column=0, row=0, padx=10, pady=10)
         signup_button.grid(column=1, row=0, padx=10, pady=10)
