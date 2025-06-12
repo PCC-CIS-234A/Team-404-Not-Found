@@ -1,44 +1,29 @@
-# Sayan Tajul
-# 06/06/2025
-# Test Notification Review
+# ***************************************************************
+"""
+Author(s): jasag
+Creation Date: 2025-05-15
+Last Modified: 2025-05-15
 
+Description:
+This file tests data layer Notification class.
+"""
+# ***************************************************************
 import unittest
-from unittest.mock import patch, MagicMock
-from logic import template_logic
+from logic.notification import Notification
 
 
-class TestNotificationReview(unittest.TestCase):
+# tests Notification class
+class TestNotification(unittest.TestCase):
+    def test_constructor(self):
+        """
+        Tests class constructor.
+        :return: n/a
+        """
+        test_notification = Notification("2025-04-23", "Fresh Fruit", "Fresh fruit available.", 1011, 3, "Bob")
 
-    @patch("logic.template_logic.Database.connect")
-    def test_fetch_template_by_name_found(self, mock_connect):
-        mock_conn = MagicMock()
-        mock_cursor = MagicMock()
-        mock_cursor.fetchone.return_value = ("Template1", "CategoryA", "SubjectA", "MessageA")
-        mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
-
-        result = template_logic.fetch_template_by_name("Template1")
-        self.assertEqual(result[0], "Template1")
-
-    @patch("logic.template_logic.Database.connect")
-    def test_fetch_template_by_name_not_found(self, mock_connect):
-        mock_conn = MagicMock()
-        mock_cursor = MagicMock()
-        mock_cursor.fetchone.return_value = None
-        mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
-
-        result = template_logic.fetch_template_by_name("MissingTemplate")
-        self.assertIsNone(result)
-
-    @patch("logic.template_logic.Database.connect")
-    def test_fetch_template_names(self, mock_connect):
-        mock_conn = MagicMock()
-        mock_cursor = MagicMock()
-        mock_cursor.fetchall.return_value = [("Welcome",), ("Update",)]
-        mock_conn.cursor.return_value = mock_cursor
-        mock_connect.return_value = mock_conn
-
-        names = template_logic.fetch_template_names()
-        self.assertIn("Welcome", names)
-        self.assertEqual(len(names), 2)
+        self.assertEqual("2025-04-23", test_notification.date_sent())
+        self.assertEqual("Fresh Fruit", test_notification.subject())
+        self.assertEqual("Fresh fruit available.", test_notification.message())
+        self.assertEqual(1011, test_notification.sender_id())
+        self.assertEqual(3, test_notification.num_subscribers())
+        self.assertEqual("Bob", test_notification.first_name())

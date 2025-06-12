@@ -13,7 +13,7 @@ log results and details.
 # Needs styling applied
 
 
-from logic.logic_layer import search_logs
+from logic.logs_logic_layer import search_logs
 
 # GUI builder - Tkinter library
 import tkinter as tk

@@ -3,7 +3,7 @@
 # Test Notification Logic
 
 import unittest
-from logic.notification_logic import validate_email, send_email_to_subscribers
+from logic.send_notification_logic import validate_email, send_email_to_subscribers
 from unittest.mock import patch, MagicMock
 
 

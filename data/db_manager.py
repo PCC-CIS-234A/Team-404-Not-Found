@@ -578,36 +578,103 @@ class Database:
             messagebox.showerror("DB Error", f"Failed to load tags: {e}")
             return []
 
-    # Gets the notification logs from database
+# Shawla's Database methods:
+
+    # UPDATED Sprint#2 A9 Gets the notification logs from database
     @classmethod
-    def get_notification_log(cls, start_date, end_date):
+    def get_notification_log(cls, start_date, end_date, sort_by, sort_order):
         """
         Fetches Notification log from database
         :param start_date: datetime, start date and time of notification sent
         :param end_date: datetime, end date and time of notification sent
-        :return: Notification log
+        :param sort_by: optional column sort by
+        :param sort_order: "asc" or "desc"
+        :return: list of Notification logs
         """
-        query = """
+
+        # NEW Sprint#2 A9 validate allowed columns for sorting
+        valid_sort_columns = {
+            "Date & Time": "n.date_sent",
+            "Subject": "n.subject",
+            "Message": "n.message",
+            "Sender": "u.first_name",
+            "# of Subscribers": "n.num_subscribers"
+        }
+        # Default sort
+        order_clause = "ORDER BY n.date_sent"
+        if sort_by in valid_sort_columns:
+            db_column = valid_sort_columns[sort_by]
+            order = "ASC" if sort_order.upper() == "ASC" else "DESC"
+            order_clause = f"ORDER BY {db_column} {order}"
+
+        query = f"""
             SELECT n.date_sent, n.subject, n.message, n.sender_id, n.num_subscribers, u.first_name
             FROM dbo.Notifications n
             JOIN dbo.Users u ON n.sender_id = u.user_id
             WHERE n.date_sent BETWEEN ? AND ?
-            ORDER BY n.date_sent;
+            {order_clause};
         """
 
         # Holds list objects from Notification table
         notifications = []
         # Opens and closes database connection
-        cls.connect()
-        cursor = cls.__client.cursor()
-        # Protects against SQL injection keeping query outside of cursor.execute
-        cursor.execute(query, (start_date, end_date))
+        connection = cls.connect()
 
-        # Gets column names
-        columns = [column[0] for column in cursor.description]
+        try:
+            cursor = connection.cursor()
+            # Protects against SQL injection keeping query outside of cursor.execute
+            cursor.execute(query, (start_date, end_date))
 
-        for row in cursor.fetchall():
-            # Converts tuples into dictionary
-            row_dict = dict(zip(columns, row))
-            notifications.append(Notification(**row_dict))
+            # Gets column names
+            columns = [column[0] for column in cursor.description]
+
+            for row in cursor.fetchall():
+                # Converts tuples into dictionary
+                row_dict = dict(zip(columns, row))
+                notifications.append(Notification(**row_dict))
+        finally:
+            connection.close()
+
+        return notifications
+
+    # NEW Sprint#2 A8 Searches logs for keyword
+    @classmethod
+    def search_logs_keyword(cls, keyword):
+        """
+        Searches Notification log by keyword
+        :param keyword, search text
+        :return: List of Notification logs matching keyword
+        """
+        query = """
+               SELECT n.date_sent, n.subject, n.message, n.sender_id, n.num_subscribers, u.first_name
+               FROM dbo.Notifications n
+               JOIN dbo.Users u ON n.sender_id = u.user_id
+               WHERE n.subject LIKE ? OR n.message LIKE ? OR u.first_name LIKE ?
+               ORDER BY n.date_sent;
+           """
+
+        # % match user input with any sequence of characters
+        keyword_pattern = f"%{keyword}%"
+        params = (keyword_pattern, keyword_pattern, keyword_pattern)
+
+        # Holds list objects from Notification table
+        notifications = []
+        # Opens and closes database connection
+        connection = cls.connect()
+
+        try:
+            cursor = connection.cursor()
+            # Protects against SQL injection keeping query outside of cursor.execute
+            cursor.execute(query, params)
+
+            # Gets column names
+            columns = [column[0] for column in cursor.description]
+
+            for row in cursor.fetchall():
+                # Converts tuples into dictionary
+                row_dict = dict(zip(columns, row))
+                notifications.append(Notification(**row_dict))
+        finally:
+            connection.close()
+
         return notifications

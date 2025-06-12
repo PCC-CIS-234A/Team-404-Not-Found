@@ -10,7 +10,7 @@ the data layer and validates date and time input.
 """
 # ***************************************************************
 from datetime import datetime, timedelta
-from data.notification_db import Database
+from data.db_manager import Database
 
 
 # UPDATED Sprint#2 A9 Requests data from data layer and validates input
@@ -40,7 +40,7 @@ def search_logs(start_date_str, end_date_str, sort_by=None, sort_order="ASC"):
 
     # Calls Database class method to get log data objects
     try:
-        #Updated Sprint#2 A9
+        # Updated Sprint#2 A9
         notifications = Database.get_notification_log(start_date, end_date, sort_by, sort_order)
         print("LOGIC LAYER -db returned:", len(notifications), "notifications")
     # Returns error if trouble retrieving data
@@ -53,15 +53,16 @@ def search_logs(start_date_str, end_date_str, sort_by=None, sort_order="ASC"):
     for n in notifications or []:
         result.append({
             # Dictionary keys
-            "date_sent" : n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
-            "subject" : n.subject,
-            "message" : n.message,
-            "first_name" : n.first_name,
-            "num_subscribers" : n.num_subscribers
+            "date_sent": n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
+            "subject": n.subject,
+            "message": n.message,
+            "first_name": n.first_name,
+            "num_subscribers": n.num_subscribers
         })
 
     print("Logic LAYER -returning:", len(result), "results")
     return result
+
 
 # NEW Sprint#2 A8 search_logs_keyword logic
 def search_logs_keyword(keyword):
@@ -82,11 +83,11 @@ def search_logs_keyword(keyword):
     result = []
     for n in notifications or []:
         result.append({
-            "date_sent" : n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
-            "subject" : n.subject,
-            "message" : n.message,
-            "first_name" : n.first_name,
-            "num_subscribers" : n.num_subscribers
+            "date_sent": n.date_sent.strftime("%Y-%m-%d %H:%M:%S"),
+            "subject": n.subject,
+            "message": n.message,
+            "first_name": n.first_name,
+            "num_subscribers": n.num_subscribers
         })
 
     return result

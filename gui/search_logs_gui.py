@@ -10,7 +10,7 @@ notification logs by date range and displays
 log results and details.
 """
 # ***************************************************************
-from logic.logic_layer import search_logs, search_logs_keyword, get_today_date_str
+from logic.logs_logic_layer import search_logs, search_logs_keyword, get_today_date_str
 
 # GUI builder - Tkinter library
 import tkinter as tk
@@ -34,7 +34,7 @@ def run_app():
         start_date = start_date_box.get()
         end_date = end_date_box.get()
 
-     # Error handling -- Don't need this with calendar feature?
+        # Error handling -- Don't need this with calendar feature?
         if not start_date or not end_date:
             messagebox.showerror("Error", "Start date and end date cannot be empty")
             return
@@ -127,7 +127,6 @@ def run_app():
                 row["num_subscribers"]
             ))
 
-
     # NEW Sprint#2 A9 Clears search fields and logs
     def clear_search_fields():
         """
@@ -140,7 +139,6 @@ def run_app():
         keyword_entry.delete(0, tk.END)
         tree.delete(*tree.get_children())
         details_text.set("")
-
 
     # Creates main window
     root = tk.Tk()
@@ -195,19 +193,20 @@ def run_app():
                     font=default_font
                     )
 
-
     # Top frame
     top_frame = ttk.Frame(root)
     top_frame.pack(pady=20)
 
     # Creates box for "start" date
     ttk.Label(top_frame, text="Start: ").grid(row=0, column=0, padx=5)
-    start_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+    start_date_box = DateEntry(
+        top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
     start_date_box.grid(row=0, column=1, padx=5)
 
     # Creates box for "end" date
     ttk.Label(top_frame, text="End: ").grid(row=0, column=2, padx=5)
-    end_date_box = DateEntry(top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
+    end_date_box = DateEntry(
+        top_frame, width=12, background='#1690b4', foreground='white', borderwidth=2, date_pattern='yyyy-mm-dd')
     end_date_box.grid(row=0, column=3, padx=5)
 
     # Creates search button
@@ -238,7 +237,7 @@ def run_app():
     # NEW Sprint#2 A9 Defines sort state tracker
     sort_orders = {col: True for col in columns}
 
-    tree = ttk.Treeview(tree_frame, columns=columns, show ="headings", yscrollcommand=scrollbar.set)
+    tree = ttk.Treeview(tree_frame, columns=columns, show="headings", yscrollcommand=scrollbar.set)
     scrollbar.config(command=tree.yview)
 
     # NEW Sprint#2 A9 Column sorting.  Settings for columns display
@@ -275,6 +274,7 @@ def run_app():
 
     details_text = tk.StringVar()
     ttk.Label(details_frame, text="Log Details: ").pack(anchor=tk.W, pady=5)
-    ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W).pack(fill=tk.BOTH, padx=10, pady=10)
+    (ttk.Label(details_frame, textvariable=details_text, justify=tk.LEFT, anchor=tk.W)
+     .pack(fill=tk.BOTH, padx=10, pady=10))
 
     root.mainloop()

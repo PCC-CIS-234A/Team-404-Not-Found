@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 from tkhtmlview import HTMLLabel
 # from html import unescape
 import re
-from logic.notification_logic import send_email_to_subscribers
+from logic.send_notification_logic import send_email_to_subscribers
 from data.db_manager import Database
 from theme import apply_theme_styles
 # from theme import get_fonts

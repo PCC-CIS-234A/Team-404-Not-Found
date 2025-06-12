@@ -1,6 +1,17 @@
-# Sayan's Send Notification logics
-# Last Modified 06/06/2025
+# ***************************************************************
+"""
+Author(s): jasag
+Creation Date: 2025-04-23
+Last Modified: 2025-05-31
 
+Description:
+This file defines Notification class and Database class
+and contains connection settings to access the Database.
+"""
+# ***************************************************************
+
+
+# Defines Notification (model/entity) class.  Notification table in database.
 class Notification:
 
     def __init__(self, date_sent, subject, message, sender_id, num_subscribers, first_name):

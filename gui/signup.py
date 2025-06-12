@@ -25,7 +25,7 @@ import smtplib
 import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from logic.notification_logic import process_tags
+from logic.send_notification_logic import process_tags
 from logic.otp import generate_otp_code, verify_otp_code
 
 
@@ -192,7 +192,7 @@ class SignupPage(tk.Frame):
              Purpose: Send a confirmation email to a new user attempting to sign up.
              Email is personalized to include the first name entry from the signup form.
 
-             **Code and logic from Sayan's files notification_logic.py and send_notification.py
+             **Code and logic from Sayan's files send_notification_logic.py and send_notification.py
 
              :param otp_code: string, one time password code
              :param tag_values: dictionary, values of template tags
