@@ -54,7 +54,7 @@ class SubscriberWelcome(tk.Frame):
 
         # Specific Subscriber welcome message
         message_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
-        message_frame.place(relx=0.5, rely=0.3, anchor="n")
+        message_frame.place(relx=0.5, rely=0.4, anchor="n")
         message_label = ttk.Label(message_frame,
                                   text="Check back soon for subscriber menu options!"
                                        "\n"
@@ -69,7 +69,7 @@ class SubscriberWelcome(tk.Frame):
 
         # Logout button.
         logout_frame = ttk.Frame(self, padding=10, style="Form.TFrame")
-        logout_frame.place(relx=0.5, rely=0.6, anchor="n")
+        logout_frame.place(relx=0.5, rely=0.7, anchor="n")
 
         logout_button = tk.Button(logout_frame,
                                   text="Logout",

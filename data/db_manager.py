@@ -556,6 +556,28 @@ class Database:
                 )
             cls.__client.commit()
 
+    @classmethod
+    def delete_template(cls, name):
+        cls.connect()
+        cursor = cls.__client.cursor()
+        cursor.execute(
+            """
+            DELETE FROM dbo.templates
+            WHERE name = ?""", (name,))
+        cls.__client.commit()
+
+    @classmethod
+    def load_tags(cls):
+        # Santhil's method taken from template_creator_gui.py
+        try:
+            cls.connect()
+            cursor = cls.__client.cursor()
+            cursor.execute("SELECT tag_name, description FROM dbo.tags")
+            return [f"{desc} – {tag}" for tag, desc in cursor.fetchall()]
+        except Exception as e:
+            messagebox.showerror("DB Error", f"Failed to load tags: {e}")
+            return []
+
     # Gets the notification logs from database
     @classmethod
     def get_notification_log(cls, start_date, end_date):

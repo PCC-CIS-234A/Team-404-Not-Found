@@ -215,7 +215,7 @@ class TemplateCreatorGUI(tk.Frame):
                                          state="disabled")
         self.tag_dropdown.configure(
             postcommand=lambda: self.tag_dropdown.configure(
-                values=self.load_tags()))
+                values=Database.load_tags()))
         self.tag_dropdown.grid(row=current_content_row, column=1, sticky="ew",
                                padx=(0, PAD_MEDIUM), pady=(PAD_MEDIUM, 0))
         self.hint_label = ttk.Label(content_body_frame, text="",
@@ -285,18 +285,18 @@ class TemplateCreatorGUI(tk.Frame):
         buttons_inner_frame.grid(row=0, column=0,
                                  sticky="w")  # Align buttons to the left
 
+        #  ("+ New", self.clear_form, "new_button", "TButton", None),
         button_definitions = [
-          #  ("+ New", self.clear_form, "new_button", "TButton", None),
-            ("+ New", self._new_template_mode, "new_button",
-             "TButton", None),
-            ("Edit", self.enable_edit_mode, "edit_button", "TButton", None),
-            ("Save As...", self.save_as_template, "save_as_button", "TButton",
-             None),
-            ("Save", self.save_template, "save_button", "TButton", None),
-            ("Delete", self.delete_template, "delete_button",
-             "Secondary.TButton", None),
-            ("Cancel", self.clear_form, "cancel_button", "Secondary.TButton",
-             None)
+             ("+ New", self._new_template_mode, "new_button",
+              "TButton", None),
+             ("Edit", self.enable_edit_mode, "edit_button", "TButton", None),
+             ("Save As...", self.save_as_template, "save_as_button", "TButton",
+              None),
+             ("Save", self.save_template, "save_button", "TButton", None),
+             ("Delete", self.delete_template, "delete_button",
+              "Secondary.TButton", None),
+             ("Cancel", self.clear_form, "cancel_button", "Secondary.TButton",
+              None)
         ]
         for i, (label, cmd, attr_name, btn_style, icon_img) in enumerate(
                 button_definitions):
@@ -346,15 +346,6 @@ class TemplateCreatorGUI(tk.Frame):
             print(
                 "Error: Could not import ManagerWelcome. Check path and class name.")
 
-    def load_tags(self):
-        try:
-            Database.connect()
-            cursor = Database._Database__client.cursor()
-            cursor.execute("SELECT tag_name, description FROM dbo.tags")
-            return [f"{desc} – {tag}" for tag, desc in cursor.fetchall()]
-        except Exception as e:
-            messagebox.showerror("DB Error", f"Failed to load tags: {e}")
-            return []
 
     def _on_tag_dropdown_click(self, event=None):
         if self.tag_dropdown.cget('state') == tk.DISABLED:
@@ -646,10 +637,7 @@ class TemplateCreatorGUI(tk.Frame):
                                    f"Delete template '{name}'? This cannot be undone."):
             return
         try:
-            conn = Database.connect()
-            cursor = Database._Database__client.cursor()
-            cursor.execute("DELETE FROM dbo.templates WHERE name = ?", (name,))
-            Database._Database__client.commit()
+            Database.delete_template(name)
             messagebox.showinfo("Deleted", f"Template '{name}' deleted.")
             self.refresh_template_dropdown()
             self.clear_form()
@@ -661,75 +649,3 @@ class TemplateCreatorGUI(tk.Frame):
             self.hint_label.configure(text="Error deleting template.",
                                       foreground="red",
                                       style="RaisedSection.Hint.TLabel")
-
-#
-# if __name__ == "__main__":
-#     class MainApplication(tk.Tk):
-#         def __init__(self, *args, **kwargs):
-#             tk.Tk.__init__(self, *args, **kwargs)
-#             self.title("Food Pantry Notification System")
-#             self.geometry("950x750")
-#             apply_theme_styles(self)
-#             container = ttk.Frame(self, padding=10)
-#             container.pack(side="top", fill="both", expand=True)
-#             container.grid_rowconfigure(0, weight=1)
-#             container.grid_columnconfigure(0, weight=1)
-#             self.frames = {}
-#             frame = TemplateCreatorGUI(container, self)
-#             self.frames[TemplateCreatorGUI] = frame
-#             frame.grid(row=0, column=0, sticky="nsew")
-#             self.show_frame(TemplateCreatorGUI)
-#
-#         def show_frame(self, cont):
-#             frame = self.frames[cont]
-#             frame.tkraise()
-#
-#         def show_frame_by_name(self, frame_name_str):  # Dummy for _go_back
-#             print(f"Attempting to show frame: {frame_name_str}")
-#
-#
-#     class Database:
-#         _Database__client = type('MockClient', (), {
-#             'commit': lambda: print("DB Commit Mocked")})()
-#
-#         @staticmethod
-#         def get_cursor():
-#             class MockCursor:
-#                 def execute(self, query, params=None): pass
-#
-#                 def fetchall(self): return [
-#                     ("Event Reminder Tag", "event_name"),
-#                     ("Location Update Tag", "campus_location")]
-#
-#             return MockCursor()
-#
-#
-#     mock_templates_db = {
-#         "Welcome Email": ("Welcome Email", "General", "Welcome to the Pantry!",
-#                           "Body of welcome... {{user_name}}"),
-#         "Event Announcement": ("Event Announcement", "Event",
-#                                "Upcoming Food Drive at {{campus_location}}",
-#                                "Join us for our event on {{event_date}}...")
-#     }
-#
-#
-#     def insert_or_update_template(name, cat, subj, body, creator_id,
-#                                   original_name):
-#         global mock_templates_db
-#         if original_name in mock_templates_db and original_name != name:
-#             del mock_templates_db[original_name]
-#         mock_templates_db[name] = (name, cat, subj, body)
-#         print(
-#             f"Mock DB: Saved/Updated Template - Name: '{name}', Original Name for lookup: '{original_name}'")
-#
-#
-#     def fetch_template_names():
-#         return list(mock_templates_db.keys())
-#
-#
-#     def fetch_template_by_name(name):
-#         return mock_templates_db.get(name)
-#
-#
-#     app = MainApplication()
-#     app.mainloop()

@@ -286,12 +286,3 @@ class SendNotificationPage(tk.Frame):
             return
 
         self.show_review_popup(subject, message)
-
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    root.title("Send Notification - PCC Free Food Pantry")
-    root.geometry("1920x1080")
-    app = SendNotificationPage(root, None)
-    app.pack(fill="both", expand=True)
-    root.mainloop()
