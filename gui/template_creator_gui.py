@@ -52,7 +52,7 @@ class TemplateCreatorGUI(tk.Frame):
         current_main_row = 0
 
         self.back_arrow_icon_tk = None
-        back_arrow_file_name = "arrowback.jpg"
+        back_arrow_file_name = "../images/arrowback.jpg"
         script_dir = os.path.dirname(__file__)
         paths_to_try_arrow = [
             os.path.join(script_dir, "assets", back_arrow_file_name),
@@ -100,7 +100,7 @@ class TemplateCreatorGUI(tk.Frame):
         title_bar_frame.grid_columnconfigure(0, weight=1)
 
         self.title_image_tk = None
-        title_image_file_name = "templatecreator.png"
+        title_image_file_name = "../images/TEMPLATECREATOR.png"
         paths_to_try_title_img = [
             os.path.join(script_dir, "assets", title_image_file_name),
             os.path.join(script_dir, title_image_file_name),
@@ -138,7 +138,7 @@ class TemplateCreatorGUI(tk.Frame):
         logo_display_frame = ttk.Frame(top_bar_frame, style="LogoArea.TFrame")
         logo_display_frame.grid(row=0, column=2, sticky="e",
                                 padx=(PAD_MEDIUM, PAD_LARGE), pady=PAD_XSMALL)
-        pcc_logo_file_name = "PCC-Primary-Logo-R_Turquoise.png"
+        pcc_logo_file_name = "../images/PCC-Primary-Logo-R_Turquoise.png"
         paths_to_try_pcc_logo = [
             os.path.join(script_dir, "assets", pcc_logo_file_name),
             os.path.join(script_dir, pcc_logo_file_name), pcc_logo_file_name
