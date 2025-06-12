@@ -18,7 +18,8 @@ from theme import *
 from home_page import HomePage
 from send_notification import SendNotificationPage
 from template_creator_gui import TemplateCreatorGUI
-from notification_logs import LogsPage
+from search_logs_gui import SearchLogsPage
+# from notification_logs import LogsPage
 
 
 class ManagerWelcome(tk.Frame):
@@ -80,7 +81,7 @@ class ManagerWelcome(tk.Frame):
             options_frame, text="Notification Logs", font=(button_font, 12, "underline", "bold"),
             bg=APP_BACKGROUND, fg=BUTTON_COLOR, relief="flat",
             activebackground=BUTTON_HOVER, activeforeground=BUTTON_TEXT,
-            command=lambda: controller.show_frame(LogsPage)
+            command=lambda: controller.show_frame(SearchLogsPage)
         )
         notification_logs_button.grid(row=0, column=2, padx=5)
 

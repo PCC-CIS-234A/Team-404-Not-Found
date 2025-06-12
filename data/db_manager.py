@@ -617,23 +617,18 @@ class Database:
 
         # Holds list objects from Notification table
         notifications = []
-        # Opens and closes database connection
-        connection = cls.connect()
 
-        try:
-            cursor = connection.cursor()
-            # Protects against SQL injection keeping query outside of cursor.execute
-            cursor.execute(query, (start_date, end_date))
+        cursor = cls.__client.cursor()
+        # Protects against SQL injection keeping query outside of cursor.execute
+        cursor.execute(query, (start_date, end_date))
 
-            # Gets column names
-            columns = [column[0] for column in cursor.description]
+        # Gets column names
+        columns = [column[0] for column in cursor.description]
 
-            for row in cursor.fetchall():
-                # Converts tuples into dictionary
-                row_dict = dict(zip(columns, row))
-                notifications.append(Notification(**row_dict))
-        finally:
-            connection.close()
+        for row in cursor.fetchall():
+            # Converts tuples into dictionary
+            row_dict = dict(zip(columns, row))
+            notifications.append(Notification(**row_dict))
 
         return notifications
 
@@ -659,22 +654,17 @@ class Database:
 
         # Holds list objects from Notification table
         notifications = []
-        # Opens and closes database connection
-        connection = cls.connect()
 
-        try:
-            cursor = connection.cursor()
-            # Protects against SQL injection keeping query outside of cursor.execute
-            cursor.execute(query, params)
+        cursor = cls.__client.cursor()
+        # Protects against SQL injection keeping query outside of cursor.execute
+        cursor.execute(query, params)
 
-            # Gets column names
-            columns = [column[0] for column in cursor.description]
+        # Gets column names
+        columns = [column[0] for column in cursor.description]
 
-            for row in cursor.fetchall():
-                # Converts tuples into dictionary
-                row_dict = dict(zip(columns, row))
-                notifications.append(Notification(**row_dict))
-        finally:
-            connection.close()
+        for row in cursor.fetchall():
+            # Converts tuples into dictionary
+            row_dict = dict(zip(columns, row))
+            notifications.append(Notification(**row_dict))
 
         return notifications
